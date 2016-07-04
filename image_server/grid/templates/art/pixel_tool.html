@@ -1,0 +1,225 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>像素画</title>
+<style>
+* {
+ margin:0;
+ padding:0;
+}
+.wrap { 
+ margin:0 auto;
+ width:750px;
+ border:1px solid #000;
+}
+.side {
+ width:750px;
+ height:60px;
+ line-height:60px;
+ border-bottom:1px solid #000;
+}
+#main {
+ width:750px;
+ height:auto;
+ text-align:center;
+}
+#colorBar {
+ margin-left:40px;
+ border:1px solid #000;
+ background-color:#F00;
+}
+#iTable,#tb {
+ background-image: url("/static/img/tx_100x100_1.jpg");
+ border-collapse:collapse;
+ margin-bottom:40px;
+}
+#iTable { border:1px solid #999; }
+#tb td {
+ border:1px solid #000;
+ width:5px; height:5px;
+ overflow:hidden;}
+#iTable td {
+ /*border:1px solid #999;*/
+ width:4px; height:4px;
+ overflow:hidden;
+}
+#box { margin:42px auto 0; text-align:left; }
+.input1 {
+ padding:5px;
+ width:68px; height:31px;
+ text-align:center;
+}
+#HashInfo {
+ width:60%; height:60px;
+ ;
+}
+
+#navTable,#tb {
+ border-collapse:collapse;
+ margin-bottom:40px;
+}
+#navTable {  }
+#navTable #tb td {
+ /*width:8px; height:8px;*/
+ /*overflow:hidden;*/
+}
+#navTable td {
+ /*border:1px solid #999;*/
+ width:1px; height:1px;
+ /*overflow:hidden;*/
+}
+#nav { margin:42px auto 0; text-align:left; }
+
+</style>
+
+<link rel="stylesheet" href="/static/css/farbtastic.css" type="text/css" />
+</head>
+<body >
+
+
+
+<div class="wrap">
+    <span id="picker"></span>
+    <span>
+        <input type="text" id="color_prepare" name="color" value="#123456" />
+        <input type="button" value="选定颜色" id="color_choose" />
+    </span>
+ <div class="side">
+     <input type="text" id="colorBar"/>
+        <input type="button" class="input1" value="隐藏边框" id="done" />
+        <input type="button" class="input1" value="重新开始" id="clear" />
+        <input type="button" class="input1" value="放大" id="bigger" />
+        <input type="button" class="input1" value="缩小" id="smaller" />
+        <select onchange="iconTable.numChange(this.value)">
+         <option value="16">16 * 16</option>
+         <option value="22" >22 * 22</option>
+         <option value="32">32 * 32</option>
+         <option value="50" selected="selected">50 * 50</option>
+        </select>
+        <input type="button" class="input1" value="颜色信息" id="ColorInfo" />
+        <a href = '/grid/upload'>
+        <input type="button" class="input1" value="重新上传"  />
+        </a>
+    </div>
+ <div id="main"><p style="font-size:12px; text-align:left; width:80%; margin:0 auto;">说明:先点击调色板选取需要的颜色,然后您可点击表格设置颜色,或按CTRL键通过移动鼠标在画板上继续设置颜色.点击"颜色信息"按钮可获取已设置过的颜色值,并可在"还原图案"按钮里进行还原</p>
+     <div id="nav">
+
+    </div>
+     <div id="box">
+
+        </div>
+        <textarea id="HashInfo"></textarea><br /><input type="button" class="input1" value="还原图案" id="SubmitColor" />
+    </div>
+</div>
+
+
+<input type="button" value="测试-生成图片" id="creation_img">
+<div id="color_main_list" >
+
+</div>
+
+</body>
+</html>
+<script src="/static/jquery/jquery-2.1.3.min.js"></script>
+<script src="/static/jquery/jquery.cookie.js"></script>
+<script src="/static/js/pixel_tool.js"></script>
+<script src="/static/js/farbtastic.js"></script>
+<script type="text/javascript">
+
+
+$(document).ready(function() {
+//    $('#demo').hide();
+    $('#picker').farbtastic('#color_prepare');
+});
+$("#creation_img").click(function(){
+    console.log(iconTable.ColorHash);
+
+    $.ajax({
+        type:"POST",
+        url:"/art/creation",
+        data:{
+            "t":1,
+            "matrix":  iconTable.ColorHash
+        },
+        beforeSend:function(xhr){
+            xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+        },
+        success:function(data,textStatus){
+            console.log(data.url)
+        },
+        error:function(XMLHttpRequest, textStatus, errorThrown){
+            alert(XMLHttpRequest.responseText);
+        }
+
+    });
+})
+
+//$('#test').click(function(){
+{%if filename%}
+     $.ajax({
+        type:"POST",
+        url:"/art/pixel_tool",
+
+        data:{
+//            "filename":"{{init_file_name}}",
+            "filename":"{{filename}}"
+        },
+        beforeSend:function(xhr){
+            xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+        },
+        success:function(data,textStatus){
+//            console.log(data.matrix)
+
+            _matrix = data.matrix;
+            //像素绘制
+            iconTable.ColorHash = _matrix;  //获取像素数组
+            GetDom("HashInfo").value = iconTable.ColorHash ; //写入hash内存
+            iconTable.submitColor(GetDom("HashInfo").value); //绘制到table中
+
+            //统计主要色彩
+            var _colorMainHash = {};
+            for(var i = 0,l = _matrix.length  ; i < l ; i++)
+            {
+                if(_colorMainHash.hasOwnProperty(_matrix[i]) )
+                    _colorMainHash[_matrix[i]] ++;
+                else
+                    _colorMainHash[_matrix[i]] = 1;
+            }
+
+
+            var _colorMainList = []; //hash变list
+            for (var c in _colorMainHash)
+            {
+                _colorMainList.push({
+                    "color":c,
+                    "num":_colorMainHash[c]
+                })
+            }
+
+            for (var i = 0; i<_colorMainList.length-1;i++ )
+                for (var j = i+1;j<_colorMainList.length ; j++ )
+                {
+                    if(_colorMainList[i].num < _colorMainList[j].num )
+                    {
+                        var temp = _colorMainList[i]
+                        _colorMainList[i] = _colorMainList[j]
+                        _colorMainList[j] = temp
+                    }
+                }
+//            console.log(_colorMainList)
+            for ( var i =0;i<5;i++)
+                $("#color_main_list").append("<div  style='background-color:"+_colorMainList[i].color+"'> "+_colorMainList[i].color+"</div>")
+
+
+        },
+        error:function(XMLHttpRequest, textStatus, errorThrown){
+            alert(XMLHttpRequest.responseText);
+        }
+
+    });
+//    return false;
+{%endif%}
+//});
+</script>
