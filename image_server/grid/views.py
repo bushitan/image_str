@@ -43,7 +43,7 @@ class WXImgToStr(BaseMixin, ListView):
 
         _img_url = self.request.POST.get("img_url", "")
 
-        filedir = sys.path[0]+"/blog/static/img/art/"
+        filedir = sys.path[0]+"/grid/static/img/art/"
         filename = "img_{}".format( time.strftime("%Y%m%d%H%M%S",time.localtime(time.time())))
         filestyle = ".png"
         # img_url = "http://mmbiz.qpic.cn/mmbiz/EmT9585IibD0V5dic327aVTjBFr1PgAcdzb7SDPK0Ndo3qqm26wHn6s4Qpf5TddjtpNFRrmL8CBb8Q64XuN13v4Q/0"
