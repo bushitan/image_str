@@ -1,64 +1,29 @@
-#--coding:utf-8--
-from django.test import TestCase
-
-import Image
-
-# color = 'MNHQ$OC?7>!:-;.'
-color = u'DJ.'
-
-def to_html(func):
-    html_head = '''
-            <html>
-              <head>
-                <style type="text/css">
-                  body {font-family:Monospace; font-size:5px;}
-                </style>
-              </head>
-            <body> '''
-    html_tail = '</body></html>'
-
-    def wrapper(img):
-        pic_str = func(img)
-        pic_str = ''.join(l + ' <br/>' for l in pic_str.splitlines())
-        return html_head + pic_str + html_tail
-
-    return wrapper
-
-@to_html
-def make_char_img(img):
-    pix = img.load()
-    pic_str = ''
-    width, height = img.size
-    for h in xrange(height):
-        for w in xrange(width):
-            pic_str += color[int(pix[w, h]) * 3 / 255]
-        pic_str += '\n'
-    return pic_str
-
-def preprocess(img_name):
-    img = Image.open(img_name)
-
-    w, h = img.size
-    m = max(img.size)
-    delta = m / 200.0
-    w, h = int(w / delta), int(h / delta)
-    img = img.resize((w, h))
-    img = img.convert('L')
-
-    return img
-
-def save_to_file(filename, pic_str):
-    outfile = open(filename, 'w')
-    outfile.write(pic_str)
-    outfile.close()
-
-def main():
-    img = preprocess('static/img/6.jpg')
-    pic_str = make_char_img(img).encode('utf-8')
-    print pic_str
-    save_to_file('char.html', pic_str)
-
+# -*- coding: utf-8 -*-
+import httplib, urllib,urllib2
+import json
 if __name__ == '__main__':
-    main()
 
+    #http://127.0.0.1:8000/art/wx_img_str
+    httpClient = None
+    try:
 
+        # url = "http://127.0.0.1:8000/art/wx_img_str"
+        # url = "http://127.0.0.1:8000/weixin/"
+        # url = 'http://120.27.97.33/weixin/'
+        url = 'http://127.0.0.1:8000/grid/api/img_str/'
+        data  = {  "img_url":"http://mmbiz.qpic.cn/mmbiz/EmT9585IibD0V5dic327aVTjBFr1PgAcdzb7SDPK0Ndo3qqm26wHn6s4Qpf5TddjtpNFRrmL8CBb8Q64XuN13v4Q/0"}
+        req = urllib2.Request(url)
+        data = urllib.urlencode(data)
+        #enable cookie
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+        response = opener.open(req, data)
+        res = response.read()
+        print response.read()
+        obj = json.loads(res)
+        print obj['img_url']
+        print obj['str_url']
+    except Exception, e:
+        print e
+    finally:
+        if httpClient:
+            httpClient.close()

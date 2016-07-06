@@ -6,6 +6,8 @@ from grid.models import *
 from django.views.generic import View, TemplateView, ListView, DetailView
 from grid.lib.str2img import Str2Img
 from grid.lib.web import Web
+from grid.lib.qi_niu import QiNiu
+
 import datetime
 import time
 import json
@@ -14,6 +16,7 @@ import os
 import base64
 from PIL import Image,ImageDraw,ImageFont
 import sys
+import image_server.settings as SETTING
 # logger
 logger = logging.getLogger(__name__)
 
@@ -28,6 +31,60 @@ class BaseMixin(object):
         context = super(BaseMixin, self).get_context_data(**kwargs)
         return context
 
+#图片处理api，生成字符画
+#接收原图url->字符画->上传->返回字符画url
+class API_ImgToStr(BaseMixin, ListView):
+    template_name = 'img_str/pc.html'
+
+    def get_context_data(self, **kwargs):
+        return super(API_ImgToStr, self).get_context_data(**kwargs)
+    def get_queryset(self):
+        pass
+    def post(self, request, *args, **kwargs):
+        _img_url = self.request.POST.get("img_url", "")
+
+        #图片路径
+        _img_filedir = "grid/static/art/img/"
+        _img_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+        _img_style = ".png"
+        _img_filename = _img_name+_img_style
+        _img_localpath = _img_filedir + _img_filename
+
+        _str_filedir = "grid/static/art/str/"
+
+
+        _qiniu_img_path = 'img/'
+        _qiniu_str_path = 'str/'
+        _qiniu_grid_path = 'grid/'
+
+        _web = Web()
+        _str2img = Str2Img()
+        _qiniu = QiNiu()
+
+         #保存图片到本地
+        if _web.Download_Img(_img_filedir,_img_filename,_img_url ): #保存图片
+            print 'download is success'
+            # print _str_filedir,_img_filename,_str_filedir+_img_filename
+            _str_filename = _str2img.Str_ByUrl(_img_filedir,_img_filename,_str_filedir) # 字符画存储路径，原图路径，
+            print _str_filename
+            _str_localpath = _str_filedir + _str_filename
+
+
+            _img_name = _qiniu.put(_qiniu_img_path,_img_filename,_img_localpath)#上传原图
+            _str_name = _qiniu.put(_qiniu_str_path,_str_filename,_str_localpath)#上传字符画
+
+            _img_url = SETTING.QINIU_HOST + _img_name
+            _str_url = SETTING.QINIU_HOST + _str_name
+
+            mydict = {
+                'img_url':_img_url,
+                'str_url':_str_url
+            }
+            return HttpResponse(
+                json.dumps(mydict),
+                content_type="application/json"
+            )
+        return HttpResponse(u"下载微信图片失败")
 
 #微信接口使用，图片转字符画
 class WXImgToStr(BaseMixin, ListView):

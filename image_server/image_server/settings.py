@@ -44,7 +44,7 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -104,3 +104,11 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static") #pythonanywhere use
 STATIC_URL = '/static/'
+
+
+# 七牛配置
+qiniu_access_key = 'bK5xWj0a-TBIljlxHYOHuQib9HYF_9Ft-HtP8tEb'
+qiniu_secret_key = '56lucORYc45sF5eDqNk63mLXsQ78n4RrubIrjtE0'
+qiniu_bucket_name = 'clickz'
+
+QINIU_HOST = 'http://7xsark.com1.z0.glb.clouddn.com/'

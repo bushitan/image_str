@@ -262,7 +262,7 @@ class Str2Img():
 
         # _url =   r"/static/img/art/"+filename
 
-    def Str_ByUrl(self,filedir , filename,_grid_numX = 4):
+    def Str_ByUrl(self,filedir , filename,str_filedir,_grid_numX = 4):
 
         im = Image.open(filedir+filename)
         print filedir+filename
@@ -301,12 +301,12 @@ class Str2Img():
                 # a.line(
                 a.line([(_lines[i][0],_lines[i][1]),(_lines[i][2],_lines[i][3])],fill=_color,width=1)
 
-        _strFilename = "str_{}".format( time.strftime("%Y%m%d%H%M%S",time.localtime(time.time())))
+        _strFilename = "{}".format( time.strftime("%Y%m%d%H%M%S",time.localtime(time.time())))
         filestyle = ".png"
-        path = filedir + _strFilename + filestyle
+        path = str_filedir + _strFilename + filestyle
         strImg.save(path)
         print path
-        return _strFilename
+        return _strFilename + filestyle
 
 
 
