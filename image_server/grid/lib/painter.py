@@ -7,6 +7,7 @@ import  time
 class CharImage():
     def __init__(self):
         self.ascii = list(u"X/-.  ") #
+        self.gray = 255
         self.grid = 4   #格子数
 
         self.size = 10 # 字符绘制宽度
@@ -40,17 +41,36 @@ class CharImage():
         if alpha == 0:
             return ' '
         gray = int(0.2126 * r + 0.7152 * g + 0.0722 * b)
-        unit = (256.0 + 1)/ len(self.ascii)
-        return self.ascii[int(gray/unit)]
+
+        unit = (256.0 + 1 - self.gray)/ len(self.ascii) #根据自己灰度阶 内部比较
+        return self.ascii[int( (gray - self.gray)/unit)]
+
+        # unit = (256.0 + 1)/ len(self.ascii) #全灰度阶比较
+        # return self.ascii[int(gray/unit)]
+
+
+    def _Max_Gray(self,r,g,b,alpha = 256):
+        if alpha == 0:
+            return ' '
+        gray = int(0.2126 * r + 0.7152 * g + 0.0722 * b)
+        if gray < self.gray :
+            self.gray = gray
 
     #画字符
     def DrawCharImage(self):
         _draw =ImageDraw.Draw(self.c_im)
+
+        #计算灰度最小（最暗）的值
+        for i in range(self.c_h):
+            for j in range(self.c_w):
+                self._Max_Gray(*self.im.getpixel((j,i)))
+
         for i in range(self.c_h):
             for j in range(self.c_w):
                 _char = self._Get_Char(*self.im.getpixel((j,i)))
                 _draw.text((j*self.size,i*self.size),_char,fill=(0,0,0))
 
+        print 'OK'
     #计算方格line 列表
     def _Get_Line(self,width = 1080,height = 1920,numX = 4):
         offX = width % numX / 2
