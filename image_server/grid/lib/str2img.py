@@ -111,7 +111,6 @@ class Str2Img():
         _h = hex((r << 16) + (g << 8) + b)
         # _h = "#"+_h[2:].upper()
         _h =_h[2:] # 删除Ox
-        _h = "#" + _h.zfill(6) #字符串用0补全6位
 
         return _h
 
