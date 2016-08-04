@@ -5,7 +5,7 @@ import sys
 import  os
 import  time
 import  random
-
+import colorsys
 
 class CharImage():
     def __init__(self):
@@ -108,7 +108,7 @@ class CharImage():
         print 'ok'
         _position_dict = {0:[],1:[],2:[],3:[],4:[],5:[]}#点分5级
         # _choice_num_dict = [5,20,15,5,5]
-        _choice_num_dict = [1,2,2,1,1]
+        _choice_num = [1,2,2,1,1,1] #6个指标
         for i in range(self.c_h):
             for j in range(self.c_w):
                 _level = self._Get_PixelLevel(*self.im.getpixel((j,i)))
@@ -118,28 +118,36 @@ class CharImage():
         # print _position_dict
         #可能存在重复
         def RanChoice(pos_list,num):
-            _num = num #随机选择的个数
-            _index = 0 #索引位置
-            _lenght = len(list) #数组长度
-            _list = [] #最新的结果
+            try:
+                _num = num #随机选择的个数
+                _index = 0 #索引位置
+                _lenght = len(pos_list) #数组长度
+                _list = [] #最新的结果
 
-            #保证选取的数量不超过数组长度
-            if _lenght < num:
-                _num = _lenght
-            for i in range(0,_lenght):
-                if _index < _num: #所以总数量，执行摇色子
-                    _ran_index = random.randint(0, _lenght - _index - 1)
-                    _list.append( pos_list[_ran_index] ) #记录选中坐标
-                else:
-                    break
-            return _list
+                #保证选取的数量不超过数组长度
+                if _lenght < num:
+                    _num = _lenght
 
-        #随机选择 50个 (25对)点
-        for i in (0,6):
-            _position_dict[i] = RanChoice(_position_dict[i],_choice_num_dict[i])
+                for i in range(0,_lenght):
+                    if _index < _num: #所以总数量，执行摇色子
+                        _ran_index = random.randint(0, _lenght - _index - 1)
+                        print _ran_index
+                        _list.append( pos_list[_ran_index] ) #记录选中坐标
+                        print  pos_list[_ran_index]
+                        _index = _index + 1
+                    else:
+                        break
 
+                return _list
+            except Exception ,e:
+                print e
 
-        print _position_dict
+        # #随机选择 50个 (25对)点
+        _new_position_dict =  {0:[],1:[],2:[],3:[],4:[],5:[]}
+        for i in range(0,6):
+            _new_position_dict[i] = RanChoice(_position_dict[i],_choice_num[i])
+
+        # print _new_position_dict
         #绝对不重复
         def RandomChoice(pos_list,num):
             _num = num #随机选择的个数
@@ -163,8 +171,9 @@ class CharImage():
                     break
             return _list
 
+        return _new_position_dict
 
-        return
+
     def _Get_PixelLevel(self,r,g,b,alpha = 256):
         if alpha == 0:
             return ' '
@@ -173,7 +182,41 @@ class CharImage():
         unit = (256.0 + 1 - self.gray)/ len(self.ascii) #根据自己灰度阶 内部比较
         return int( (gray - self.gray)/unit)
 
-#
+    def GetMainColor(self):
+        image = self.im.convert('RGBA')
+        max_score = None
+        dominant_color = None
+
+        color_list = []
+        for count, (r, g, b, a) in image.getcolors(image.size[0] * image.size[1]):
+            # 跳过纯黑色
+            if a == 0:
+                continue
+
+            saturation = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)[1]
+
+            y = min(abs(r * 2104 + g * 4130 + b * 802 + 4096 + 131072) >> 13, 235)
+
+            y = (y - 16.0) / (235 - 16)
+
+            # 忽略高亮色
+            if y > 0.9:
+                continue
+
+            # Calculate the score, preferring highly saturated colors.
+            # Add 0.1 to the saturation so we don't completely ignore grayscale
+            # colors by multiplying the count by zero, but still give them a low
+            # weight.
+            score = (saturation + 0.1) * count
+
+            if score > max_score:
+                max_score = score
+                dominant_color = (r, g, b)
+                color_list.append(dominant_color)
+
+        return color_list
+
+
 class Painter():
     #字符画+方格
     @staticmethod
@@ -205,7 +248,9 @@ class Painter():
         _cim.DrawCharImage()
         # _cim.Save(save_path)
 
-        _cim.GetCirclePosition()
+        _circle_dict = _cim.GetCirclePosition() #获取圈的位置
+        _color_dict = _cim.GetMainColor() # 获取图片主要颜色
+        print 'color :' ,_color_dict
         return True
 
 
@@ -217,3 +262,10 @@ if __name__ == '__main__':
     a = 1
     _position[a].append(11)
     print _position
+
+    temp_dict =  {0:[],1:[],2:[],3:[],4:[],5:[]}
+    for i in range(0,6):
+            temp = [{'x':5,'y':10}]
+            print temp
+            temp_dict[i] = temp
+    print temp_dict

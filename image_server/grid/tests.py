@@ -25,7 +25,9 @@ if __name__ == '__main__':
         # url = "http://127.0.0.1:8000/api/img_str/?img_url=" + img_url
 
 
-        data  = {  "img_url":"http://mmbiz.qpic.cn/mmbiz/EmT9585IibD0V5dic327aVTjBFr1PgAcdzb7SDPK0Ndo3qqm26wHn6s4Qpf5TddjtpNFRrmL8CBb8Q64XuN13v4Q/0"}
+        # data  = {  "img_url":"http://mmbiz.qpic.cn/mmbiz/EmT9585IibD0V5dic327aVTjBFr1PgAcdzb7SDPK0Ndo3qqm26wHn6s4Qpf5TddjtpNFRrmL8CBb8Q64XuN13v4Q/0"}
+        data  = {  "img_url":"http://127.0.0.1:8000/static/art/img/20160706154153.png"}
+
 
         req = urllib2.Request(url)
         data = urllib.urlencode(data)
