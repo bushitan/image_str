@@ -19,7 +19,8 @@ if __name__ == '__main__':
         # url = "http://127.0.0.1:8000/grid/api/img_str_temp/?img_url=" + img_url
         # url = 'http://127.0.0.1:8000/grid/api/img_str_temp/'
 
-        url = 'http://127.0.0.1:8000/grid/api/img_str/'
+        # url = 'http://127.0.0.1:8000/grid/api/img_str/'
+        url = 'http://127.0.0.1:8000/grid/api/game/'
 
         # url = "http://127.0.0.1:8000/api/img_str/?img_url=" + img_url
 

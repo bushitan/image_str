@@ -1,8 +1,11 @@
 #--coding:utf-8--
+
 from PIL import Image,ImageDraw,ImageFont
 import sys
 import  os
 import  time
+import  random
+
 
 class CharImage():
     def __init__(self):
@@ -47,6 +50,7 @@ class CharImage():
 
         # unit = (256.0 + 1)/ len(self.ascii) #全灰度阶比较
         # return self.ascii[int(gray/unit)]
+
 
 
     def _Max_Gray(self,r,g,b,alpha = 256):
@@ -100,6 +104,75 @@ class CharImage():
     def Save(self,path):
         self.c_im.save(path)
 
+    def GetCirclePosition(self):
+        print 'ok'
+        _position_dict = {0:[],1:[],2:[],3:[],4:[],5:[]}#点分5级
+        # _choice_num_dict = [5,20,15,5,5]
+        _choice_num_dict = [1,2,2,1,1]
+        for i in range(self.c_h):
+            for j in range(self.c_w):
+                _level = self._Get_PixelLevel(*self.im.getpixel((j,i)))
+                # print _level
+                _position_dict[_level].append( {'x':j,'y':i} )#加入坐标
+
+        # print _position_dict
+        #可能存在重复
+        def RanChoice(pos_list,num):
+            _num = num #随机选择的个数
+            _index = 0 #索引位置
+            _lenght = len(list) #数组长度
+            _list = [] #最新的结果
+
+            #保证选取的数量不超过数组长度
+            if _lenght < num:
+                _num = _lenght
+            for i in range(0,_lenght):
+                if _index < _num: #所以总数量，执行摇色子
+                    _ran_index = random.randint(0, _lenght - _index - 1)
+                    _list.append( pos_list[_ran_index] ) #记录选中坐标
+                else:
+                    break
+            return _list
+
+        #随机选择 50个 (25对)点
+        for i in (0,6):
+            _position_dict[i] = RanChoice(_position_dict[i],_choice_num_dict[i])
+
+
+        print _position_dict
+        #绝对不重复
+        def RandomChoice(pos_list,num):
+            _num = num #随机选择的个数
+            _index = 0 #索引位置
+            _lenght = len(list) #数组长度
+            _list = [] #最新的结果
+
+            if _lenght < num:
+                _num = _lenght
+
+            for i in range(0,_lenght):
+                if _index < _num: #所以总数量，执行摇色子
+                    _ran_index = random.randint(0, _lenght - _index - 1)
+                    _list.append( pos_list[_ran_index] ) #记录选中坐标
+                    #位置互换
+                    temp = pos_list[_lenght-1]
+                    pos_list[_lenght-1] = pos_list[_ran_index]
+                    pos_list[_ran_index] = temp
+                    _index = _index + 1
+                else:
+                    break
+            return _list
+
+
+        return
+    def _Get_PixelLevel(self,r,g,b,alpha = 256):
+        if alpha == 0:
+            return ' '
+        gray = int(0.2126 * r + 0.7152 * g + 0.0722 * b)
+
+        unit = (256.0 + 1 - self.gray)/ len(self.ascii) #根据自己灰度阶 内部比较
+        return int( (gray - self.gray)/unit)
+
 #
 class Painter():
     #字符画+方格
@@ -122,3 +195,25 @@ class Painter():
         _cim.Save(save_path)
         return True
         # print  _cim._Get_Line()
+
+    #
+    @staticmethod
+    def Game_ActiveCircle(url,save_path):
+        _cim = CharImage()
+        _cim.PreImage(url)
+        _cim.PreCharImage()
+        _cim.DrawCharImage()
+        # _cim.Save(save_path)
+
+        _cim.GetCirclePosition()
+        return True
+
+
+if __name__ == '__main__':
+    _position = {
+            1:[]
+        }
+
+    a = 1
+    _position[a].append(11)
+    print _position
