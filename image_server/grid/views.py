@@ -133,9 +133,9 @@ class API_Game_ActiveCircle(BaseMixin, ListView):
 
             mydict = Painter.Game_ActiveCircle(_img_localpath,_str_localpath)#图片转字符画成功,获取游戏数据
             #上传图片
-            # _img_name = _qiniu.put(_qiniu_img_path,_img_filename,_img_localpath)#上传原图
-            # _str_name = _qiniu.put(_qiniu_str_path,_str_filename,_str_localpath)#上传字符画
-            _str_name = 'tt'
+            _img_name = _qiniu.put(_qiniu_img_path,_img_filename,_img_localpath)#上传原图
+            _str_name = _qiniu.put(_qiniu_str_path,_str_filename,_str_localpath)#上传字符画
+            # _str_name = 'tt'
             _img_url = SETTING.QINIU_HOST + _img_name
             _str_url = SETTING.QINIU_HOST + _str_name
 

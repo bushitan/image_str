@@ -174,6 +174,15 @@ class CharImage():
         return _new_position_dict
 
 
+
+    def rgb2hex(self,r,g,b):
+        _h = hex((r << 16) + (g << 8) + b)
+        # _h = "#"+_h[2:].upper()
+        _h =_h[2:] # 删除Ox
+
+        return '#' + _h
+
+    #获取主要色彩
     def _Get_PixelLevel(self,r,g,b,alpha = 256):
         if alpha == 0:
             return ' '
@@ -211,7 +220,7 @@ class CharImage():
 
             if score > max_score:
                 max_score = score
-                dominant_color = (r, g, b)
+                dominant_color = self.rgb2hex(r, g, b)
                 color_list.append(dominant_color)
 
         return color_list
@@ -246,7 +255,7 @@ class Painter():
         _cim.PreImage(url)
         _cim.PreCharImage()
         _cim.DrawCharImage()
-        # _cim.Save(save_path)
+        _cim.Save(save_path)
 
         _circle_dict = _cim.GetCirclePosition() #获取圈的位置
         _color_dict = _cim.GetMainColor() # 获取图片主要颜色
