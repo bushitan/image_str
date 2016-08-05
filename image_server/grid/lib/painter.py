@@ -250,8 +250,8 @@ class Painter():
 
         _circle_dict = _cim.GetCirclePosition() #获取圈的位置
         _color_dict = _cim.GetMainColor() # 获取图片主要颜色
-        print 'color :' ,_color_dict
-        return True
+        # print 'color :' ,_color_dict
+        return {'circle':_circle_dict,'color':_color_dict}
 
 
 if __name__ == '__main__':

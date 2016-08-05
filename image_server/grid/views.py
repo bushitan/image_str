@@ -130,22 +130,22 @@ class API_Game_ActiveCircle(BaseMixin, ListView):
         if _web.Download_Img(_img_filedir,_img_filename,_img_url ): #保存图片
             # _str_filename = _str2img.Str_ByUrl(_img_filedir,_img_filename,_str_filedir) # 字符画存储路径，原图路径，
             print _img_localpath , _str_filedir
-            if Painter.Game_ActiveCircle(_img_localpath,_str_localpath): #图片转字符画成功
-                #上传图片
-                # _img_name = _qiniu.put(_qiniu_img_path,_img_filename,_img_localpath)#上传原图
-                # _str_name = _qiniu.put(_qiniu_str_path,_str_filename,_str_localpath)#上传字符画
-                _str_name = 'tt'
-                _img_url = SETTING.QINIU_HOST + _img_name
-                _str_url = SETTING.QINIU_HOST + _str_name
 
-                mydict = {
-                    'img_url':_img_url,
-                    'str_url':_str_url
-                }
-                return HttpResponse(
-                    json.dumps(mydict),
-                    content_type="application/json"
-                )
+            mydict = Painter.Game_ActiveCircle(_img_localpath,_str_localpath)#图片转字符画成功,获取游戏数据
+            #上传图片
+            # _img_name = _qiniu.put(_qiniu_img_path,_img_filename,_img_localpath)#上传原图
+            # _str_name = _qiniu.put(_qiniu_str_path,_str_filename,_str_localpath)#上传字符画
+            _str_name = 'tt'
+            _img_url = SETTING.QINIU_HOST + _img_name
+            _str_url = SETTING.QINIU_HOST + _str_name
+
+            mydict['img_url'] =_img_url
+            mydict['str_url'] =_str_url
+
+            return HttpResponse(
+                json.dumps(mydict),
+                content_type="application/json"
+            )
         return HttpResponse(u"下载微信图片失败")
 #图片处理api，生成字符画
 #接收原图url->字符画->上传->返回字符画url
