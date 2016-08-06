@@ -4,6 +4,7 @@ ehthumbs.db
 
 # Python:
 *.py[cod]
+*.pyc
 *.so
 *.egg
 *.egg-info

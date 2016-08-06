@@ -108,12 +108,18 @@ class CharImage():
         print 'ok'
         _position_dict = {0:[],1:[],2:[],3:[],4:[],5:[]}#点分5级
         # _choice_num_dict = [5,20,15,5,5]
-        _choice_num = [1,2,2,1,1,1] #6个指标
+        _pos_num_dict = [1,2,2,1,1,1] #6个级别，每个级别分配指标
+        _pos_radio_range = [8,16] #半径范围
+
         for i in range(self.c_h):
             for j in range(self.c_w):
                 _level = self._Get_PixelLevel(*self.im.getpixel((j,i)))
                 # print _level
-                _position_dict[_level].append( {'x':j,'y':i} )#加入坐标
+                _position_dict[_level].append({
+                    'x':j,
+                    'y':i,
+                    'r':random.randint(_pos_radio_range[0],_pos_radio_range[1])
+                })#所有的点加入坐标
 
         # print _position_dict
         #可能存在重复
@@ -145,7 +151,7 @@ class CharImage():
         # #随机选择 50个 (25对)点
         _new_position_dict =  {0:[],1:[],2:[],3:[],4:[],5:[]}
         for i in range(0,6):
-            _new_position_dict[i] = RanChoice(_position_dict[i],_choice_num[i])
+            _new_position_dict[i] = RanChoice(_position_dict[i],_pos_num_dict[i])
 
         # print _new_position_dict
         #绝对不重复
@@ -180,7 +186,8 @@ class CharImage():
         # _h = "#"+_h[2:].upper()
         _h =_h[2:] # 删除Ox
 
-        return '#' + _h
+        return '#' + _h #css 16进制格式.
+
 
     #获取主要色彩
     def _Get_PixelLevel(self,r,g,b,alpha = 256):
@@ -224,7 +231,8 @@ class CharImage():
                 color_list.append(dominant_color)
 
         return color_list
-
+    def GetStage(self):
+        return {'width':self.c_w,'height':self.c_h}
 
 class Painter():
     #字符画+方格
@@ -248,7 +256,7 @@ class Painter():
         return True
         # print  _cim._Get_Line()
 
-    #
+    #画
     @staticmethod
     def Game_ActiveCircle(url,save_path):
         _cim = CharImage()
@@ -260,7 +268,8 @@ class Painter():
         _circle_dict = _cim.GetCirclePosition() #获取圈的位置
         _color_dict = _cim.GetMainColor() # 获取图片主要颜色
         # print 'color :' ,_color_dict
-        return {'circle':_circle_dict,'color':_color_dict}
+        _stage_dict = _cim.GetStage()
+        return {'stage':_stage_dict,'circle':_circle_dict,'color':_color_dict}
 
 
 if __name__ == '__main__':
