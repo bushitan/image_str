@@ -6,6 +6,7 @@ import  os
 import  time
 import  random
 import colorsys
+import string
 
 class CharImage():
     def __init__(self):
@@ -182,11 +183,23 @@ class CharImage():
 
 
     def rgb2hex(self,r,g,b):
+        print (r,g,b)
         _h = hex((r << 16) + (g << 8) + b)
         # _h = "#"+_h[2:].upper()
         _h =_h[2:] # 删除Ox
-
+        _h = _h.zfill(6)  #第一个为0会自动删掉，需补全6位
+        print '#' + _h
         return '#' + _h #css 16进制格式.
+
+        # rgb = [str(r),str(g),str(b)]
+        # strs = "#"
+        #
+        # for j in range (0, len(rgb)):
+        #     print rgb[j]
+        #     num = string.atoi(rgb[j])
+        #     strs += str(hex(num))[-2:]  #每次转换之后只取0x7b的后两位，拼接到strs中
+        # print strs
+        # return  strs
 
 
     #获取主要色彩
@@ -273,17 +286,5 @@ class Painter():
 
 
 if __name__ == '__main__':
-    _position = {
-            1:[]
-        }
-
-    a = 1
-    _position[a].append(11)
-    print _position
-
-    temp_dict =  {0:[],1:[],2:[],3:[],4:[],5:[]}
-    for i in range(0,6):
-            temp = [{'x':5,'y':10}]
-            print temp
-            temp_dict[i] = temp
-    print temp_dict
+    _cim = CharImage()
+    print _cim.rgb2hex(16, 1, 0)
