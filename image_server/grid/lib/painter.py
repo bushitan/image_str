@@ -7,6 +7,8 @@ import  time
 import  random
 import colorsys
 import string
+import cv2
+import numpy as np
 
 class CharImage():
     def __init__(self):
@@ -247,6 +249,24 @@ class CharImage():
     def GetStage(self):
         return {'width':self.c_w,'height':self.c_h}
 
+
+    def DrawSketch (self,img_url,sketch_url):
+        lowThreshold = 20
+        max_lowThreshold = 100
+        ratio = 3
+        kernel_size = 3
+
+        url = img_url
+        img = cv2.imread(url)
+        gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+
+        detected_edges = cv2.GaussianBlur(gray,(9,9),0) # （ 5,5 ）为高斯核的大小， 0 为标准差
+        detected_edges = cv2.Canny(detected_edges,lowThreshold,lowThreshold*ratio,apertureSize = kernel_size)
+        cv2.imwrite(sketch_url, detected_edges, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+
+        return sketch_url
+        # pass
+
 class Painter():
     #字符画+方格
     @staticmethod
@@ -269,7 +289,20 @@ class Painter():
         return True
         # print  _cim._Get_Line()
 
-    #画
+    #字符画
+    @staticmethod
+    def ImgCharLine(img_url,str_url,sketch_url):
+        _cim = CharImage()
+        _cim.PreImage(img_url)
+        _cim.PreCharImage()
+        _cim.DrawCharImage()
+        print 'pre save'
+        _cim.Save(str_url) #保存字符画
+        print ' save'
+        _cim.DrawSketch(img_url,sketch_url)   #绘制保存线稿
+        print ' DrawSketch'
+        return True
+
     @staticmethod
     def Game_ActiveCircle(url,save_path):
         _cim = CharImage()

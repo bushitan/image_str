@@ -45,7 +45,7 @@ class API_ImgToStr_Temp(BaseMixin, ListView):
     def get_queryset(self):
         pass
     def post(self, request, *args, **kwargs):
-        print 'OK temp'
+        print 'OK API_ImgToStr_Temp'
         _img_url = self.request.POST.get("img_url", "")
         #图片路径
         _img_filedir = "grid/static/art/img/"
@@ -55,34 +55,51 @@ class API_ImgToStr_Temp(BaseMixin, ListView):
         _img_localpath = _img_filedir + _img_filename
 
         _str_filedir = "grid/static/art/str/"
-        _str_filename = "{}".format( time.strftime("%Y%m%d%H%M%S",time.localtime(time.time())))
-        filestyle = ".png"
-        _str_localpath = _str_filedir + _str_filename + filestyle
+        _str_name = "{}".format( time.strftime("%Y%m%d%H%M%S",time.localtime(time.time())))
+        _str_style = ".png"
+        _str_filename = _str_name + _str_style
+        _str_localpath = _str_filedir + _str_filename + _str_style
+
+        _sketch_filedir = "grid/static/art/sketch/"
+        _sketch_name = "{}".format( time.strftime("%Y%m%d%H%M%S",time.localtime(time.time())))
+        _sketch_style = ".png"
+        _sketch_filename = _sketch_name + _sketch_style
+        _sketch_localpath =  _sketch_filedir +  _sketch_filename + _sketch_style
 
         _qiniu_img_path = 'img/'
         _qiniu_str_path = 'str/'
         _qiniu_grid_path = 'grid/'
+        _qiniu_sketch_path = 'sketch/'
 
         _web = Web()
         _str2img = Str2Img()
         _qiniu = QiNiu()
 
+        print "IN down"
          #保存图片到本地
         if _web.Download_Img(_img_filedir,_img_filename,_img_url ): #保存图片
             # _str_filename = _str2img.Str_ByUrl(_img_filedir,_img_filename,_str_filedir) # 字符画存储路径，原图路径，
             print _img_localpath , _str_filedir
-            if Painter.CharGrid(_img_localpath,_str_localpath): #图片转字符画成功
+            if Painter.ImgCharLine(_img_localpath,_str_localpath,_sketch_localpath): #图片、组孵化、线稿
                 #上传图片
                 _img_name = _qiniu.put(_qiniu_img_path,_img_filename,_img_localpath)#上传原图
                 _str_name = _qiniu.put(_qiniu_str_path,_str_filename,_str_localpath)#上传字符画
+                _sketch_name = _qiniu.put(_qiniu_sketch_path,_sketch_filename,_sketch_localpath)
 
                 _img_url = SETTING.QINIU_HOST + _img_name
                 _str_url = SETTING.QINIU_HOST + _str_name
+                _sketch_url = SETTING.QINIU_HOST + _sketch_name
 
                 mydict = {
                     'img_url':_img_url,
-                    'str_url':_str_url
+                    'str_url':_str_url,
+                    'sketch_url':_sketch_url
                 }
+                # mydict = {
+                #     'img_url':_img_name,
+                #     # 'str_url':_str_name,
+                #     # 'sketch_url':_sketch_name
+                # }
                 return HttpResponse(
                     json.dumps(mydict),
                     content_type="application/json"
