@@ -64,7 +64,7 @@ class API_PC(BaseMixin, ListView):
         file.close()
 
         IMAGE_SERVER_HOST = 'http://120.27.97.33:91/'
-        url = IMAGE_SERVER_HOST + '/grid/api/img_str/'
+        url = IMAGE_SERVER_HOST + 'grid/api/img_str/'
         data  = {  "img_url":IMAGE_SERVER_HOST + "static/art/img/"+_img_filename}
 
         print url,data
