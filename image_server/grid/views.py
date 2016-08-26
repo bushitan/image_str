@@ -1,5 +1,6 @@
 #coding:utf-8
 from django.views.decorators.csrf import csrf_exempt
+import httplib, urllib,urllib2
 from django.http import HttpResponse, Http404
 from grid.models import *
 
@@ -31,6 +32,50 @@ class BaseMixin(object):
         #    kwargs['user_id'] = user
         context = super(BaseMixin, self).get_context_data(**kwargs)
         return context
+
+#
+class API_PC(BaseMixin, ListView):
+    template_name = 'img_str/pc.html'
+
+    def get(self, request, *args, **kwargs):
+        print "get API_PC"
+        return super(API_PC, self).get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        return super(API_PC, self).get_context_data(**kwargs)
+    def get_queryset(self):
+        pass
+    def post(self, request, *args, **kwargs):
+        print "post API_PC"
+        _tx = request.POST['tx']
+        _imgData = base64.b64decode(_tx)
+
+        _img_filedir = "grid/static/art/img/"
+        _img_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+        _img_style = ".png"
+        _img_filename = _img_name+_img_style
+        _img_localpath = _img_filedir + _img_filename
+
+
+        print "_img_localpath:" + _img_localpath
+        #写入图片
+        file = open(_img_localpath, "wb+")
+        file.write(_imgData)
+        file.flush()
+        file.close()
+
+        IMAGE_SERVER_HOST = 'http://120.27.97.33:91/'
+        url = IMAGE_SERVER_HOST + '/grid/api/img_str/'
+        data  = {  "img_url":IMAGE_SERVER_HOST + "static/art/img/"+_img_filename}
+
+        req = urllib2.Request(url)
+        data = urllib.urlencode(data)
+        #enable cookie
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+        response = opener.open(req,data)
+        res = response.read()
+        print 'res:',res
+        return HttpResponse(res)
+
 
 #图片处理api，生成字符画
 #接收原图url->字符画->上传->返回字符画url

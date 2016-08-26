@@ -8,6 +8,7 @@ urlpatterns = [
    # url(r'^wx_img_str/$', WXImgToStr.as_view()),
 
    # url(r'^api/img_str/$', API_ImgToStr.as_view()),
+   url(r'^api/pc/$', API_PC.as_view()),
    url(r'^api/img_str/$', API_ImgToStr_Temp.as_view()),
 
 

@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <title>手绘分析神器</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-{#    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />#}
-{#    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">#}
-{#    <link rel="stylesheet" href="/static/css/vmaig.css">#}
-{#    <link rel="stylesheet" href="/static/css/vmaig_comments.css">#}
-{#    <link rel="stylesheet" href="/static/css/vmaig_auth.css">#}
-{#    <link rel="stylesheet" href="/static/jquery/jquery.Jcrop.min.css">#}
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/vmaig.css">
+    <link rel="stylesheet" href="/static/css/vmaig_comments.css">
+    <link rel="stylesheet" href="/static/css/vmaig_auth.css">
+    <link rel="stylesheet" href="/static/jquery/jquery.Jcrop.min.css">
 
     <script src="/static/jquery/jquery-2.1.3.min.js"></script>
     <script src="/static/jquery/jquery.cookie.js"></script>
     <script src="/static/jquery/jquery.form.js"></script>
     <script src="/static/jquery/jquery.Jcrop.min.js"></script>
-{#    <script src="/static/bootstrap/js/bootstrap.min.js"></script>#}
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
 
@@ -90,8 +90,11 @@
         </div>
         <div class="col-md-6  ">
             <!--<div id="preview-pane">-->
-                <h4>字符画</h4>
-
+                <!--<h4>字符画</h4>-->
+                <span>
+                    <input type="radio" class="radioImg" name="img_check" value="1" checked="true"><span>字符画</span>
+                    <input type="radio" class="radioImg" name="img_check" value="2" ><span>线稿</span>
+                </span>
                 <div class="preview-container" style="width: 100%;height:auto;border: 1px">
                     <a>
                         <img id="img-str"  src="" alt="" style="width: 100%;height: auto">
@@ -125,7 +128,7 @@
     <div class="modal-dialog">
           <div class="modal-content">
             <a style="top:100px">
-{#              <img src="/static/icon/loading.gif" style="width:100%;height: auto;">#}
+              <img src="/static/icon/loading.gif" style="width:100%;height: auto;">
             </a>
           </div><!-- /.modal-content -->
     </div><!-- /.modal -->
@@ -134,31 +137,183 @@
 </body>
 <script language="javascript" type="text/javascript">
 
-     $.ajax({
+var jcrop_api,boundx,boundy;
+var image = new Image();
+var x,y,width,height = 0;
 
-         url: "/grid/img_str/",
-         type: "GET",
-         data: {
-             "url":"http://7xsark.com1.z0.glb.clouddn.com/str/20160706154945.png"
-         },
-         beforeSend: function (xhr) {
+$('#tmp-tx').Jcrop({onChange: updatePreview,
+                    onSelect: updatePreview,
+                    aspectRatio:1,
+                    boxWidth:400,
+                    boxHeight:300},
+                    function(){
+                        jcrop_api = this;
+                   });
 
-             xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
-         },
-         success: function (data, textStatus) {
+$("#upload-tx").change(function(){
 
-         },
-         error: function (XMLHttpRequest, textStatus, errorThrown) {
-             alert(XMLHttpRequest.responseText);
-         },
-         complete: function (XMLHttpRequest, textStatus, errorThrown) {
+    if(typeof FileReader == "undefined"){
+        alert("您的浏览器不支持FileReader对象！");
+    }
 
+    var file = this.files[0];
+    var reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+
+    reader.onload=function(e){
+        image.src = e.target.result;
+        $("#tmp-tx").attr("src",image.src);
+        $("#preview-pane .preview-container img").attr("src",image.src);
+        jcrop_api.setImage(image.src);
+        preImage(image.src,function(){
+                boundx = this.width;
+                boundy = this.height;
+            });
+
+        console.log("boundx:"+boundx+" boundy:"+boundy);
+    }
+});
+
+$("#save-tx").click(function(){
+    console.log("x:"+x+" y:"+y+" width:"+width+" height:"+height);
+
+    var canvas=$('<canvas width="'+width+'" height="'+height+'"></canvas>')[0],
+    ctx=canvas.getContext('2d');
+
+    ctx.drawImage(image,parseInt(x),parseInt(y),parseInt(width),parseInt(height),0,0,parseInt(width),parseInt(height));
+
+    var data=canvas.toDataURL();
+
+    // dataURL 的格式为 “data:image/png;base64,****”,逗号之前都是一些说明性的文字，我们只需要逗号之后的就行了
+    data=data.split(',')[1];
+    data=window.atob(data);
+    var ia = new Uint8Array(data.length);
+    for (var i = 0; i < data.length; i++) {
+        ia[i] = data.charCodeAt(i);
+    };
+
+    // canvas.toDataURL 返回的默认格式就是 image/png
+    var blob=new Blob([ia], {type:"image/jpg"});
+
+    var fd=new FormData();
+
+    fd.append('file',blob);
+
+    //字符画设置判断
+    console.log($('input:radio[name="img_type"]:checked').val())
+
+         //以100位基准，按照宽高比传入
+    _width = 128;
+    _height = 128;
+
+
+    $.ajax({
+        url:"/grid/api/pc/",
+        type:"POST",
+        data:{
+            "tx":canvas.toDataURL().split(',')[1],
+            "img_type":$('input:radio[name="img_type"]:checked').val(),
+            "width":parseInt(_width),
+            "height":parseInt(_height),
+            "char_size":$("#char_size").val(),
+            "char_ascii":$("#ascii").val(),
+            "grid_num":$("#grid_num").val()
+        },
+        beforeSend:function(xhr){
+            $("#myModal").modal('show');
+            xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+        },
+        success:function(data,textStatus){
+//            alert(data.url);
+            console.log(data,data.url);
+
+            url = JSON.parse(data);
+            $("#img-str").prop("src",url['str_url']);
+
+//            $("#img-str").css("width",width+"px");
+//            $("#img-str").css("height",height+"px");
+//            $("#img-str").prop("style","width:"+width+"px;height:"+height+"px;");
+
+//            $("#img-str").prop("src",data.url);
+//            window.location.href = data.url
+//            location.reload();
+        },
+        error:function(XMLHttpRequest, textStatus, errorThrown){
+            alert(XMLHttpRequest.responseText);
+        },
+        complete:function(XMLHttpRequest, textStatus, errorThrown){
+            $("#myModal").modal('hide');
 //            console.log("1:"+ $("body").scrollTop())
 //            $("body").scrollTop(10000)
 //            console.log("2:"+  $("body").scrollTop())
-         }
-     })
+        }
 
+
+    });
+
+
+});
+
+
+
+
+$('#myModal').on('hidden.bs.modal', function () {
+   console.log(document.body.scrollTop )
+   document.body.scrollTop = 200
+
+   console.log(document.body.scrollTop )
+})
+
+function preImage(url,callback){
+    var img = new Image(); //创建一个Image对象，实现图片的预下载
+    img.src = url;
+
+    if (img.complete) { // 如果图片已经存在于浏览器缓存，直接调用回调函数
+        callback.call(img);
+        return; // 直接返回，不用再处理onload事件
+    }
+
+    img.onload = function () { //图片下载完毕时异步调用callback函数。
+        callback.call(img);//将回调函数的this替换为Image对象
+    };
+}
+
+function updatePreview(c){
+
+//     console.log("比例："+c.getScaleFactor())
+     if (parseInt(c.w) > 0) {
+        x = c.x;
+        y = c.y;
+        width = c.w;
+        height = c.h;
+        var rx = 100.0 / c.w;
+        var ry = 100.0 / c.h;
+
+        console.log("rx:"+ Math.round(rx * boundx)+" ry:"+ry);
+
+        $("#preview-pane .preview-container img").css({
+            width: Math.round(rx * boundx) + 'px',
+            height: Math.round(ry * boundy) + 'px',
+            marginLeft: '-' + Math.round(rx * c.x) + 'px',
+            marginTop: '-' + Math.round(ry * c.y) + 'px'
+        });
+    }
+}
+
+
+$(".radioImg").change(function(){
+    var _value = $("input[name='img_check']:checked").val();
+//    $("#str_img").css('display','none');
+//    $("#origin_img").css('display','none');
+//    $("#sketch_img").css('display','none');
+
+    if (_value == '1')
+         $("#img-str").prop("src",url['str_url']);
+    if (_value == '2')
+          $("#img-str").prop("src",url['sketch_url']);
+});
 
 </script>
 </html>
