@@ -67,6 +67,8 @@ class API_PC(BaseMixin, ListView):
         url = IMAGE_SERVER_HOST + '/grid/api/img_str/'
         data  = {  "img_url":IMAGE_SERVER_HOST + "static/art/img/"+_img_filename}
 
+        print url,data
+
         req = urllib2.Request(url)
         data = urllib.urlencode(data)
         #enable cookie
