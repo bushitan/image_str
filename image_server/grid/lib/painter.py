@@ -10,6 +10,8 @@ import string
 import cv2
 import numpy as np
 
+import types
+
 class CharImage():
     def __init__(self):
         self.ascii = list(u"X/-.  ") #
@@ -70,11 +72,20 @@ class CharImage():
         #计算灰度最小（最暗）的值
         for i in range(self.c_h):
             for j in range(self.c_w):
-                self._Max_Gray(*self.im.getpixel((j,i)))
+                if  type( self.im.getpixel((j,i))) is types.IntType:
+                    _value_int =  self.im.getpixel((j,i))
+                    self._Max_Gray(_value_int,_value_int,_value_int)
+                elif type( self.im.getpixel((j,i))) is types.TupleType:
+                    self._Max_Gray(*self.im.getpixel((j,i)))
 
         for i in range(self.c_h):
             for j in range(self.c_w):
-                _char = self._Get_Char(*self.im.getpixel((j,i)))
+                _char = ''
+                if  type( self.im.getpixel((j,i))) is types.IntType:
+                    _value_int =  self.im.getpixel((j,i))
+                    _char = self._Get_Char(_value_int,_value_int,_value_int)
+                elif type( self.im.getpixel((j,i))) is types.TupleType:
+                    _char = self._Get_Char(*self.im.getpixel((j,i)))
                 _draw.text((j*self.size,i*self.size),_char,fill=(0,0,0))
 
         print 'OK'

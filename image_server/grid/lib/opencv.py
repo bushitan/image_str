@@ -25,7 +25,7 @@ Written by : Abid K. (abidrahman2@gmail.com) , Visit opencvpython.blogspot.com f
 
 import cv2
 import numpy as np
-
+import time
 def CannyThreshold(lowThreshold):
     detected_edges = cv2.GaussianBlur(gray,(9,9),0) # （ 5,5 ）为高斯核的大小， 0 为标准差
     detected_edges = cv2.Canny(detected_edges,lowThreshold,lowThreshold*ratio,apertureSize = kernel_size)
@@ -44,7 +44,13 @@ def CannyThreshold(lowThreshold):
     #         iTmp[i,j] = 255 - detected_edges[i,j]
 
     cv2.imshow('canny demo',detected_edges)
-    cv2.imwrite("x.png", detected_edges, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+
+    _img_filedir = "art/"
+    _img_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+    _img_style = ".png"
+    _img_filename = _img_name+_img_style
+    _img_localpath = _img_filedir + _img_filename
+    cv2.imwrite(_img_localpath, detected_edges, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
     # cv2.imwrite("cat.png", dst, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
 lowThreshold = 0
@@ -55,7 +61,9 @@ kernel_size = 3
 name = '20160808114358.png'
 
 url = r'C:\Users\Administrator\Desktop\30day\xiangao\10.jpg'
-img = cv2.imread(url)
+url_mm_tx = r'C:\Users\Administrator\Desktop\30day\learn\3.jpg'
+
+img = cv2.imread(url_mm_tx)
 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
 
