@@ -79,6 +79,87 @@ class API_PC(BaseMixin, ListView):
         return HttpResponse(res)
 
 
+#  imgData = base64.b64decode(_tx)
+# 接受图片数据，
+class API_ImgToStr_Data(BaseMixin, ListView):
+    template_name = 'img_str/pc.html'
+
+    def get(self, request, *args, **kwargs):
+        print request,"get"
+        return super(API_ImgToStr_Data, self).get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        return super(API_ImgToStr_Data, self).get_context_data(**kwargs)
+    def get_queryset(self):
+        pass
+    def post(self, request, *args, **kwargs):
+        print 'OK API_ImgToStr_Data'
+        _img_url = self.request.POST.get("img_url", "")
+        #图片路径
+        _img_filedir = "grid/static/art/img/"
+        _img_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+        _img_style = ".png"
+        _img_filename = _img_name+_img_style
+        _img_localpath = _img_filedir + _img_filename
+
+        _str_filedir = "grid/static/art/str/"
+        _str_name = "{}".format( time.strftime("%Y%m%d%H%M%S",time.localtime(time.time())))
+        _str_style = ".png"
+        _str_filename = _str_name + _str_style
+        _str_localpath = _str_filedir + _str_filename + _str_style
+
+        _sketch_filedir = "grid/static/art/sketch/"
+        _sketch_name = "{}".format( time.strftime("%Y%m%d%H%M%S",time.localtime(time.time())))
+        _sketch_style = ".png"
+        _sketch_filename = _sketch_name + _sketch_style
+        _sketch_localpath =  _sketch_filedir +  _sketch_filename + _sketch_style
+
+        _qiniu_img_path = 'img/'
+        _qiniu_str_path = 'str/'
+        _qiniu_grid_path = 'grid/'
+        _qiniu_sketch_path = 'sketch/'
+
+        _web = Web()
+        _str2img = Str2Img()
+        _qiniu = QiNiu()
+
+        _img_data =  base64.b64decode( self.request.POST.get('img_data', '') )
+        # print 'imgdata:',_img_data
+
+        #保存图片到本地
+        file = open(_img_localpath, "wb+")
+        file.write(_img_data)
+        file.flush()
+        file.close()
+
+        print _img_localpath , _str_filedir
+
+
+        if Painter.ImgCharLine(_img_localpath,_str_localpath,_sketch_localpath): #图片、组孵化、线稿
+            #上传图片
+            _img_name = _qiniu.put(_qiniu_img_path,_img_filename,_img_localpath)#上传原图
+            _str_name = _qiniu.put(_qiniu_str_path,_str_filename,_str_localpath)#上传字符画
+            _sketch_name = _qiniu.put(_qiniu_sketch_path,_sketch_filename,_sketch_localpath)
+
+            _img_url = SETTING.QINIU_HOST + _img_name
+            _str_url = SETTING.QINIU_HOST + _str_name
+            _sketch_url = SETTING.QINIU_HOST + _sketch_name
+
+            mydict = {
+                'img_url':_img_url,
+                'str_url':_str_url,
+                'sketch_url':_sketch_url
+            }
+            # mydict = {
+            #     'img_url':_img_name,
+            #     # 'str_url':_str_name,
+            #     # 'sketch_url':_sketch_name
+            # }
+            return HttpResponse(
+                json.dumps(mydict),
+                content_type="application/json"
+            )
+        return HttpResponse(u"下载微信图片失败")
+
 #图片处理api，生成字符画
 #接收原图url->字符画->上传->返回字符画url
 class API_ImgToStr_Temp(BaseMixin, ListView):
