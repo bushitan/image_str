@@ -18,9 +18,9 @@ class CharImage():
         self.gray = 255
         self.grid = 4   #格子数
 
-        self.size = 10 # 字符绘制宽度
-        self.c_w = 128 # 字符画 固定 宽
-        self.c_h = 128 # 自适应 高
+        self.size = 5 # 字符绘制宽度
+        self.c_w = 96 # 字符画 固定 宽
+        self.c_h = 96 # 自适应 高
 
         self.im = None #
         self.c_im = None #
