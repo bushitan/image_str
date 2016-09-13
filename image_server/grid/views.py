@@ -17,7 +17,9 @@ import os
 import base64
 from PIL import Image,ImageDraw,ImageFont
 import sys
-import image_server.settings as SETTING
+# import image_server.settings as SETTING
+from django.conf import settings as SETTING
+
 from grid.lib.painter import Painter
 # logger
 logger = logging.getLogger(__name__)
