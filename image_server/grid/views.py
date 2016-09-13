@@ -17,9 +17,7 @@ import os
 import base64
 from PIL import Image,ImageDraw,ImageFont
 import sys
-# import image_server.settings as SETTING
-# from django.conf import settings as SETTING
-
+import image_server.settings as SETTING
 from grid.lib.painter import Painter
 # logger
 logger = logging.getLogger(__name__)
@@ -142,14 +140,9 @@ class API_ImgToStr_Data(BaseMixin, ListView):
             _str_name = _qiniu.put(_qiniu_str_path,_str_filename,_str_localpath)#上传字符画
             _sketch_name = _qiniu.put(_qiniu_sketch_path,_sketch_filename,_sketch_localpath)
 
-            # _img_url = SETTING.QINIU_HOST + _img_name
-            # _str_url = SETTING.QINIU_HOST + _str_name
-            # _sketch_url = SETTING.QINIU_HOST + _sketch_name
-
-            QINIU_HOST = 'http://7xsark.com1.z0.glb.clouddn.com/'
-            _img_url = QINIU_HOST + _img_name
-            _str_url = QINIU_HOST + _str_name
-            _sketch_url = QINIU_HOST + _sketch_name
+            _img_url = SETTING.QINIU_HOST + _img_name
+            _str_url = SETTING.QINIU_HOST + _str_name
+            _sketch_url = SETTING.QINIU_HOST + _sketch_name
 
             mydict = {
                 'img_url':_img_url,
@@ -221,15 +214,9 @@ class API_ImgToStr_Temp(BaseMixin, ListView):
                 _str_name = _qiniu.put(_qiniu_str_path,_str_filename,_str_localpath)#上传字符画
                 _sketch_name = _qiniu.put(_qiniu_sketch_path,_sketch_filename,_sketch_localpath)
 
-                # _img_url = SETTING.QINIU_HOST + _img_name
-                # _str_url = SETTING.QINIU_HOST + _str_name
-                # _sketch_url = SETTING.QINIU_HOST + _sketch_name
-
-                QINIU_HOST = 'http://7xsark.com1.z0.glb.clouddn.com/'
-                _img_url = QINIU_HOST + _img_name
-                _str_url = QINIU_HOST + _str_name
-                _sketch_url = QINIU_HOST + _sketch_name
-
+                _img_url = SETTING.QINIU_HOST + _img_name
+                _str_url = SETTING.QINIU_HOST + _str_name
+                _sketch_url = SETTING.QINIU_HOST + _sketch_name
 
                 mydict = {
                     'img_url':_img_url,
