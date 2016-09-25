@@ -1,0 +1,6 @@
+1、 pip install numpy-1.11.1+mkl-cp27-cp27m-win32.whl
+2、下载opencv-2.4.10.exe，解压
+把  C:\opencv\opencv\build\python\2.7\x86  复制到    D:\Python27\Lib\site-packages 
+版本要对
+3、修改path路径为:C:\opencv\opencv\build\x64\vc11\bin
+3、import cv2 成功
