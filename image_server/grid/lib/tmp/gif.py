@@ -100,8 +100,9 @@ def writeGif(filename, images, duration=0.1, loops=0, dither=1):
     for im in images:
         
         if isinstance(im,Image.Image): #如果是PIL Image
+            # images2.append( im.convert('P',dither=dither) )
             images2.append( im.convert('P',dither=dither) )
-            
+
         elif np and isinstance(im, np.ndarray): #如果是Numpy格式
             if im.dtype == np.uint8:
                 pass
@@ -111,7 +112,7 @@ def writeGif(filename, images, duration=0.1, loops=0, dither=1):
                 im = im.astype(np.uint8)
             # 转换
             if len(im.shape)==3 and im.shape[2]==3:
-                im = Image.fromarray(im,'RGB').convert('P',dither=dither)
+                im = Image.fromarray(im,'RGBA').convert('P',dither=dither)
             elif len(im.shape)==2:
                 im = Image.fromarray(im,'L').convert('P',dither=dither)
             else:
@@ -138,7 +139,8 @@ def images2gif( images, giffile, durations=0.5, loops = 0):
     seq = []
     for i in range(len(images)):
         im = Image.open(images[i])
-        background = Image.new('RGB', im.size, (255,255,255))
+        # background = Image.new('RGBA', im.size, (255,255,255))
+        background = Image.new('RGBA', im.size)
         background.paste(im, (0,0))
         seq.append(background)
     frames = writeGif( giffile, seq, durations, loops)
@@ -153,9 +155,9 @@ def gif2images( filename, distDir = '.', type = 'bmp' ):
     im.seek(0)  # skip to the second frame
     cnt = 0
     type = string.lower(type)
-    mode = 'RGB'  # image modea
-    if type == 'bmp' or type == 'png':
-        mode = 'P'    # image mode 
+    mode = 'RGBA'  # image modea
+    # if type == 'bmp' or type == 'png':
+    #     mode = 'P'    # image mode
     im.convert(mode).save(distDir+'/%d.'%cnt+type )
     cnt = cnt+1
     try:
@@ -166,12 +168,12 @@ def gif2images( filename, distDir = '.', type = 'bmp' ):
     except EOFError:
         pass # end of sequence
     white = (255,255,255)
-    preIm = Image.open(distDir+'/%d.'%0+type).convert('RGB')
+    preIm = Image.open(distDir+'/%d.'%0+type).convert('RGBA')
     size = preIm.size
     prePixs = preIm.load()
     for k in range (1,cnt):
         print '.',
-        im = Image.open(distDir+'/%d.'%k+type).convert('RGB')
+        im = Image.open(distDir+'/%d.'%k+type).convert('RGBA')
         pixs = im.load()
         for i in range(size[0]):
             for j in range(size[1]):
@@ -185,13 +187,13 @@ def gif2images( filename, distDir = '.', type = 'bmp' ):
 
 ##############################################################
 if __name__ == '__main__':
-    frames = gif2images('gif/h1.gif',distDir='tmp',type='png')
+    frames = gif2images('h1.gif',distDir='tmp',type='png')
     images = []
     # for i in range(frames-1,-1,-1):
     for i in range(frames-1,-1,-1):
         images.append('tmp/%d.png'%i)
-    print images
-    images.reverse()
-    print images
 
-    images2gif(images,'gif/save5.gif', durations = 0.05)
+    images.reverse()
+
+
+    images2gif(images,'save_h4.gif', durations = 0.05)

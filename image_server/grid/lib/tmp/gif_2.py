@@ -1,8 +1,7 @@
 #--coding:utf-8--
 import os
 from PIL import Image  
-import images2gif  
-
+import images2gif
 #type 合成GIF分类   
 #0：图片缩放到最大宽度*最大高度（长方形）、并粘贴到最大宽度*最大高度（长方形）的白色背景图片中、居中后合成  
 #1：图片缩放到最大长度（正方形）、并粘贴到最大长度（正方形）的白色背景图片中、居中后合成  
@@ -43,7 +42,7 @@ def GetGifAnimationFromImages(targetGifFilePath, srcImageFilePaths, type = 0):
         #原图直接合成(按宽度排序)  
         if type == 4:  
             for widthAndFilePath in widthAndFilePaths:  
-                img = Image.open(widthAndFilePath[1])  
+                img = Image.open(widthAndFilePath[1])
                 images.append(img)  
         #原图直接合成(按高度排序)  
         if type == 5:  
@@ -89,7 +88,8 @@ def GetGifAnimationFromImages(targetGifFilePath, srcImageFilePaths, type = 0):
             images.append(imgResizeAndCenter)  
             fp.close()  
 
-    images2gif.writeGif(targetGifFilePath, images, duration=1, nq=0.1)  
+    # images2gif.writeGif(targetGifFilePath, images, duration=0.05, nq=0.1)
+    images2gif.writeGif(targetGifFilePath, images, duration=0.05,nq=0.1)
 
 #取得目录下面的文件列表  
 def GetDirImageList(dir_proc, recusive = True):  
@@ -104,13 +104,54 @@ def GetDirImageList(dir_proc, recusive = True):
 
     return resultList  
 
-if __name__ == "__main__":  
-    GetGifAnimationFromImages(r"D:\\hecheng.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\c.jpg"])  
-    GetGifAnimationFromImages(r"D:\\hecheng1.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 1)  
-    GetGifAnimationFromImages(r"D:\\hecheng2.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 2)  
-    GetGifAnimationFromImages(r"D:\\hecheng3.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 3)  
-    GetGifAnimationFromImages(r"D:\\hecheng4.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 4)  
-    GetGifAnimationFromImages(r"D:\\hecheng5.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 5)  
+def MixImageList(bg_url,sprite_url_list,frame_url_list,option):
+    try:
+        offsetX = option["offsetX"]
+        offsetY = option["offsetY"]
+        out_width = option["out_width"]
+        out_height = option["out_height"]
 
-    GetGifAnimationFromImages(r"D:\\hechengTest.gif", GetDirImageList(r"D:\\GifMarker"), type = 4)
+        #提取精灵图，重新绘制每一帧
+        for i in range(0,len(sprite_url_list)):
+            bg_im = Image.open(bg_url)
+            sprite_im = Image.open(sprite_url_list[i])
+            bg_im.paste(sprite_im, (offsetX,offsetY), sprite_im.convert('RGBA'))
+
+            bg_im = bg_im.resize((out_width,out_height), Image.NEAREST)
+
+            bg_im.save(frame_url_list[i], 'png')
+        return True
+    except Exception ,e:
+        raise e
+
+
+
+
+if __name__ == "__main__":  
+    # GetGifAnimationFromImages(r"D:\\hecheng_littile.gif", [r"http://7xsark.com1.z0.glb.clouddn.com/img/20160823110421.png", r"http://7xsark.com1.z0.glb.clouddn.com/img/20160823110421.png", r"http://7xsark.com1.z0.glb.clouddn.com/img/20160823110421.png"])
+    # GetGifAnimationFromImages(r"D:\\hecheng1.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 1)
+    # GetGifAnimationFromImages(r"D:\\hecheng2.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 2)
+    # GetGifAnimationFromImages(r"D:\\hecheng3.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 3)
+    # GetGifAnimationFromImages(r"D:\\hecheng4.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 4)
+    # GetGifAnimationFromImages(r"D:\\hecheng5.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 5)
+
+    # GetGifAnimationFromImages(r"D:\\hecheng_png1.gif", GetDirImageList(r"D:\\GifMarker1"), type = 4)
+
+    path = r'C:\Users\Administrator\Desktop\gif\\'
+    bg_url = path + r'bg.jpg'
+    sprite_url_list = [path + r'a.png',path + r'b.png',path + r'c.png']
+    frame_url_list = [path + r'save_fame_11.jpg',path + r'save_fame_12.jpg',path + r'save_fame_13.jpg',]
+    save_gif_url =  path + r'user.gif'
+
+    option = {
+         "offsetX":100,
+         "offsetY":100,
+         "out_width":256,
+         "out_height":192
+    }
+    if MixImageList(bg_url,sprite_url_list,frame_url_list,option):
+         GetGifAnimationFromImages(save_gif_url, frame_url_list)
+
+
+
 #该片段来自于http://outofmemory.cn
