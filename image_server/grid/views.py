@@ -308,50 +308,86 @@ class API_GIF_Mix(BaseMixin, ListView):
 
         try:
             #Todo 把图片保存至本地
+            print "post API_GIF_Mix"
 
+
+            _bg_img = request.POST['bg_img']
+            _draw_img = request.POST['draw_img']
+
+            # _gif_sprite_img = request.POST['_gif_sprite_img']    #post传递数组有待讨论
+            _gif_sprite_1 = request.POST['gif_sprite_1']
+            _gif_sprite_2 = request.POST['gif_sprite_2']
+            _gif_sprite_3 = request.POST['gif_sprite_3']
+
+            # print "img_path:" ,_bg_img,_gif_sprite_img
+            # print _draw_img
+            _imgData = base64.b64decode(_draw_img)
+            # print _imgData
+
+            _img_filedir = "grid/static/mix/"
+            _img_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+            _img_style = ".png"
+            _img_filename = _img_name+_img_style
+            _img_localpath = _img_filedir + _img_filename
+
+
+            print "_img_localpath:" + _img_localpath
+            #写入图片
+            file = open(_img_localpath, "wb+")
+            file.write(_imgData)
+            file.flush()
+            file.close()
+
+
+            # print bg_img,gif_sprite_img
 
             # path = r'C:\Users\Administrator\Desktop\gif\\'
             path = r'grid/static/mix/'
-            bg_url = path + r'bg.jpg'
-            sprite_url_list = [path + r'a.png',path + r'b.png',path + r'c.png']
+            bg_url = path + _bg_img
+            draw_url = _img_localpath
+            sprite_url_list = [path + _gif_sprite_1, path + _gif_sprite_2, path +_gif_sprite_3]
+            print sprite_url_list
             frame_url_list = [path + r'save_fame_11.jpg',path + r'save_fame_12.jpg',path + r'save_fame_13.jpg',]
             save_gif_url =  path + r'user.gif'
 
             layer = ["bg","draw","gif"]
 
+
             bg = {
-                "bg_url":path + r'bg.jpg',
+                "bg_url":bg_url,
                 "bg_width":240,
                 "bg_height":240,
             }
             gif = {
-                "gif_sprite_url_list":[path + r'a.png',path + r'b.png',path + r'c.png'],
+                "gif_sprite_url_list":sprite_url_list,
                 "gif_offsetX":100,
                 "gif_offsetY":100,
                 "gif_width":240,
                 "gif_height":240,
-                "gif_show_width":120,
+                "gif_show_width":240,
                 "gif_show_height":120,
             }
             draw = {
-                "draw_url":path + r'a.png',
+                "draw_url":draw_url,
                 "draw_offsetX":200,
                 "draw_offsetY":200,
                 "draw_width":240,
                 "draw_height":240,
-                "draw_show_width":120,
-                "draw_show_height":120,
+                "draw_show_width":500,
+                "draw_show_height":600,
             }
             out= {
-                "out_frame_url_list":[path + r'save_fame_11.jpg',path + r'save_fame_12.jpg',path + r'save_fame_13.jpg',],
-                "out_url": path + r'user.gif',
+                "out_frame_url_list":frame_url_list,
+                "out_url": save_gif_url,
                 "out_width":256,
                 "out_height":192,
             }
 
             g = GifMix()
             #bg + gif + draw
-            if g.MixBgGifDraw(layer,bg,gif,draw,out):
+            isTrue = g.MixBgGifDraw(layer,bg,gif,draw,out)
+            print isTrue
+            if isTrue:
                 g.GetGifAnimationFromImages(out["out_url"], out["out_frame_url_list"])
 
             return HttpResponse("true")
