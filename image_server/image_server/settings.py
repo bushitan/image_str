@@ -104,7 +104,10 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static") #pythonanywhere use
 STATIC_URL = '/static/'
-
+STATICFILES_FINDERS =(
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder"
+)
 
 # 七牛配置
 qiniu_access_key = 'bK5xWj0a-TBIljlxHYOHuQib9HYF_9Ft-HtP8tEb'

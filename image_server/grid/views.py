@@ -292,6 +292,73 @@ class API_Game_ActiveCircle(BaseMixin, ListView):
                 content_type="application/json"
             )
         return HttpResponse(u"下载微信图片失败")
+
+from lib.gif_mix import GifMix
+class API_GIF_Mix(BaseMixin, ListView):
+    template_name = 'img_str/pc.html'
+
+    # def get(self, request, *args, **kwargs):
+    #     print request,"get"
+    #     return super(API_Game_ActiveCircle, self).get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        return super(API_GIF_Mix, self).get_context_data(**kwargs)
+    def get_queryset(self):
+        pass
+    def post(self, request, *args, **kwargs):
+
+        try:
+            #Todo 把图片保存至本地
+
+
+            # path = r'C:\Users\Administrator\Desktop\gif\\'
+            path = r'grid/static/mix/'
+            bg_url = path + r'bg.jpg'
+            sprite_url_list = [path + r'a.png',path + r'b.png',path + r'c.png']
+            frame_url_list = [path + r'save_fame_11.jpg',path + r'save_fame_12.jpg',path + r'save_fame_13.jpg',]
+            save_gif_url =  path + r'user.gif'
+
+            layer = ["bg","draw","gif"]
+
+            bg = {
+                "bg_url":path + r'bg.jpg',
+                "bg_width":240,
+                "bg_height":240,
+            }
+            gif = {
+                "gif_sprite_url_list":[path + r'a.png',path + r'b.png',path + r'c.png'],
+                "gif_offsetX":100,
+                "gif_offsetY":100,
+                "gif_width":240,
+                "gif_height":240,
+                "gif_show_width":120,
+                "gif_show_height":120,
+            }
+            draw = {
+                "draw_url":path + r'a.png',
+                "draw_offsetX":200,
+                "draw_offsetY":200,
+                "draw_width":240,
+                "draw_height":240,
+                "draw_show_width":120,
+                "draw_show_height":120,
+            }
+            out= {
+                "out_frame_url_list":[path + r'save_fame_11.jpg',path + r'save_fame_12.jpg',path + r'save_fame_13.jpg',],
+                "out_url": path + r'user.gif',
+                "out_width":256,
+                "out_height":192,
+            }
+
+            g = GifMix()
+            #bg + gif + draw
+            if g.MixBgGifDraw(layer,bg,gif,draw,out):
+                g.GetGifAnimationFromImages(out["out_url"], out["out_frame_url_list"])
+
+            return HttpResponse("true")
+        except Exception ,e:
+            # raise e
+            return HttpResponse(e)
+
 #图片处理api，生成字符画
 #接收原图url->字符画->上传->返回字符画url
 # class API_ImgToStr(BaseMixin, ListView):
