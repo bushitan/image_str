@@ -205,6 +205,7 @@ if __name__ == "__main__":
     # GetGifAnimationFromImages(r"D:\\hecheng5.gif", [r"D:\\a.jpg", r"D:\\b.jpg", r"D:\\c.jpg"], 5)
 
     # GetGifAnimationFromImages(r"D:\\hecheng_png1.gif", GetDirImageList(r"D:\\GifMarker1"), type = 4)
+    # GetGifAnimationFromImages(r"D:\\hecheng_png1.gif", GetDirImageList(r"D:\\GifMarker1"), type = 4)
 
     path = r'C:\Users\Administrator\Desktop\gif\\'
     bg_url = path + r'bg.jpg'
@@ -254,10 +255,11 @@ if __name__ == "__main__":
 
 
     g = GifMix()
-
-    #bg + gif + draw
-    if g.MixBgGifDraw(layer,bg,gif,draw,out):
-        g.GetGifAnimationFromImages(out["out_url"], out["out_frame_url_list"])
+    g.GetGifAnimationFromImages(r"C:\Users\Administrator\Desktop\vedio\d_53.gif", g.GetDirImageList(r"C:\Users\Administrator\Desktop\vedio\picture"), type = 4)
+    #
+    # #bg + gif + draw
+    # if g.MixBgGifDraw(layer,bg,gif,draw,out):
+    #     g.GetGifAnimationFromImages(out["out_url"], out["out_frame_url_list"])
 
     #bg + gif
     # if g.MixImageList(bg_url,sprite_url_list,frame_url_list,option):

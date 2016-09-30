@@ -86,7 +86,7 @@ class CharImage():
                     _char = self._Get_Char(_value_int,_value_int,_value_int)
                 elif type( self.im.getpixel((j,i))) is types.TupleType:
                     _char = self._Get_Char(*self.im.getpixel((j,i)))
-                _draw.text((j*self.size,i*self.size),_char,fill=(0,0,0))
+                _draw.text( ( j*self.size , i*self.size ) , _char , fill=(0,0,0))
 
         print 'OK'
     #计算方格line 列表

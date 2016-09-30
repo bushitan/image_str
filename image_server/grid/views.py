@@ -395,6 +395,41 @@ class API_GIF_Mix(BaseMixin, ListView):
             # raise e
             return HttpResponse(e)
 
+
+from lib.image_mix import ImageMix
+class API_WX_ImageMix(BaseMixin, ListView):
+    template_name = 'img_str/pc.html'
+
+    def get(self, request, *args, **kwargs):
+        # print request,"get"
+
+        bg_img = request.GET.get('bg_img', '')
+        word = request.GET.get('word', '')
+        size = int(request.GET.get('size', ''))
+        x = int(request.GET.get('x', ''))
+        y = int(request.GET.get('y', ''))
+
+        jpg_opt = {
+            "url": r"grid/static/mix/"+bg_img,
+            "save_url":r"grid/static/mix/img_word_save1.jpg",
+        }
+        word_opt = [
+            {
+                "word":word,
+                "size":size,
+                "x":x,
+                "y":y,
+            }
+        ]
+        m = ImageMix()
+        m.image_word(jpg_opt,word_opt)
+
+        return HttpResponse("static/mix/img_word_save1.jpg")
+        # return super(API_WX_Static, self).get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        return super(API_WX_ImageMix, self).get_context_data(**kwargs)
+    def get_queryset(self):
+        pass
 #图片处理api，生成字符画
 #接收原图url->字符画->上传->返回字符画url
 # class API_ImgToStr(BaseMixin, ListView):

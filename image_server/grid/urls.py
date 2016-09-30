@@ -17,6 +17,8 @@ urlpatterns = [
 
    url(r'^api/gif/mix/$', API_GIF_Mix.as_view()),
 
+   url(r'^api/wx/image_mix/$', API_WX_ImageMix.as_view()),
+
 
    # url(r'^api/img_str_temp/$', API_ImgToStr_Temp.as_view()),
 
