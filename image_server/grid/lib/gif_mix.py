@@ -1,6 +1,6 @@
 #--coding:utf-8--
 import os
-from PIL import Image  
+from PIL import Image
 import images2gif
 
 class GifMix():
@@ -254,8 +254,8 @@ if __name__ == "__main__":
     }
 
 
-    g = GifMix()
-    g.GetGifAnimationFromImages(r"C:\Users\Administrator\Desktop\vedio\d_53.gif", g.GetDirImageList(r"C:\Users\Administrator\Desktop\vedio\picture"), type = 4)
+    # g = GifMix()
+    # g.GetGifAnimationFromImages(r"C:\Users\Administrator\Desktop\vedio\d_53.gif", g.GetDirImageList(r"C:\Users\Administrator\Desktop\vedio\picture"), type = 4)
     #
     # #bg + gif + draw
     # if g.MixBgGifDraw(layer,bg,gif,draw,out):
@@ -266,6 +266,8 @@ if __name__ == "__main__":
     #      g.GetGifAnimationFromImages(save_gif_url, frame_url_list)
 
 
+    url = r"H:\Code\Python\Git\image_str\image_server\grid\static\mix"
+    im = Image.open("filename")
 
 
 #该片段来自于http://outofmemory.cn

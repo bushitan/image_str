@@ -187,7 +187,8 @@ def gif2images( filename, distDir = '.', type = 'bmp' ):
 
 ##############################################################
 if __name__ == '__main__':
-    frames = gif2images('h1.gif',distDir='tmp',type='png')
+    url =r"H:\Code\Python\Git\image_str\image_server\grid\static\mix\user2.gif"
+    frames = gif2images(url,distDir='tmp',type='png')
     images = []
     # for i in range(frames-1,-1,-1):
     for i in range(frames-1,-1,-1):
