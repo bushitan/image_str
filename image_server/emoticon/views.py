@@ -57,7 +57,7 @@ class Resize(BaseMixin, ListView):
         _imgData = base64.b64decode(_tx)
         print 'post over:',datetime.datetime.now()
 
-        #图片全部写入，但只转gif
+        #图片全部写入，只转gif
         _img_filedir = "emoticon/static/magick/upload/"
         _img_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
         _img_style = "." + _type
