@@ -19,4 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^grid/', include('grid.urls')),
+    url(r'^emoticon/', include('emoticon.urls')),
 ]

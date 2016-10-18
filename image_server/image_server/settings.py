@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'grid',
+    'emoticon',
 )
 
 MIDDLEWARE_CLASSES = (
