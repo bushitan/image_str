@@ -24,7 +24,7 @@ from grid.lib.painter import Painter
 # logger
 logger = logging.getLogger(__name__)
 
-
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class BaseMixin(object):
     def get_context_data(self, *args, **kwargs):
@@ -57,8 +57,9 @@ class Resize(BaseMixin, ListView):
         _imgData = base64.b64decode(_tx)
         print 'post over:',datetime.datetime.now()
 
+
         #图片全部写入，只转gif
-        _img_filedir = "emoticon/static/magick/upload/"
+        _img_filedir = BASE_DIR + "/emoticon/static/magick/upload/"
         _img_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
         _img_style = "." + _type
         _img_filename = _img_name+_img_style
@@ -75,7 +76,7 @@ class Resize(BaseMixin, ListView):
 
 
             print 'save_close:',datetime.datetime.now()
-            _save_filedir = "emoticon/static/magick/download/"
+            _save_filedir = BASE_DIR + "/emoticon/static/magick/download/"
             _save_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
             _save_style = "." + _type
             _save_filename = _save_name+_save_style
