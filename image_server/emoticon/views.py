@@ -56,19 +56,23 @@ class Resize(BaseMixin, ListView):
         _type = request.POST['type']
         _imgData = base64.b64decode(_tx)
         print 'post over:',datetime.datetime.now()
+
+        #图片全部写入，但只转gif
+        _img_filedir = "emoticon/static/magick/upload/"
+        _img_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+        _img_style = "." + _type
+        _img_filename = _img_name+_img_style
+        _img_localpath = _img_filedir + _img_filename
+        print 'save:',datetime.datetime.now()
+        # print "_img_localpath:" + _img_localpath
+        #写入图片
+        file = open(_img_localpath, "wb+")
+        file.write(_imgData)
+        file.flush()
+        file.close()
+
         if _type == 'gif' or _type =="GIF":
-            _img_filedir = "emoticon/static/magick/upload/"
-            _img_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
-            _img_style = "." + _type
-            _img_filename = _img_name+_img_style
-            _img_localpath = _img_filedir + _img_filename
-            print 'save:',datetime.datetime.now()
-            # print "_img_localpath:" + _img_localpath
-            #写入图片
-            file = open(_img_localpath, "wb+")
-            file.write(_imgData)
-            file.flush()
-            file.close()
+
 
             print 'save_close:',datetime.datetime.now()
             _save_filedir = "emoticon/static/magick/download/"
@@ -82,6 +86,9 @@ class Resize(BaseMixin, ListView):
             m.Resize(_img_localpath)
 
             print 'resize:',datetime.datetime.now()
+            return HttpResponse( "/static/magick/download/" + _save_filename)
+        else :
+            return HttpResponse( "/static/magick/upload/" + _img_filename)
         # IMAGE_SERVER_HOST = 'http://120.27.97.33:91/'
         # url = IMAGE_SERVER_HOST + 'grid/api/img_str/'
         # data  = {  "img_url":IMAGE_SERVER_HOST + "static/art/img/"+_img_filename}
@@ -95,4 +102,4 @@ class Resize(BaseMixin, ListView):
         # response = opener.open(req,data)
         # res = response.read()
         # print 'res:',res
-        return HttpResponse( "/static/magick/download/" + _save_filename)
+

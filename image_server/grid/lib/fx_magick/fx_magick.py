@@ -113,10 +113,12 @@ class FX_Magick():
             _space = _space*1024
         return {
             "frame_num":len(arr),
-            "width": frame[2].split('x')[0],
-            "height":frame[2].split('x')[1],
+            "width": float(frame[2].split('x')[0]),
+            "height":float(frame[2].split('x')[1]),
             "type":frame[1],
-            "space":int(_space)
+            "space":int(_space),
+            "color":frame[6][:-1],
+            "ratio":float(frame[2].split('x')[1])/float(frame[2].split('x')[0]), #高/宽比，
         }
 
     #图片压缩，对外使用
@@ -125,8 +127,37 @@ class FX_Magick():
     # 192*240、192*192、 128*128
     # color 64c 、 128c
     # png/jpg : 1280*720 大小不限制
-    def Resize(self,in_src,out_src):
-        return
+    def Resize(self,in_src):
+
+        img = self._identity(in_src)
+
+        if(img['space'] < 1000):
+            #复制图片
+            _cmd = u"magick %s %s" %(in_src,self.save_url)
+            out_str = subprocess.check_output(_cmd, shell=True)
+            return
+
+        if(img['space'] > 1000 and img['space'] < 1600):
+            # 180x240 裁剪
+            _cmd = u"magick convert -resize 180x240 %s %s" % (in_src,self.save_url)
+            subprocess.check_output(_cmd, shell=True)
+
+
+
+        if(img['space'] >= 1600 and img['space'] < 2000):
+            # 128x128 裁剪
+            _cmd = u"magick convert -resize 128x128 %s %s" % (in_src,self.save_url)
+            subprocess.check_output(_cmd, shell=True)
+
+        if(img['space'] > 2000):
+            # 96x96 裁剪
+            _cmd = u"magick convert -resize 96x96 %s %s" % (in_src,self.save_url)
+            subprocess.check_output(_cmd, shell=True)
+
+        # 颜色转换,对save图直接操作
+        _cmd = u"magick convert -colors %s %s %s" % (img['color'],self.save_url,self.save_url)
+        subprocess.check_output(_cmd, shell=True)
+
 
 import  datetime
 if __name__ ==  "__main__":
@@ -138,32 +169,14 @@ if __name__ ==  "__main__":
     bg_src = r"C:\Users\Administrator\Desktop\vedio\img2gif\black.jpg"
 
 
-    save_url = r"C:\Users\Administrator\Desktop\vedio\img2gif\vedio.gif"
+    img = r"C:\Users\Administrator\Desktop\vedio\gif\c.gif"
+    save_url = r"C:\Users\Administrator\Desktop\vedio\gif\c3.gif"
     imgList = [img1_src,bg_src,img2_src]
     # imgList = [img2_src,bg_src,img1_src]
     m = FX_Magick(save_url)
     # m.Image2Gif(imgList)
-    m.AddWatermark(img1_src)
+    # m.AddWatermark(img1_src)
+    m.Resize(img)
 
-    b = datetime.datetime.now()
-
-    print a,b,  datetime.datetime.now()
-    # t=time.strftime('%H:%M:%S',time.gmtime(6))
-    a = '6'
-    b = float(192/320)
-    t = round(b, 3)
-    # print type(b),b
-    # path = u"C:\\Users\\Administrator\\Desktop\\vedio\\"
-    # gif = path + u"out1_21.gif"
-    # txt = path + u"t.txt"
-    # f = file(txt, 'w')
-    # s = '的萨达dd442 的'
-    # f.write(s)
-    # f.close()
-    #
-    # _shuiyin_cmd = u" magick  convert " + gif + u"  -font 方正兰亭超细黑简体  -fill white -undercolor #00000080 -gravity South -annotate 0x0+0+10 @" + txt  + u" anno1.gif"
-    # _shuiyin_cmd = u"magick  mogrify -font simhei.ttf -pointsize 24 -fill white -weight bolder -gravity southeast -annotate +20+20 @" + txt +" " + gif
-    # print
-    # _shuiyin_cmd.encode('utf-8').
 
 
