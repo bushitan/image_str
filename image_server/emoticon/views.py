@@ -72,24 +72,32 @@ class Resize(BaseMixin, ListView):
         file.flush()
         file.close()
 
+        #存储图片
+        print 'save_close:',datetime.datetime.now()
+        _save_filedir = BASE_DIR + "/emoticon/static/magick/download/"
+        _save_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+        _save_style = "." + _type
+        _save_filename = _save_name+_save_style
+        _save_localpath = _save_filedir + _save_filename
+
+        _magick = Magick(_save_localpath)
+
         if _type == 'gif' or _type =="GIF":
-
-
-            print 'save_close:',datetime.datetime.now()
-            _save_filedir = BASE_DIR + "/emoticon/static/magick/download/"
-            _save_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
-            _save_style = "." + _type
-            _save_filename = _save_name+_save_style
-            _save_localpath = _save_filedir + _save_filename
-
-
-            m = Magick(_save_localpath)
-            m.Resize(_img_localpath)
-
+            print "in gif"
+            _magick.Resize(_img_localpath)
             print 'resize:',datetime.datetime.now()
-            return HttpResponse( "/static/magick/download/" + _save_filename)
+            # return HttpResponse( "/static/magick/download/" + _save_filename)
+        #其他图片，只复制
         else :
-            return HttpResponse( "/static/magick/upload/" + _img_filename)
+            _magick.Copy(_img_localpath)
+
+        img_dict = _magick.Identity(_save_localpath)
+        img_dict["yun_url"] = "/static/magick/download/" + _save_filename
+        return HttpResponse(
+            json.dumps(img_dict),
+            content_type="application/json"
+        )
+            # return HttpResponse( "/static/magick/upload/" + _img_filename)
         # IMAGE_SERVER_HOST = 'http://120.27.97.33:91/'
         # url = IMAGE_SERVER_HOST + 'grid/api/img_str/'
         # data  = {  "img_url":IMAGE_SERVER_HOST + "static/art/img/"+_img_filename}
@@ -104,3 +112,66 @@ class Resize(BaseMixin, ListView):
         # res = response.read()
         # print 'res:',res
 
+
+import datetime
+class Join(BaseMixin, ListView):
+    template_name = 'join.html'
+
+    def get(self, request, *args, **kwargs):
+        return super(Join, self).get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        return super(Join, self).get_context_data(**kwargs)
+    def get_queryset(self):
+        pass
+    def post(self, request, *args, **kwargs):
+
+        _img1_post = request.POST['img_first']
+        _img2_post = request.POST['img_second']
+        _type1 = request.POST['type_first']
+        _type2 = request.POST['type_second']
+
+        _imgData1 = base64.b64decode(_img1_post)
+        _imgData2 = base64.b64decode(_img2_post)
+
+
+        #图片全部写入，只转gif
+        _img_filedir = BASE_DIR + "/emoticon/static/magick/upload/"
+
+        _img1_name = "{}1".format(time.strftime('%Y%m%d%H%M%S'))
+        _img1_style = "." + _type1
+        _img1_filename = _img1_name+_img1_style
+        _img1_localpath = _img_filedir + _img1_filename
+        _img2_name = "{}2".format(time.strftime('%Y%m%d%H%M%S'))
+        _img2_style = "." + _type2
+        _img2_filename = _img2_name+_img2_style
+        _img2_localpath = _img_filedir + _img2_filename
+
+        _img_bg = BASE_DIR + "/emoticon/static/magick/resouces/black.jpg"
+        #写入两张图片
+        file = open(_img1_localpath, "wb+")
+        file.write(_imgData1)
+        file.flush()
+        file.close()
+
+        file = open(_img2_localpath, "wb+")
+        file.write(_imgData2)
+        file.flush()
+        file.close()
+
+        #拼接的图片为gif格式
+        print 'save_close:',datetime.datetime.now()
+        _save_filedir = BASE_DIR + "/emoticon/static/magick/download/"
+        _save_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+        _save_style = ".gif"
+        _save_filename = _save_name+_save_style
+        _save_localpath = _save_filedir + _save_filename
+
+        _magick = Magick(_save_localpath)
+        _magick.Join([_img1_localpath,_img_bg,_img2_localpath])
+
+        img_dict = _magick.Identity(_save_localpath)
+        img_dict["yun_url"] = "/static/magick/download/" + _save_filename
+        return HttpResponse(
+            json.dumps(img_dict),
+            content_type="application/json"
+        )

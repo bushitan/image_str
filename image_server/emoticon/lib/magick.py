@@ -2,8 +2,10 @@
 from moviepy.editor import *
 import subprocess
 import logging
+import os
 logger = logging.getLogger(__name__)
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class Magick():
     save_url = ""
     def __init__(self,save_url):
@@ -58,22 +60,22 @@ class Magick():
     # 两张图片拼Gif
     # 以第一张图片Wie模板
     # 固定128的大小
-    def Image2Gif(self,imgList=[]):
+    def Join(self,imgList=[]):
         _out_range = 150
         img1_src = imgList[0]
-        img2_src = imgList[2]
         bg_src = imgList[1]
+        img2_src = imgList[2]
 
-        img1_pre_src = r"pre1.gif"
-        img2_pre_src = r"pre2.gif"
-        bg_pre_src = r"pre_black.jpg"
+        img1_pre_src = BASE_DIR + "/emoticon/static/magick/temp/pre1.gif"
+        img2_pre_src = BASE_DIR + "/emoticon/static/magick/temp/pre2.gif"
+        bg_pre_src = BASE_DIR + "/emoticon/static/magick/temp/pre_black.jpg"
 
         #按128x128，按固定比例压缩图片
         _cmd = u"magick convert -resize %sx%s %s %s" % (_out_range,_out_range,img1_src,img1_pre_src)
         subprocess.check_output(_cmd, shell=True)
 
         #解析第一张图片压缩后数据,以此为模板
-        img1 = self._identity(img1_pre_src)
+        img1 = self.Identity(img1_pre_src)
         _out_w = float(img1['width'])
         _out_h = float(img1['height'])
         _out_r = _out_h/_out_w
@@ -87,7 +89,7 @@ class Magick():
         subprocess.check_output(_cmd, shell=True)
 
         #解析图二压缩后数据，
-        img2 = self._identity(img2_pre_src)
+        img2 = self.Identity(img2_pre_src)
         img2_w = float(img2['width'])
         img2_h = float(img2['height'])
 
@@ -97,13 +99,20 @@ class Magick():
         print _out_h,_out_w
         print img2_h,img2_w
         # print bord_h,bord_w
-        _cmd = u" magick %s %s ( %s -repage 0x0+%s+%s! ) %s  " % (img1_pre_src, bg_pre_src, img2_pre_src, offsetX, offsetY, self.save_url)
+        # _cmd = u" magick  -delay 50 -loop 0 %s %s  %s  " % (img1_pre_src, bg_pre_src,  self.save_url)
+        # subprocess.call(_cmd, shell=True)
+        # _cmd = u" magick   -loop 0  %s ( %s -repage 0x0+%s+%s! )  %s  " % (self.save_url, img2_pre_src, offsetX, offsetY, self.save_url)
+        # subprocess.call(_cmd, shell=True)
+        _cmd = u" magick  -loop 0 %s %s ( %s -repage 0x0+%s+%s! )  %s  " % (img1_pre_src, bg_pre_src, img2_pre_src, offsetX, offsetY, self.save_url)
+        subprocess.call(_cmd, shell=True)
+
+        _cmd = u" magick  convert -colors 100  %s  %s" % (self.save_url,self.save_url)
         subprocess.call(_cmd, shell=True)
 
     # 识别img的基础数据
     # 1\地址，2\格式，3\size，4\偏移量，5\8-bit，6\sRGB，7\256c,8\占用内存，9\0.000u， 10\时间
     #['C:\\Users\\Administrator\\Desktop\\vedio\\img2gif\\pre1.gif[0]', 'GIF', '96x128', '96x128+0+0', '8-bit', 'sRGB', '256c', '214KB', '0.000u', '0:00.003']
-    def _identity(self,img_url):
+    def Identity(self,img_url):
         _cmd = u"magick identify %s" %(img_url)
         out_str = subprocess.check_output(_cmd, shell=True)
         arr = out_str.split('\r\n')
@@ -116,6 +125,7 @@ class Magick():
             "width": float(frame[2].split('x')[0]),
             "height":float(frame[2].split('x')[1]),
             "type":frame[1],
+            "color_code":frame[5],
             "space":int(_space),
             "color":frame[6][:-1],
             "ratio":float(frame[2].split('x')[1])/float(frame[2].split('x')[0]), #高/宽比，
@@ -129,7 +139,9 @@ class Magick():
     # png/jpg : 1280*720 大小不限制
     def Resize(self,in_src):
 
-        img = self._identity(in_src)
+        print in_src
+        img = self.Identity(in_src)
+        print 2
 
         if(img['space'] < 1000):
             #复制图片
@@ -157,6 +169,11 @@ class Magick():
         # 颜色转换,对save图直接操作
         _cmd = u"magick convert -colors %s %s %s" % (img['color'],self.save_url,self.save_url)
         subprocess.check_output(_cmd, shell=True)
+
+    #把图片copy到save_url
+    def Copy(self,in_src):
+        _cmd = u"magick %s %s" %(in_src,self.save_url)
+        out_str = subprocess.check_output(_cmd, shell=True)
 
 
 import  datetime
