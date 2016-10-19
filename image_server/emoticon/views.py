@@ -169,6 +169,8 @@ class Join(BaseMixin, ListView):
         _magick = Magick(_save_localpath)
         _magick.Join([_img1_localpath,_img_bg,_img2_localpath])
 
+        # _magick.AddWatermark(_save_localpath)
+
         img_dict = _magick.Identity(_save_localpath)
         img_dict["yun_url"] = "/static/magick/download/" + _save_filename
         return HttpResponse(

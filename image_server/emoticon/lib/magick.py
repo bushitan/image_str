@@ -20,15 +20,23 @@ class Magick():
         _cmd = u"magick %s %s " % (img,self.save_url )
         subprocess.check_output(_cmd, shell=True)
 
-        _txt_file = txt_file
-        _img = "pre1.gif"
+        _resouces_path = BASE_DIR + "/static/magick/resouces/"
+        _txt_file = _resouces_path + txt_file
+        # _img = "pre1.gif"
+
+
 
         _size = "-pointsize 12"
-        _font = "-font simhei.ttf"
-        _fill = "-fill white -weight bolder"
-        offsetX = 20
-        offsetY = 20
-        _cmd = u"magick  mogrify %s %s %s  -annotate 0x0+%s+%s @%s %s" % (_font,_size,_fill,offsetX,offsetY,_txt_file,self.save_url)
+
+        _font = "-font %ssimhei.ttf" % (_resouces_path)
+        # _fill = "-fill white -weight bolder"
+        _fill = "-fill white -undercolor #00000080 -weight bolder"
+        offsetX = 0
+        offsetY = 0
+        # _cmd = u"magick  mogrify %s %s %s  -annotate 0x0+%s+%s @%s %s" % (_font,_size,_fill,offsetX,offsetY,_txt_file,self.save_url)
+
+        #右下角水印
+        _cmd = u"magick  mogrify %s %s %s  -gravity southeast -geometry +0+0  -annotate 0x0+%s+%s @%s %s" % (_font,_size,_fill,offsetX,offsetY,_txt_file,self.save_url)
         subprocess.check_output(_cmd, shell=True)
         return
 
@@ -66,9 +74,9 @@ class Magick():
         bg_src = imgList[1]
         img2_src = imgList[2]
 
-        img1_pre_src = BASE_DIR + "/emoticon/static/magick/temp/pre1.gif"
-        img2_pre_src = BASE_DIR + "/emoticon/static/magick/temp/pre2.gif"
-        bg_pre_src = BASE_DIR + "/emoticon/static/magick/temp/pre_black.jpg"
+        img1_pre_src = BASE_DIR + "/static/magick/temp/pre1.gif"
+        img2_pre_src = BASE_DIR + "/static/magick/temp/pre2.gif"
+        bg_pre_src = BASE_DIR + "/static/magick/temp/pre_black.jpg"
 
         #按128x128，按固定比例压缩图片
         _cmd = u"magick convert -resize %sx%s %s %s" % (_out_range,_out_range,img1_src,img1_pre_src)
@@ -192,7 +200,7 @@ if __name__ ==  "__main__":
     # imgList = [img2_src,bg_src,img1_src]
     m = Magick(save_url)
     # m.Image2Gif(imgList)
-    # m.AddWatermark(img1_src)
+    m.AddWatermark(img1_src)
     # m.Resize(img)
 
 
