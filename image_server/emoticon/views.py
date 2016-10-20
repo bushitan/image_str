@@ -91,6 +91,9 @@ class Resize(BaseMixin, ListView):
         else :
             _magick.Copy(_img_localpath)
 
+        # _magick.AddWatermark(_save_localpath)
+
+
         img_dict = _magick.Identity(_save_localpath)
         img_dict["yun_url"] = "/static/magick/download/" + _save_filename
         return HttpResponse(
@@ -170,6 +173,54 @@ class Join(BaseMixin, ListView):
         _magick.Join([_img1_localpath,_img_bg,_img2_localpath])
 
         # _magick.AddWatermark(_save_localpath)
+
+        img_dict = _magick.Identity(_save_localpath)
+        img_dict["yun_url"] = "/static/magick/download/" + _save_filename
+        return HttpResponse(
+            json.dumps(img_dict),
+            content_type="application/json"
+        )
+
+
+class Watermark(BaseMixin, ListView):
+    template_name = 'watermark.html'
+
+    def get(self, request, *args, **kwargs):
+        return super(Watermark, self).get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        return super(Watermark, self).get_context_data(**kwargs)
+    def get_queryset(self):
+        pass
+    def post(self, request, *args, **kwargs):
+        _tx = request.POST['img']
+        _type = request.POST['type']
+        _imgData = base64.b64decode(_tx)
+        print 'post over:',datetime.datetime.now()
+
+        #图片全部写入，只转gif
+        _img_filedir = BASE_DIR + "/emoticon/static/magick/upload/"
+        _img_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+        _img_style = "." + _type
+        _img_filename = _img_name+_img_style
+        _img_localpath = _img_filedir + _img_filename
+        print 'save:',datetime.datetime.now()
+        # print "_img_localpath:" + _img_localpath
+        #写入图片
+        file = open(_img_localpath, "wb+")
+        file.write(_imgData)
+        file.flush()
+        file.close()
+
+        #存储图片
+        print 'save_close:',datetime.datetime.now()
+        _save_filedir = BASE_DIR + "/emoticon/static/magick/download/"
+        _save_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+        _save_style = "." + _type
+        _save_filename = _save_name+_save_style
+        _save_localpath = _save_filedir + _save_filename
+
+        _magick = Magick(_save_localpath)
+        _magick.AddWatermark(_img_localpath)
 
         img_dict = _magick.Identity(_save_localpath)
         img_dict["yun_url"] = "/static/magick/download/" + _save_filename

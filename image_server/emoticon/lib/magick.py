@@ -11,6 +11,7 @@ class Magick():
     def __init__(self,save_url):
         self.save_url = save_url
         pass
+
     #图片打水印  simhei.ttf 字体要在同一文件夹下
     # jpg/png 能打 文字/图片/gif水印
     # gif 能打文字水印
@@ -23,9 +24,6 @@ class Magick():
         _resouces_path = BASE_DIR + "/static/magick/resouces/"
         _txt_file = _resouces_path + txt_file
         # _img = "pre1.gif"
-
-
-
         _size = "-pointsize 12"
 
         _font = "-font %ssimhei.ttf" % (_resouces_path)
@@ -48,7 +46,7 @@ class Magick():
         _startTime = float(startTime)
         _endTime = float(endTime)
         _speed = 3
-        _resize = float(192.00/320.00) #把320*40的视频转192*144
+        _resize = float(180.00/320.00) #把320*40的视频转192*144
         _fps = 10
         try:
         # print VideoFileClip(url)
@@ -74,30 +72,26 @@ class Magick():
         bg_src = imgList[1]
         img2_src = imgList[2]
 
-        img1_pre_src = BASE_DIR + "/static/magick/temp/pre1.gif"
-        img2_pre_src = BASE_DIR + "/static/magick/temp/pre2.gif"
-        bg_pre_src = BASE_DIR + "/static/magick/temp/pre_black.jpg"
+        # img1_pre_src = BASE_DIR + "/static/magick/temp/pre1.gif"
+        # img2_pre_src = BASE_DIR + "/static/magick/temp/pre2.gif"
+        # bg_pre_src = BASE_DIR + "/static/magick/temp/pre_black.jpg"
 
-        #按128x128，按固定比例压缩图片
-        _cmd = u"magick convert -resize %sx%s %s %s" % (_out_range,_out_range,img1_src,img1_pre_src)
+        #按_out_range ，按固定比例压缩图片
+        _cmd = u"magick convert -resize %sx%s %s %s" % (_out_range,_out_range,img1_src,img1_src)
         subprocess.check_output(_cmd, shell=True)
 
         #解析第一张图片压缩后数据,以此为模板
-        img1 = self.Identity(img1_pre_src)
+        img1 = self.Identity(img1_src)
         _out_w = float(img1['width'])
         _out_h = float(img1['height'])
         _out_r = _out_h/_out_w
 
-         #按照图1的范围，压缩黑色背景图
-        _cmd = u"magick convert -resize %sx%s! %s %s" % (_out_w,_out_h,bg_src,bg_pre_src)
-        subprocess.check_output(_cmd, shell=True)
-
-        #按照图1的范围，压缩图2
-        _cmd = u"magick convert -resize %sx%s %s %s" % (_out_w,_out_h,img2_src,img2_pre_src)
+        #按照图1的比例，压缩图2
+        _cmd = u"magick convert -resize %sx%s %s %s" % (_out_w,_out_h,img2_src,img2_src)
         subprocess.check_output(_cmd, shell=True)
 
         #解析图二压缩后数据，
-        img2 = self.Identity(img2_pre_src)
+        img2 = self.Identity(img2_src)
         img2_w = float(img2['width'])
         img2_h = float(img2['height'])
 
@@ -106,16 +100,72 @@ class Magick():
         offsetX = int(( _out_w - img2_w ) /2)
         print _out_h,_out_w
         print img2_h,img2_w
-        # print bord_h,bord_w
-        # _cmd = u" magick  -delay 50 -loop 0 %s %s  %s  " % (img1_pre_src, bg_pre_src,  self.save_url)
-        # subprocess.call(_cmd, shell=True)
-        # _cmd = u" magick   -loop 0  %s ( %s -repage 0x0+%s+%s! )  %s  " % (self.save_url, img2_pre_src, offsetX, offsetY, self.save_url)
-        # subprocess.call(_cmd, shell=True)
-        _cmd = u" magick  -loop 0 %s %s ( %s -repage 0x0+%s+%s! )  %s  " % (img1_pre_src, bg_pre_src, img2_pre_src, offsetX, offsetY, self.save_url)
+
+        #图片2加黑边
+        _cmd = u'magick convert -border  %sx%s -bordercolor "#000000"  %s %s' % (offsetX,offsetY,img2_src,img2_src)
+        subprocess.check_output(_cmd, shell=True)
+
+
+        #按照图1的比例，压缩图,强制压缩
+        _cmd = u"magick convert -resize %sx%s! %s %s" % (_out_w,_out_h,img2_src,img2_src)
+        subprocess.check_output(_cmd, shell=True)
+
+        #gif合成
+        _cmd = u" magick  -loop 0 %s %s  %s  " % (img1_src,  img2_src, self.save_url)
         subprocess.call(_cmd, shell=True)
 
         _cmd = u" magick  convert -colors 100  %s  %s" % (self.save_url,self.save_url)
         subprocess.call(_cmd, shell=True)
+
+
+    # def Join(self,imgList=[]):
+    #     _out_range = 150
+    #     img1_src = imgList[0]
+    #     bg_src = imgList[1]
+    #     img2_src = imgList[2]
+    #
+    #     img1_pre_src = BASE_DIR + "/static/magick/temp/pre1.gif"
+    #     img2_pre_src = BASE_DIR + "/static/magick/temp/pre2.gif"
+    #     bg_pre_src = BASE_DIR + "/static/magick/temp/pre_black.jpg"
+    #
+    #     #按128x128，按固定比例压缩图片
+    #     _cmd = u"magick convert -resize %sx%s %s %s" % (_out_range,_out_range,img1_src,img1_pre_src)
+    #     subprocess.check_output(_cmd, shell=True)
+    #
+    #     #解析第一张图片压缩后数据,以此为模板
+    #     img1 = self.Identity(img1_pre_src)
+    #     _out_w = float(img1['width'])
+    #     _out_h = float(img1['height'])
+    #     _out_r = _out_h/_out_w
+    #
+    #      #按照图1的范围，压缩黑色背景图
+    #     _cmd = u"magick convert -resize %sx%s! %s %s" % (_out_w,_out_h,bg_src,bg_pre_src)
+    #     subprocess.check_output(_cmd, shell=True)
+    #
+    #     #按照图1的范围，压缩图2
+    #     _cmd = u"magick convert -resize %sx%s %s %s" % (_out_w,_out_h,img2_src,img2_pre_src)
+    #     subprocess.check_output(_cmd, shell=True)
+    #
+    #     #解析图二压缩后数据，
+    #     img2 = self.Identity(img2_pre_src)
+    #     img2_w = float(img2['width'])
+    #     img2_h = float(img2['height'])
+    #
+    #     #第2张图片偏移量
+    #     offsetY = int(( _out_h - img2_h ) /2)
+    #     offsetX = int(( _out_w - img2_w ) /2)
+    #     print _out_h,_out_w
+    #     print img2_h,img2_w
+    #     # print bord_h,bord_w
+    #     # _cmd = u" magick  -delay 50 -loop 0 %s %s  %s  " % (img1_pre_src, bg_pre_src,  self.save_url)
+    #     # subprocess.call(_cmd, shell=True)
+    #     # _cmd = u" magick   -loop 0  %s ( %s -repage 0x0+%s+%s! )  %s  " % (self.save_url, img2_pre_src, offsetX, offsetY, self.save_url)
+    #     # subprocess.call(_cmd, shell=True)
+    #     _cmd = u" magick  -loop 0 %s %s ( %s -repage 0x0+%s+%s! )  %s  " % (img1_pre_src, bg_pre_src, img2_pre_src, offsetX, offsetY, self.save_url)
+    #     subprocess.call(_cmd, shell=True)
+    #
+    #     _cmd = u" magick  convert -colors 100  %s  %s" % (self.save_url,self.save_url)
+    #     subprocess.call(_cmd, shell=True)
 
     # 识别img的基础数据
     # 1\地址，2\格式，3\size，4\偏移量，5\8-bit，6\sRGB，7\256c,8\占用内存，9\0.000u， 10\时间
