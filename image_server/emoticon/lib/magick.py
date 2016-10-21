@@ -178,6 +178,17 @@ class Magick():
         _space =  float(frame[7][:-2])
         if frame[7][-2:] == 'MB':
             _space = _space*1024
+
+        #计算Geometry是否变化，
+        _temp = frame[3]
+        print _temp
+        _is_same_geometry = True
+        for i in range(0,len(arr)-1):
+            _temp_frame = arr[i].split(' ')
+            print _temp_frame
+            if _temp == _temp_frame[3]:
+                _is_same_geometry = False
+
         return {
             "frame_num":len(arr),
             "width": float(frame[2].split('x')[0]),
@@ -187,6 +198,7 @@ class Magick():
             "space":int(_space),
             "color":frame[6][:-1],
             "ratio":float(frame[2].split('x')[1])/float(frame[2].split('x')[0]), #高/宽比，
+            "is_same_geometry":_is_same_geometry
         }
 
     #图片压缩，对外使用
@@ -207,25 +219,43 @@ class Magick():
             out_str = subprocess.check_output(_cmd, shell=True)
             return
 
-        if(img['space'] > 1000 and img['space'] < 1500):
-            # 180x240 裁剪
-            _cmd = u"magick convert -resize 180x240 %s %s" % (in_src,self.save_url)
-            subprocess.check_output(_cmd, shell=True)
-            return
+        if img['is_same_geometry'] is True:
+            if(img['space'] > 1000 and img['space'] < 1500):
+                # 180x240 裁剪
+                _cmd = u"magick convert -resize 170x170 %s %s" % (in_src,self.save_url)
+                subprocess.check_output(_cmd, shell=True)
+                return
 
+            if(img['space'] >= 1500 and img['space'] < 2000):
+                # 128x128 裁剪
+                _cmd = u"magick convert -resize 128x128 %s %s" % (in_src,self.save_url)
+                subprocess.check_output(_cmd, shell=True)
+                return
+            if(img['space'] > 2000):
+                # 96x96 裁剪
+                _cmd = u"magick convert -resize 96x96 %s %s" % (in_src,self.save_url)
+                subprocess.check_output(_cmd, shell=True)
+                return
+            # 颜色转换,对save图直接操作
 
-        if(img['space'] >= 1500 and img['space'] < 2000):
-            # 128x128 裁剪
-            _cmd = u"magick convert -resize 128x128 %s %s" % (in_src,self.save_url)
-            subprocess.check_output(_cmd, shell=True)
-            return
-        if(img['space'] > 2000):
-            # 96x96 裁剪
-            _cmd = u"magick convert -resize 96x96 %s %s" % (in_src,self.save_url)
-            subprocess.check_output(_cmd, shell=True)
-            return
-        # 颜色转换,对save图直接操作
-        _cmd = u"magick convert -colors %s %s %s" % (img['color'],self.save_url,self.save_url)
+        else:
+            if(img['space'] > 1000 and img['space'] < 1500):
+                _cmd = u"magick convert  %s -coalesce -thumbnail 170x170 -layers optimize %s" % (in_src,self.save_url)
+                subprocess.check_output(_cmd, shell=True)
+                return
+            if(img['space'] >= 1500 and img['space'] < 2000):
+                # 128x128 裁剪
+                _cmd = u"magick convert  %s -coalesce -thumbnail 128x128 -layers optimize %s" % (in_src,self.save_url)
+                subprocess.check_output(_cmd, shell=True)
+                return
+            if(img['space'] > 2200):
+                # 96x96 裁剪
+                _cmd = u"magick convert  %s -coalesce -thumbnail 96x96 -layers optimize %s" % (in_src,self.save_url)
+                subprocess.check_output(_cmd, shell=True)
+                return
+            # 颜色转换,对save图直接操作
+
+        _cmd = u"magick convert -colors 100 %s %s" % (img['color'],self.save_url,self.save_url)
         subprocess.check_output(_cmd, shell=True)
 
     #把图片copy到save_url

@@ -228,3 +228,4 @@ class Watermark(BaseMixin, ListView):
             json.dumps(img_dict),
             content_type="application/json"
         )
+
