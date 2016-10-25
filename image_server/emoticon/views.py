@@ -7,9 +7,9 @@ from grid.models import *
 from django.views.generic import View, TemplateView, ListView, DetailView
 from grid.lib.str2img import Str2Img
 from grid.lib.web import Web
-from grid.lib.qi_niu import QiNiu
-
+from emoticon.lib.qi_niu import QiNiu
 from emoticon.lib.magick import Magick
+from emoticon.lib.filepath import FilePath
 
 import datetime
 import time
@@ -25,7 +25,7 @@ from grid.lib.painter import Painter
 logger = logging.getLogger(__name__)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+FILE_PATH = FilePath(BASE_DIR)
 class BaseMixin(object):
     def get_context_data(self, *args, **kwargs):
 
@@ -37,7 +37,82 @@ class BaseMixin(object):
         context = super(BaseMixin, self).get_context_data(**kwargs)
         return context
 
-#
+
+class Upload(BaseMixin, ListView):
+    template_name = 'upload.html'
+
+    def get(self, request, *args, **kwargs):
+        return super(Upload, self).get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        return super(Upload, self).get_context_data(**kwargs)
+    def get_queryset(self):
+        pass
+    def post(self, request, *args, **kwargs):
+
+        _imgData = base64.b64decode(request.POST['img'])
+        _type = request.POST['type']
+        _up_path = FILE_PATH.Up(_type)
+        print _up_path["local_path"]
+        #图片保存本地
+        file = open(_up_path["local_path"], "wb+")
+        file.write(_imgData)
+        file.flush()
+        file.close()
+
+        #上传七牛云
+        _qiniu = QiNiu()
+
+        if _qiniu.put("",_up_path["file_name"],_up_path["local_path"]) is True: #上传原图
+        # if True:
+             img_dict = {
+                 "status": 1,
+                 "img":SETTING.QINIU_HOST + _up_path["file_name"] + "?imageMogr2/thumbnail/170x170",#默认返回170x170的缩略图
+             }
+        else:
+            img_dict = {
+                 "status": -1 ,
+                 "img":-1,
+             }
+
+        return HttpResponse(
+            json.dumps(img_dict),
+            content_type="application/json"
+        )
+
+class Identify(BaseMixin, ListView):
+    def get_context_data(self, **kwargs):
+        return super(Identify, self).get_context_data(**kwargs)
+    def get_queryset(self):
+        pass
+    def post(self, request, *args, **kwargs):
+
+        _img_url = request.POST['img_url']
+        req = urllib2.Request(_img_url)
+
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+        response = opener.open(req)
+        data = response.read()
+
+        _save_filedir = BASE_DIR + "/emoticon/static/magick/download/"
+        _save_name = "{}".format(time.strftime('%Y%m%d%H%M%S'))
+        # _save_style = "." + _type
+        # _save_filename = _save_name+_save_style
+        _save_localpath = _save_filedir + _save_name
+
+        file = open(_save_localpath, "wb+")
+        file.write(data)
+        file.flush()
+        file.close()
+
+        _magick = Magick()
+        img_dict = _magick.Identity(_img_url)
+
+        return HttpResponse(
+            json.dumps(img_dict),
+            content_type="application/json"
+        )
+
+
 import datetime
 class Resize(BaseMixin, ListView):
     template_name = 'resize.html'
@@ -65,6 +140,7 @@ class Resize(BaseMixin, ListView):
         _img_filename = _img_name+_img_style
         _img_localpath = _img_filedir + _img_filename
         print 'save:',datetime.datetime.now()
+
         # print "_img_localpath:" + _img_localpath
         #写入图片
         file = open(_img_localpath, "wb+")

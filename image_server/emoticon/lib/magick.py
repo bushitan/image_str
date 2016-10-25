@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class Magick():
     save_url = ""
-    def __init__(self,save_url):
+    def __init__(self,save_url=""):
         self.save_url = save_url
         pass
 
