@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'grid',
     'emoticon',
+    'wx_app',
 )
 
 MIDDLEWARE_CLASSES = (

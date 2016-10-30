@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^grid/', include('grid.urls')),
     url(r'^emoticon/', include('emoticon.urls')),
+    url(r'^wx_app/', include('wx_app.urls')),
 ]
