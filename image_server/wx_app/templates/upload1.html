@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+    <title>自适应微信表情 </title>
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/vmaig.css">
+    <!--<link rel="stylesheet" href="/static/css/vmaig_comments.css">-->
+    <link rel="stylesheet" href="/static/css/vmaig_auth.css">
+    <!--<link rel="stylesheet" href="/static/jquery/jquery.Jcrop.min.css">-->
+
+    <script src="/static/jquery/jquery-2.1.3.min.js"></script>
+    <!--<script src="/static/jquery/jquery.cookie.js"></script>-->
+    <!--<script src="/static/jquery/jquery.form.js"></script>-->
+    <!--<script src="/static/jquery/jquery.Jcrop.min.js"></script>-->
+    <!--<script src="/static/bootstrap/js/bootstrap.min.js"></script>-->
+    <style>
+        .pre-view{
+/*display: table;*/
+margin-left: 20%;
+margin-right: 20%;
+        }
+        img {
+            border: 1px slategrey;
+
+        }
+        .show-gif img{
+            width: 30%;
+            height:auto;
+            /*margin-left:10px;*/
+            /*margin-right:10px;*/
+        }
+    </style>
+</head>
+<body>
+<!--<header id="vmaig-header" class="navbar navbar-inverse navbar-fixed-top navbar-vmaig">-->
+    <!--<div class="container">-->
+        <!--<div class="navbar-header">-->
+            <!--<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#vmaig-navbar-collapse">-->
+                <!--<span class="sr-only">切换导航</span>-->
+                <!--<span class="icon-bar"></span>-->
+                <!--<span class="icon-bar"></span>-->
+                <!--<span class="icon-bar"></span>-->
+                <!--<span class="icon-bar"></span>-->
+            <!--</button>-->
+            <!--<div class="navbar-brand">观察 &#45;&#45; 方格字符画</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</header>-->
+
+    <div class="container">
+        <div  class="center-block " style="text-align:center;"  >
+             --------听说你微信上传GIF，尺寸过大--------
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="row">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                        <p >
+                             <img id="tmp-tx" class="center-block"  src="" alt="" width="200" height="200" >
+                        </p>
+                         <form role="form" id="upload-tx-form"  >
+                            <div class="form-group">
+                            <input type="button" id="save-tx" class="btn btn-vmaig-auth" value="确认转换">
+                            <button type="button" class="btn btn-info">选择图片</button>
+                            <input type="file" id="upload-tx" name="upload-tx">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="up_box"  class="center-block " style="text-align:center; display: none"  >
+            上传中：<span id="up_num">0</span>%
+        </div>
+         <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="row">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                         <img id="img_resize" class="center-block" src="" alt="" width="128" height="128">
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div  class="center-block " style="text-align:center;"  >
+             -------长按，“保存到手机”，表情才能动喔Q^Q--------
+        </div>
+
+         <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="row">
+                    <div class="col-md-3 "  >
+
+                    </div>
+                    <div class="col-md-3 show-gif center-block">
+                       <img src="/static/magick/download/5.gif" />
+                        <img src="/static/magick/download/2.jpg" />
+                        <img src="/static/magick/download/3.gif" />
+                    </div>
+                    <div class="col-md-3">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div  class="center-block " style="text-align:center;"  >
+             --------^这^是^公^众^号^--------
+        </div>
+    </div>
+    <!--<div style="width: 400px;">-->
+        <!--<div class="row" >-->
+        <!--<div class="col-md-4">-->
+            <!--<img id="tmp-tx"  src="" alt="" width="200" height="200">-->
+             <!--<img id="img_resize"  src="" alt="" width="auto" height="auto">-->
+        <!--</div>-->
+
+        <!--<div class="col-md-4">-->
+             <!--<form role="form" id="upload-tx-form">-->
+                <!--<div class="form-group">-->
+                    <!--<input type="button" id="save-tx" class="btn btn-vmaig-auth" value="确认转换">-->
+                    <!--<button type="button" class="btn btn-info">选择图片</button>-->
+                    <!--<input type="file" id="upload-tx" name="upload-tx">-->
+                <!--</div>-->
+            <!--</form>-->
+        <!--</div>-->
+         <!--<div class="col-md-4">-->
+            <!--<img id="tmp-tx"  src="" alt="" width="200" height="200">-->
+             <!--<img id="img_resize"  src="" alt="" width="auto" height="auto">-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+
+
+</body>
+
+
+<script language="javascript" type="text/javascript">
+    var image = new Image();
+    var up_img,up_data,up_type;
+
+    var interval;
+    var _index_up_num = 0;
+    function Update_Num()
+    {
+        $("#up_num").text(_index_up_num);
+        if (_index_up_num<100)
+            _index_up_num++;
+    }
+
+//    timer.
+    $("#upload-tx").change(function(){
+
+        if(typeof FileReader == "undefined"){
+            alert("您的浏览器不支持FileReader对象！");
+        }
+
+        var file = this.files[0];
+
+
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+
+
+        reader.onload=function(e){
+            image.src = e.target.result;
+            $("#tmp-tx").attr("src",image.src);
+            $("#tmp-tx").attr("height","auto");
+
+            up_img = e.target.result;
+            up_data =up_img .split(',')[1];
+            up_type =up_img .split(',')[0].split('/')[1].split(';')[0];
+            console.log(up_type)
+        }
+    });
+
+var isUpload = false
+
+$("#save-tx").click(function(){
+    if (isUpload == true)
+        alert("别急，正在上传");
+    else
+    {
+        isUpload = true;
+        //确认上传
+        _index_up_num = 0;
+        interval = setInterval( Update_Num, 1000);
+        $("#up_box").show();
+
+        $.ajax({
+            url:"/wx_app/img/add/",
+            type:"POST",
+            data:{
+                "uid":10,
+                "img":up_data,
+                "type":up_type
+            },
+            success:function(data,textStatus){
+                console.log(data);
+                $("#img_resize").attr("src",data.img);
+                $("#img_resize").attr("height","auto");
+
+                $("#up_num").text(100);
+                clearInterval(interval);
+                isUpload = false;
+            },
+            error:function(XMLHttpRequest, textStatus, errorThrown){
+                $("#up_num").text(100);
+                clearInterval(interval);
+                isUpload = false;
+                alert(XMLHttpRequest.responseText);
+            }
+        });
+    }
+
+
+});
+
+</script>
+</html>
