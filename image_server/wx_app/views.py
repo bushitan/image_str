@@ -169,28 +169,32 @@ class PictureQuery(BaseMixin, ListView):
 #77  移动图片
 class PictureMove(BaseMixin, ListView):
     def post(self, request, *args, **kwargs):
+        try:
+            # 移动图片，到新分类
+            _img_id = request.POST['img_id']
+            _category_id = request.POST['category_id']
 
-        # 移动图片，到新分类
-        _img_id = request.POST['img_id']
-        _category_id = request.POST['category_id']
 
+            if  Category.objects.filter( id = _category_id ).exists()is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"目录不存在"}),content_type="application/json" )
+            if  Img.objects.filter( id = _img_id ).exists()is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"图片不存在"}),content_type="application/json" )
 
-        if  Category.objects.filter( id = _category_id ).exists()is False:
-            return HttpResponse( json.dumps({"status":"false","msg":u"目录不存在"}),content_type="application/json" )
-        if  Img.objects.filter( id = _img_id ).exists()is False:
-            return HttpResponse( json.dumps({"status":"false","msg":u"图片不存在"}),content_type="application/json" )
+            _category = Category.objects.get(id = _category_id)
+            _img =Img.objects.get(id = _img_id)
+            if RelCategoryImg.objects.filter(category=_category,img=_img).exists() :
+                return HttpResponse( json.dumps({"status":"false","msg":u"图片已在当前目录"}),content_type="application/json" )
 
-        _category = Category.objects.get(id = _category_id)
-        _img =Img.objects.get(id = _img_id)
-        if RelCategoryImg.objects.filter(category=_category,img=_img).exists() :
-            return HttpResponse( json.dumps({"status":"false","msg":u"图片已在当前目录"}),content_type="application/json" )
+            _rel = RelCategoryImg(
+                category = _category,
+                img = _img
+            )
+            _rel.save()
+            return HttpResponse(json.dumps({"status":"true","category_id":_category.id}),content_type="application/json")
+        except Exception ,e:
+                print e
+                return HttpResponse(json.dumps({"status":"false","msg":u"系统移动图片分组出错"}),content_type="application/json")
 
-        _rel = RelCategoryImg(
-            category = _category,
-            img = _img
-        )
-        _rel.save()
-        return HttpResponse(json.dumps({"status":"true","category_id":_category.id}),content_type="application/json")
 
 #88  图片删除
 
@@ -219,33 +223,53 @@ class PictureDelete(BaseMixin, ListView):
 #77
 class CategoryAdd(BaseMixin, ListView):
     def post(self, request, *args, **kwargs):
-        _category_name = request.POST['category_name']
-        _uid = request.POST['uid']
-        _category_parent_id = request.POST['_category_parent_id']
+        try:
+            _category_name = request.POST['category_name']
+            _uid = request.POST['uid']
+            # _category_parent_id = request.POST['_category_parent_id']
 
-        #user 不存在
-        if  User.objects.filter( id = _uid ).exists() is False:
-            return HttpResponse(
-                json.dumps({"status":"false","msg":u"用户不存在"}),
-                content_type="application/json"
-            )
-        #查_category_parent_id存在,增加目录
-        if  Category.objects.filter( id = _category_parent_id ).exists():
+            #user 不存在
+            if  User.objects.filter( id = _uid ).exists() is False:
+                return HttpResponse(
+                    json.dumps({"status":"false","msg":u"用户不存在"}),
+                    content_type="application/json"
+                )
+            #查_category_parent_id存在,增加目录
+            # if  Category.objects.filter( id = _category_parent_id ).exists():
+            #     _category = Category(
+            #         name = _category_name,
+            #         user_id = _uid,
+            #         parent_id = _category_parent_id,
+            #     )
+            # else :
+
+            _user = User.objects.get( id = _uid )
+            print _category_name
             _category = Category(
                 name = _category_name,
-                user_id = _uid,
-                parent_id = _category_parent_id,
+                user_id = _user,
             )
-        else :
-            _category = Category(
-                name = _category_name,
-                user_id = _uid,
-            )
-        _category.save()
-        return HttpResponse(
-            json.dumps({"status":"true","category_id":_category.id}),
-            content_type="application/json"
-        )
+            _category.save()
+
+            #查询用户名下所有目录
+            _list = Category.objects.filter( user_id = _uid)
+            _category_list = []
+            for c in _list:
+                _category_list.append({
+                    "category_id":c.id,
+                    "name":c.name,
+                    "is_default":c.is_default,
+                    "hasImg":RelCategoryImg.objects.filter( category = c ).exists(),
+                })
+
+            return HttpResponse(json.dumps({"status":"true","category_list":_category_list}),content_type="application/json")
+            # return HttpResponse(
+            #     json.dumps({"status":"true","category_id":_category.id}),
+            #     content_type="application/json"
+            # )
+        except Exception ,e:
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"系统增加目录出错"}),content_type="application/json")
 
 #88
 class CategoryReset(BaseMixin, ListView):
@@ -255,31 +279,48 @@ class CategoryReset(BaseMixin, ListView):
 #99
 class CategoryDelete(BaseMixin, ListView):
     def post(self, request, *args, **kwargs):
-        _uid = request.POST['uid']
-        _category_id = request.POST['category_id']
-        #user 不存在
-        if  User.objects.filter( id = _uid ).exists() is False:
-            return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在"}),content_type="application/json" )
+        try:
+            _uid = request.POST['uid']
+            _category_id = request.POST['category_id']
+            print _uid,_category_id
+            #user 不存在
+            if  User.objects.filter( id = _uid ).exists() is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在"}),content_type="application/json" )
 
-        if  Category.objects.filter( id = _category_id ).exists()is False:
-            return HttpResponse( json.dumps({"status":"false","msg":u"目录不存在"}),content_type="application/json" )
+            if  Category.objects.filter( id = _category_id ).exists()is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"目录不存在"}),content_type="application/json" )
 
-        # 1 目录只能给本uid 删除
-        if  Category.objects.filter( id = _category_id ,uid = _uid).exists()is False:
-            return HttpResponse( json.dumps({"status":"false","msg":u"用户没有删除该目录权限"}),content_type="application/json" )
+            # 1 目录只能给本uid 删除
+            if  Category.objects.filter( id = _category_id ,user_id = _uid).exists()is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"用户没有删除该目录权限"}),content_type="application/json" )
 
-        # 2 有子目录不能删除
-        if  Category.objects.filter( parent_id = _category_id ).exists():
-            return HttpResponse( json.dumps({"status":"false","msg":u"存在子目录，请先移除子目录"}),content_type="application/json" )
+            # 2 有子目录不能删除
+            if  Category.objects.filter( parent_id = _category_id ).exists():
+                return HttpResponse( json.dumps({"status":"false","msg":u"存在子目录，请先移除子目录"}),content_type="application/json" )
 
-        # 3 relcatimig 中，目录下有图片不能删除
-        _category =  Category.objects.get( id = _category_id )
-        if  RelCategoryImg.objects.filter( category = _category ).exists():
-            return HttpResponse( json.dumps({"status":"false","msg":u"目录下存在图片，请先移除图片"}),content_type="application/json" )
+            # 3 relcatimig 中，目录下有图片不能删除
+            _category =  Category.objects.get( id = _category_id )
+            if  RelCategoryImg.objects.filter( category = _category ).exists():
+                return HttpResponse( json.dumps({"status":"false","msg":u"目录下存在图片，请先移除图片"}),content_type="application/json" )
 
-        #删除目录
-        _category.delete()
-        return HttpResponse(json.dumps({"status":"true","category_id":_category.id}),content_type="application/json")
+            #删除目录
+            _category.delete()
+            # return HttpResponse(json.dumps({"status":"true","category_id":_category.id}),content_type="application/json")
+            #查询用户名下所有目录
+            _list = Category.objects.filter( user_id = _uid)
+            _category_list = []
+            for c in _list:
+                _category_list.append({
+                    "category_id":c.id,
+                    "name":c.name,
+                    "is_default":c.is_default,
+                    "hasImg":RelCategoryImg.objects.filter( category = c ).exists(),
+                })
+
+            return HttpResponse(json.dumps({"status":"true","category_list":_category_list}),content_type="application/json")
+        except Exception ,e:
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"系统删除目录除错"}),content_type="application/json")
 
 
 #10

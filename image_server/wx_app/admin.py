@@ -15,7 +15,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
 class RelCategoryImgAdmin(admin.ModelAdmin):
-    # list_display = ('name',)
+    list_display = ('category','img')
     pass
 admin.site.register(User,UserAdmin)
 admin.site.register(Img,ImgAdmin)
