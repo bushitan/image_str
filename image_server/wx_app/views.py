@@ -216,7 +216,6 @@ class PictureDelete(BaseMixin, ListView):
             content_type="application/json"
         )
 
-
 #77
 class CategoryAdd(BaseMixin, ListView):
     def post(self, request, *args, **kwargs):
@@ -293,12 +292,15 @@ class CategoryQuery(BaseMixin, ListView):
                 return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在"}),content_type="application/json" )
 
             # 1 用户名下的所有目录
+            # 目录下包含的图片
             _list = Category.objects.filter( user_id = _uid)
             _category_list = []
             for c in _list:
                 _category_list.append({
+                    "category_id":c.id,
                     "name":c.name,
                     "is_default":c.is_default,
+                    "hasImg":RelCategoryImg.objects.filter( category = c ).exists(),
                 })
 
             return HttpResponse(json.dumps({"status":"true","category_list":_category_list}),content_type="application/json")
