@@ -7,10 +7,15 @@ if __name__ == '__main__':
     httpClient = None
     try:
 
-        url = 'http://127.0.0.1:8000/wx_app/upload/img/'
+        url = 'https://www.12xiong.top/wx_app/img/query/'
 
         data  = {  "img_url":"http://7xsark.com1.z0.glb.clouddn.com/0_20161025165325.gif"}
         data  = {  "img_url":"http://7xsark.com1.z0.glb.clouddn.com/yuan.gif?imageMogr2/thumbnail/170x240"}
+
+        data = {
+            'uid': 10 ,
+            'category_id': 'null',
+        }
 
 
         req = urllib2.Request(url)
