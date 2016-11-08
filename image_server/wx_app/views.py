@@ -102,6 +102,7 @@ class UploadImg(BaseMixin, ListView):
                 return HttpResponse(json.dumps({"status":"false"}),content_type="application/json")
         except Exception,e:
             print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")
 
 
 #22
@@ -164,7 +165,7 @@ class PictureQuery(BaseMixin, ListView):
                 return HttpResponse(json.dumps({"status":"true","img_list":_rel}),content_type="application/json")
         except Exception ,e:
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":u"系统查询图片除错"}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"系统查询图片除错" + e}),content_type="application/json")
 
 #77  移动图片
 class PictureMove(BaseMixin, ListView):
@@ -193,7 +194,7 @@ class PictureMove(BaseMixin, ListView):
             return HttpResponse(json.dumps({"status":"true","category_id":_category.id}),content_type="application/json")
         except Exception ,e:
                 print e
-                return HttpResponse(json.dumps({"status":"false","msg":u"系统移动图片分组出错"}),content_type="application/json")
+                return HttpResponse(json.dumps({"status":"false","msg":u"系统移动图片分组出错"+ e}),content_type="application/json")
 
 
 #88  图片删除
@@ -269,7 +270,7 @@ class CategoryAdd(BaseMixin, ListView):
             # )
         except Exception ,e:
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":u"系统增加目录出错"}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"系统增加目录出错" + e}),content_type="application/json")
 
 #88
 class CategoryReset(BaseMixin, ListView):
@@ -320,7 +321,7 @@ class CategoryDelete(BaseMixin, ListView):
             return HttpResponse(json.dumps({"status":"true","category_list":_category_list}),content_type="application/json")
         except Exception ,e:
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":u"系统删除目录除错"}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"系统删除目录除错" + e}),content_type="application/json")
 
 
 #10
@@ -347,7 +348,7 @@ class CategoryQuery(BaseMixin, ListView):
             return HttpResponse(json.dumps({"status":"true","category_list":_category_list}),content_type="application/json")
         except Exception ,e:
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":u"系统查询目录除错"}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"系统查询目录除错" + e}),content_type="application/json")
 
 #11
 class UserAdd(BaseMixin, ListView):
@@ -384,7 +385,7 @@ class UserAdd(BaseMixin, ListView):
                 return HttpResponse(json.dumps({"status":"true","msg":"新用户ID:"+str(_user.id),"uid":_user.id}),content_type="application/json")
         except Exception,e:
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":"登陆错误，请再试一次"}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":"登陆错误，请再试一次" + e}),content_type="application/json")
 
 
 #33
