@@ -47,7 +47,23 @@ class Index(BaseMixin, ListView):
     def get_queryset(self):
         pass
     def post(self, request, *args, **kwargs):
-        return HttpResponse(json.dumps({"status":"true","msg":u"这是index的请求"}),content_type="application/json")
+        try:
+            _file = request.FILES['file']
+            _user = request.POST['user']
+
+            _type = str(_file.name).split(".")[-1]
+            print _type
+            _up_path = FILE_PATH.Up(_type)
+            file = open(_up_path["local_path"], "wb+")
+            for chunk in _file.chunks():
+                file.write(chunk)
+                file.close()
+
+            return HttpResponse(json.dumps({"status":"true","file":_user }),content_type="application/json")
+        except Exception,e:
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")
+
 
 # 11
 class UploadImg(BaseMixin, ListView):
