@@ -4,6 +4,8 @@ from django.conf.urls import url
 from wx_app.views import *
 urlpatterns = [
 
+   url(r'^$', Index.as_view()),
+
    url(r'^upload/img/$', UploadImg.as_view()),
    url(r'^upload/video/$', UploadVideo.as_view()),
 

@@ -37,6 +37,18 @@ class BaseMixin(object):
         return context
 
 
+class Index(BaseMixin, ListView):
+    template_name = 'upload1.html'
+    def get(self, request, *args, **kwargs):
+        return super(Index, self).get(request, *args, **kwargs)
+        # return HttpResponse(json.dumps({"status":"false","msg":u"这是index的请求"}),content_type="application/json")
+    def get_context_data(self, **kwargs):
+        return super(Index, self).get_context_data(**kwargs)
+    def get_queryset(self):
+        pass
+    def post(self, request, *args, **kwargs):
+        return HttpResponse(json.dumps({"status":"true","msg":u"这是index的请求"}),content_type="application/json")
+
 # 11
 class UploadImg(BaseMixin, ListView):
     template_name = 'upload1.html'
