@@ -29,6 +29,12 @@ urlpatterns = [
    url(r'^category/delete/$', CategoryDelete.as_view()),
    url(r'^category/query/$', CategoryQuery.as_view()),
 
+
+   url(r'^user/login/$', UserLogin.as_view()),
    url(r'^user/add/$', UserAdd.as_view()),
+   url(r'^user/reset/$', UserAdd.as_view()),
+   url(r'^user/delete/$', UserAdd.as_view()),
+   url(r'^user/query/$', UserAdd.as_view()),
+   url(r'^user/identify/$', UserAdd.as_view()),
 
 ]

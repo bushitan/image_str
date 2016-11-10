@@ -25,6 +25,8 @@ from grid.lib.painter import Painter
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILE_PATH = FilePath(BASE_DIR)
+
+
 class BaseMixin(object):
     def get_context_data(self, *args, **kwargs):
 
@@ -380,6 +382,149 @@ class CategoryQuery(BaseMixin, ListView):
             return HttpResponse(json.dumps({"status":"false","msg":u"系统查询目录除错" + e}),content_type="application/json")
 
 #11
+
+app_id = "wx00098b11d40e8910"
+app_secret = "34362b7f79645d0659c5950e21e892cd"
+
+class UserLogin(BaseMixin, ListView):
+    def post(self, request, *args, **kwargs):
+
+        _expires = 10 #session存活秒数
+        #综合
+        _js_code = request.POST['js_code']
+        _session = request.POST['session']
+        _session_url = "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code "  %(app_id,app_secret,_js_code )
+
+        # if  _session == "false":  #像weixin查询openid,secret_key
+        def WX_GetSession(_session_url):
+            req = urllib2.Request(_session_url)
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+            response = opener.open(req)
+            _json =  json.loads(response.read())
+            return _json
+
+        try:
+            if  User.objects.filter( session = _session ).exists() is False: #查session不存在,更新整个用户
+
+                _json = WX_GetSession(_session_url)
+                if _json["errcode"] : #登陆信息错误，结束
+                    return HttpResponse(json.dumps({"status":"false","msg":_json["errmsg"] }),content_type="application/json")
+
+                #查open_id存在user表中
+                _expires_in =  time.time() + _json["expires_in"]  #存在时间
+                _new_session = _js_code + str(time.time())
+                _new_expires = time.time() + _expires
+
+                if  User.objects.filter( wx_open_id =  _json["openid"] ).exists():
+                    _user = User.objects.get( wx_open_id =  _json["openid"] ) #用户存在，增加session
+                    _user.wx_session_key =  _json["session_key"]
+                    _user.wx_expires_in = _expires_in
+                    _user.session = _new_session
+                    _user.expires = _new_expires #当前时间+存活秒数
+                    _user.save()
+                    #登陆成功 ，返回session
+                    return HttpResponse(json.dumps({"status":"true","session":_new_session }),content_type="application/json")
+                else:
+                    #不存在，新增用户
+
+                    _user = User(
+                        open_id = _json["openid"],
+                        wx_session_key =  _json["session_key"],
+                        wx_expires_in = _expires_in,
+                        session = _new_session,
+                        expires = _new_expires,
+                    )
+                    _user.save()
+                    #登陆成功 ，返回session
+                    return HttpResponse(json.dumps({"status":"true","session":_new_session }),content_type="application/json")
+            else : #session 存在，
+                _user = User.objects.get( session = _session )
+
+                if time.time() > _user.wx_expires_in : #wx_session 过期
+                    _json = WX_GetSession(_session_url)
+                    if _json["errcode"] : #登陆信息错误，结束
+                        return HttpResponse(json.dumps({"status":"false","msg":_json["errmsg"] }),content_type="application/json")
+
+                    if _user.wx_open_id == _json["openid"]: #用户存在，跟新wx_session信息
+                        _user.wx_session_key = _json["session_key"]
+                        _user.wx_expires_in = time.time() + _json["expires_in"]
+                        _user.save()
+                    else:
+                        return HttpResponse(json.dumps({"status":"false","msg":"微信错误。未回复open_id" }),content_type="application/json")
+
+                if time.time() >_user.expires: # python 的session过期
+                    _new_session = _js_code + str(time.time())  #新的后台session
+                    _new_expires = time.time() + _expires #新的后台过期时间
+                    _user.session = _new_session
+                    _user.expires = _new_expires
+                    _user.save()
+                    return HttpResponse(json.dumps({"status":"true","session":_new_session }),content_type="application/json")
+
+                print _session
+                #session未过期，回复继续使用
+                return HttpResponse(json.dumps({"status":"true","session":_session }),content_type="application/json")
+
+        except Exception ,e:
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"用户登录错误" + e}),content_type="application/json")
+
+
+
+
+
+        #1 未注册
+
+        #2 注册未登录
+
+        #3 已登录
+
+
+
+        # print "fist:",request.session['js_code']
+        # print request.session.get('js_code',default=None)
+        # request.session['js_code'] =  "sadsa"
+        # print request.session.get('js_code',default=None)
+        return HttpResponse(json.dumps({"status":"false","msg":u"用户登录出错" }),content_type="application/json")
+        # if request.session.get('js_code',default=None) is None:
+        #     _js_code = "001yzWfg0Mlw9A1GH8jg0bhTfg0yzWfK"
+        #     request.session['js_code'] = _js_code
+        #     print  "new:",request.session.get('js_code',default=None)
+        #     # request.session.set_expiry(60)
+        #
+        # else:
+        #     print  "has:",request.session.get('js_code',default=None)
+
+
+
+
+
+        # req = urllib2.Request(_session_url)
+        # opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+        # response = opener.open(req)
+        # _json =  json.loads(response.read())
+        # if _json["errcode"]:
+        #     return HttpResponse(json.dumps({"status":"false","msg":u"用户登录出错" }),content_type="application/json")
+
+        # 登录成功，
+         # _json["openid"]:
+         # _json["session_key"]:
+         # _json["expires_in"]:
+        #Todo 1 小程序，
+        # 发送 js_code, session_code ,至后台
+
+        #Todo 2 当前时间+ “expires_in”，
+        # 在user表生成3rd_session:session_code , session_time过期时间（当前时间+1天）
+        # 将session_code,session_time 返回 小程序,
+        #Todo 3 小程序 storage 存储
+        #将将session_code 代替uid
+
+        #Todo 4后台根据将session_code，查找uid，再做操作
+
+        #Todo 超时，由小程序每次登陆时，检测超时，更新session_code
+
+
+        return
+
 class UserAdd(BaseMixin, ListView):
     def post(self, request, *args, **kwargs):
         try:
