@@ -30,7 +30,7 @@ class User(models.Model):
     wx_open_id = models.CharField(max_length=50, verbose_name=u'微信OpenID',null=True)
     wx_session_key = models.CharField( max_length=128,verbose_name=u'微信SessionKey',null=True)
     wx_expires_in = models.FloatField( verbose_name=u'微信SessionKey过期时间',null=True)
-    session = models.CharField(max_length=128, verbose_name=u'Django的session',null=True)
+    session = models.CharField (max_length=128, verbose_name=u'Django的session',null=True)
     expires = models.FloatField( verbose_name=u'Django的session过期时间',null=True)
 
     is_public = models.IntegerField(u'是否管理员',default=0,choices=USER_ROLE.items())
@@ -55,7 +55,7 @@ class Img(models.Model):
 
 class Category(models.Model):
     name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,)
-    user_id = models.ForeignKey(User, verbose_name=u'目录')
+    user_id = models.ForeignKey(User, verbose_name=u'用户')
     is_default = models.IntegerField(u'是否用户默认目录',default=0,choices=CATEGORY_ROLE.items(),)
     parent_id = models.OneToOneField('self', verbose_name=u'父类目录',null=True,)  #自身目录
     class Meta:

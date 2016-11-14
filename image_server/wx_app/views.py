@@ -162,8 +162,11 @@ class PictureQuery(BaseMixin, ListView):
         # 2 查目录下所有图片
         # 3 查用户指定目录下图片
         try:
-            _uid = request.POST['uid']
+            # _uid = request.POST['uid']
+            session = request.POST['session']
             _category_id = request.POST['category_id']
+
+            _uid = User.objects.get( session = session)
             # print "_category_id",_category_id
             #1
             if _category_id == "null" and _uid != "null":
@@ -181,6 +184,8 @@ class PictureQuery(BaseMixin, ListView):
                             # "yun_url":_r.img.yun_url + "?imageMogr2/thumbnail/" + _size, # 七牛云自动缩略图
                             "yun_url":_r.img.yun_url, # 七牛云自动缩略图
                             "size":_r.img.size ,
+                            "category_name":_category.name,
+                            "category_id":_category.id,
                         })
 
                 return HttpResponse(json.dumps({"status":"true","img_list":_img_list}),content_type="application/json")
@@ -206,6 +211,7 @@ class PictureMove(BaseMixin, ListView):
             _img_id = request.POST['img_id']
             _category_id = request.POST['category_id']
 
+            print _img_id,_category_id
 
             if  Category.objects.filter( id = _category_id ).exists()is False:
                 return HttpResponse( json.dumps({"status":"false","msg":u"目录不存在"}),content_type="application/json" )
@@ -359,11 +365,14 @@ class CategoryDelete(BaseMixin, ListView):
 class CategoryQuery(BaseMixin, ListView):
     def post(self, request, *args, **kwargs):
         try:
-            _uid = request.POST['uid']
+
+            session = request.POST['session']
+            # _uid =
              #user 不存在
-            if  User.objects.filter( id = _uid ).exists() is False:
+            if  User.objects.filter( session = session).exists() is False:
                 return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在"}),content_type="application/json" )
 
+            _uid = User.objects.get( session = session)
             # 1 用户名下的所有目录
             # 目录下包含的图片
             _list = Category.objects.filter( user_id = _uid)
@@ -404,6 +413,8 @@ class UserLogin(BaseMixin, ListView):
             return _json
 
         try:
+            # raise NameError("There is a name error","in test.py")
+
             if  User.objects.filter( session = _session ).exists() is False: #查session不存在,更新整个用户
 
                 _json = WX_GetSession(_session_url)
@@ -463,7 +474,6 @@ class UserLogin(BaseMixin, ListView):
                 print _session
                 #session未过期，回复继续使用
                 return HttpResponse(json.dumps({"status":"true","session":_session }),content_type="application/json")
-
         except Exception ,e:
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"用户登录错误" + e}),content_type="application/json")
@@ -484,7 +494,7 @@ class UserLogin(BaseMixin, ListView):
         # print request.session.get('js_code',default=None)
         # request.session['js_code'] =  "sadsa"
         # print request.session.get('js_code',default=None)
-        return HttpResponse(json.dumps({"status":"false","msg":u"用户登录出错" }),content_type="application/json")
+        #return HttpResponse(json.dumps({"status":"false","msg":u"用户登录出错" }),content_type="application/json")
         # if request.session.get('js_code',default=None) is None:
         #     _js_code = "001yzWfg0Mlw9A1GH8jg0bhTfg0yzWfK"
         #     request.session['js_code'] = _js_code
