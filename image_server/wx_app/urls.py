@@ -7,6 +7,7 @@ urlpatterns = [
    url(r'^$', Index.as_view()),
 
    url(r'^upload/img/$', UploadImg.as_view()),
+   url(r'^upload/wx_img/$', UploadWXImg.as_view()),
    url(r'^upload/video/$', UploadVideo.as_view()),
 
 
