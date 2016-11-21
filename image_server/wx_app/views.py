@@ -214,6 +214,7 @@ class PictureQuery(BaseMixin, ListView):
             # _uid = request.POST['uid']
             session = request.GET['session']
             _category_id = request.GET['category_id']
+
             # print "name",_category_name
             _uid = User.objects.get( session = session)
             # print "_category_id",_category_id
@@ -240,7 +241,8 @@ class PictureQuery(BaseMixin, ListView):
                 return HttpResponse(json.dumps({"status":"true","img_list":_img_list}),content_type="application/json")
             #2
 
-            _category_name = request.POST['category_name']
+            _category_name = request.GET['category_name']
+            print _category_name
             if _uid == "null" and _category_name != "null" :
                 _category = Category.objects.get( name = _category_name)
                 _rel = RelCategoryImg.objects.filter(category=_category)
@@ -260,18 +262,21 @@ class PictureQuery(BaseMixin, ListView):
                     })
                 # _rel = RelCategoryImg.objects.filter(category=_category)
                 return HttpResponse(json.dumps({"status":"true","img_list":_img_list}),content_type="application/json")
+            # if  _category_name == "null" :
+
+            # return HttpResponse(json.dumps({"status":"true","img_list":"OK"}),content_type="application/json")
         except Exception ,e:
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"系统查询图片除错" + e}),content_type="application/json")
 
 #77  移动图片
 class PictureMove(BaseMixin, ListView):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
             # 移动图片，到新分类
-            _img_id = request.POST['img_id']
-            _old_category_id = request.POST['old_category_id']
-            _new_category_id = request.POST['new_category_id']
+            _img_id = request.GET['img_id']
+            _old_category_id = request.GET['old_category_id']
+            _new_category_id = request.GET['new_category_id']
 
             print _img_id,_old_category_id
 
@@ -303,11 +308,11 @@ class PictureMove(BaseMixin, ListView):
 
 #88  图片删除  删除图片、图片目录关系
 class PictureDelete(BaseMixin, ListView):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
 
-            _img_id = request.POST['img_id']
-            _category_id = request.POST['category_id']
+            _img_id = request.GET['img_id']
+            _category_id = request.GET['category_id']
             if  Img.objects.filter(id=_img_id).exists() is False:
                 return HttpResponse( json.dumps({"status":"false","msg":u"图片不存在"}),content_type="application/json" )
             if  Category.objects.filter(id= _category_id).exists() is False:
@@ -336,10 +341,10 @@ class PictureDelete(BaseMixin, ListView):
 
 #77
 class CategoryAdd(BaseMixin, ListView):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
-            _category_name = request.POST['category_name']
-            session = request.POST['session']
+            _category_name = request.GET['category_name']
+            session = request.GET['session']
             #user 不存在
             if   User.objects.filter( session = session).exists() is False:
                 return HttpResponse(
@@ -372,10 +377,10 @@ class CategoryReset(BaseMixin, ListView):
 
 #99
 class CategoryDelete(BaseMixin, ListView):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
-            _uid = request.POST['uid']
-            _category_id = request.POST['category_id']
+            _uid = request.GET['uid']
+            _category_id = request.GET['category_id']
             print _uid,_category_id
             #user 不存在
             if  User.objects.filter( id = _uid ).exists() is False:
