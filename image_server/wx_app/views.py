@@ -206,14 +206,14 @@ class PictureHot(BaseMixin, ListView):
     pass
 #66
 class PictureQuery(BaseMixin, ListView):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         # 1 查用户名下所有图片 （管理者权限的图片加限制）
         # 2 查目录下所有图片
         # 3 查用户指定目录下图片
         try:
             # _uid = request.POST['uid']
-            session = request.POST['session']
-            _category_id = request.POST['category_id']
+            session = request.GET['session']
+            _category_id = request.GET['category_id']
             # print "name",_category_name
             _uid = User.objects.get( session = session)
             # print "_category_id",_category_id
@@ -419,10 +419,10 @@ class CategoryDelete(BaseMixin, ListView):
 
 #10
 class CategoryQuery(BaseMixin, ListView):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
 
-            session = request.POST['session']
+            session = request.GET['session']
             # _uid =
              #user 不存在
             if  User.objects.filter( session = session).exists() is False:
@@ -452,12 +452,12 @@ app_id = "wx00098b11d40e8910"
 app_secret = "34362b7f79645d0659c5950e21e892cd"
 
 class UserLogin(BaseMixin, ListView):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
 
         _expires = 10 #session存活秒数
-        #综合
-        _js_code = request.POST['js_code']
-        _session = request.POST['session']
+        _js_code = request.GET['js_code']
+        _session = request.GET['session']
+
         _session_url = "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code "  %(app_id,app_secret,_js_code )
 
         # if  _session == "false":  #像weixin查询openid,secret_key
