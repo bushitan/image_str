@@ -19,7 +19,7 @@ urlpatterns = [
    url(r'^picture/hot/$', PictureHot.as_view()),
 
 
-   url(r'^img/add/$', UploadImg.as_view()),
+   url(r'^img/add/$', PictureAdd.as_view()),
    url(r'^img/query/$', PictureQuery.as_view()),
    url(r'^img/move/$', PictureMove.as_view()),
    url(r'^img/delete/$', PictureDelete.as_view()),

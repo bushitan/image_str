@@ -338,6 +338,40 @@ class PictureDelete(BaseMixin, ListView):
                 print e
                 return HttpResponse(json.dumps({"status":"false","msg":u"删除图片出错"+ e}),content_type="application/json")
 
+class PictureAdd(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        try:
+            _img_id = request.GET['img_id']
+            session = request.GET['session']
+            _user = User.objects.get( session = session)
+
+            _img = Img.objects.get(id=_img_id)
+            print _img
+            _category = Category.objects.get( user_id = _user ,is_default = 1)
+            print _category
+
+            if RelCategoryImg.objects.filter(img=_img , category_id = _category) is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"已收藏"}),content_type="application/json" )
+
+            _rel = RelCategoryImg(
+                img=_img ,
+                category = _category
+            )
+            _rel.save()
+
+            r_img = {
+                "img_id":_img.id,
+                "yun_url":_img.yun_url, # 七牛云自动缩略图
+                "size":_img.size ,
+                "category_name":_category.name,
+                "category_id":_category.id,
+            }
+            print r_img
+            return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
+        except Exception ,e:
+                print e
+                return HttpResponse(json.dumps({"status":"false","msg":u"收藏图片出错"+ e}),content_type="application/json")
+
 
 #77
 class CategoryAdd(BaseMixin, ListView):
@@ -455,11 +489,12 @@ class CategoryQuery(BaseMixin, ListView):
 
 app_id = "wx00098b11d40e8910"
 app_secret = "34362b7f79645d0659c5950e21e892cd"
+# app_secret = "34362b7f79645d0659c5950e21e892"
 
 class UserLogin(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
 
-        _expires = 10 #session存活秒数
+        _expires = 1000000000 #session存活秒数
         _js_code = request.GET['js_code']
         _session = request.GET['session']
 
@@ -479,7 +514,8 @@ class UserLogin(BaseMixin, ListView):
             if  User.objects.filter( session = _session ).exists() is False: #查session不存在,更新整个用户
 
                 _json = WX_GetSession(_session_url)
-                if _json["errcode"] : #登陆信息错误，结束
+                print _json
+                if _json.has_key('errcode') : #登陆信息错误，结束
                     return HttpResponse(json.dumps({"status":"false","msg":_json["errmsg"] }),content_type="application/json")
 
                 #查open_id存在user表中
@@ -498,15 +534,21 @@ class UserLogin(BaseMixin, ListView):
                     return HttpResponse(json.dumps({"status":"true","session":_new_session }),content_type="application/json")
                 else:
                     #不存在，新增用户
-
                     _user = User(
-                        open_id = _json["openid"],
+                        wx_open_id = _json["openid"],
                         wx_session_key =  _json["session_key"],
                         wx_expires_in = _expires_in,
                         session = _new_session,
                         expires = _new_expires,
                     )
                     _user.save()
+                    #新增默认目录
+                    _category = Category(
+                        name = u"默认目录",
+                        user_id = _user,
+                        is_default = 1,
+                    )
+                    _category.save()
                     #登陆成功 ，返回session
                     return HttpResponse(json.dumps({"status":"true","session":_new_session }),content_type="application/json")
             else : #session 存在，
