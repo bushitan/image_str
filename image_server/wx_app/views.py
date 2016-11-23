@@ -20,6 +20,8 @@ import base64
 from PIL import Image,ImageDraw,ImageFont
 import sys
 import image_server.settings as SETTING
+from PIL import Image
+
 from grid.lib.painter import Painter
 # logger
 logger = logging.getLogger(__name__)
@@ -85,6 +87,17 @@ class UploadWXImg(BaseMixin, ListView):
                 file.write(chunk)
                 file.close()
 
+            #判断size
+            im = Image.open(_up_path["local_path"])
+            print im.size[0],im.size[1]
+            size = 170
+            if _type == 'gif' or _type == "GIF" or _type == 'Gif':
+                size = 1
+            elif im.size[0] <= im.size[1] :
+                size = 2
+            elif im.size[0] > im.size[1] :
+                size = 3
+
             #3 上传七牛云
             _qiniu = QiNiu()
             if _qiniu.put("",_up_path["file_name"],_up_path["local_path"]) is True: #上传原图
@@ -94,7 +107,7 @@ class UploadWXImg(BaseMixin, ListView):
                 _img = Img(
                     name = _up_path["file_name"],
                     yun_url = _yun_url,
-                    size = 170,
+                    size = size,
                 )
                 _img.save()
 
