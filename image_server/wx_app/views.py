@@ -97,7 +97,8 @@ class UploadWXImg(BaseMixin, ListView):
                 size = 2
             elif im.size[0] > im.size[1] :
                 size = 3
-
+            elif _type == 'mp4' or _type == "MP4" or _type == "Mp4":
+                size = 4
             #3 上传七牛云
             _qiniu = QiNiu()
             if _qiniu.put("",_up_path["file_name"],_up_path["local_path"]) is True: #上传原图
@@ -200,15 +201,31 @@ class UploadImg(BaseMixin, ListView):
 #22
 class UploadVideo(BaseMixin, ListView):
     def post(self, request, *args, **kwargs):
-        _videoData = request.POST['videoData']
-        _dict = {
-            "videoData":_videoData,
-            "imgUrl":"http://127.0.0.1:8000/static/magick/download/5.gif"
-        }
-        return HttpResponse(
-            json.dumps(_dict),
-            content_type="application/json"
-        )
+        try:
+            print "UploadVideo"
+            _file = request.FILES['file']
+            session = request.POST['session']
+
+            # 1 查询用户是否存在
+            if  User.objects.filter( session = session).exists() is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在"}),content_type="application/json" )
+            _user = User.objects.get( session = session)
+            _type = str(_file.name).split(".")[-1]
+            _up_path = FILE_PATH.Up(_type,_user.id) #按用户id命名图片
+
+            file = open(_up_path["local_path"], "wb+")
+            for chunk in _file.chunks():
+                file.write(chunk)
+                file.close()
+
+
+            return HttpResponse(
+                json.dumps("OK"),
+                content_type="application/json"
+            )
+        except Exception,e:
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")
 
 
 #55
