@@ -80,6 +80,8 @@ class UploadWXImg(BaseMixin, ListView):
                 return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在"}),content_type="application/json" )
             _user = User.objects.get( session = session)
             _type = str(_file.name).split(".")[-1]
+            if _type == "ext-mp4":
+                _type = "mp4"
             _up_path = FILE_PATH.Up(_type,_user.id) #按用户id命名图片
 
             file = open(_up_path["local_path"], "wb+")
