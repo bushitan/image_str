@@ -447,18 +447,20 @@ class CategoryReset(BaseMixin, ListView):
 class CategoryDelete(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         try:
-            _uid = request.GET['uid']
+
+            session = request.GET['session']
             _category_id = request.GET['category_id']
-            print _uid,_category_id
+            print session,_category_id
             #user 不存在
-            if  User.objects.filter( id = _uid ).exists() is False:
+            if  User.objects.filter( session = session ).exists() is False:
                 return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在"}),content_type="application/json" )
 
             if  Category.objects.filter( id = _category_id ).exists()is False:
                 return HttpResponse( json.dumps({"status":"false","msg":u"目录不存在"}),content_type="application/json" )
 
+            _user = User.objects.get( session = session )
             # 1 目录只能给本uid 删除
-            if  Category.objects.filter( id = _category_id ,user_id = _uid).exists()is False:
+            if  Category.objects.filter( id = _category_id ,user_id = _user).exists()is False:
                 return HttpResponse( json.dumps({"status":"false","msg":u"用户没有删除该目录权限"}),content_type="application/json" )
 
             # 2 有子目录不能删除
@@ -474,7 +476,7 @@ class CategoryDelete(BaseMixin, ListView):
             _category.delete()
             # return HttpResponse(json.dumps({"status":"true","category_id":_category.id}),content_type="application/json")
             #查询用户名下所有目录
-            _list = Category.objects.filter( user_id = _uid)
+            _list = Category.objects.filter( user_id = _user)
             _category_list = []
             for c in _list:
                 _category_list.append({
@@ -505,6 +507,7 @@ class CategoryQuery(BaseMixin, ListView):
             # 1 用户名下的所有目录
             # 目录下包含的图片
             _list = Category.objects.filter( user_id = _uid)
+            print _list
             _category_list = []
             for c in _list:
                 _category_list.append({
