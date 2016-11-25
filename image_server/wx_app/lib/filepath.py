@@ -24,3 +24,6 @@ class FilePath():
         return {
             "local_path":_img_localpath,
         }
+
+    def GetMagickPy(self):
+        return self.BASE_DIR + "/wx_app/lib/magick.py"

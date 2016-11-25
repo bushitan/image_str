@@ -41,21 +41,7 @@ class Magick():
     #视频 -> gif
     # 视频要6s以内
     # fps:10 ，
-    def Video2Gif(self,startTime = 0,endTime = 6,url = r"C:\Users\Administrator\Desktop\vedio\draw.mp"):
 
-        _startTime = float(startTime)
-        _endTime = float(endTime)
-        _speed = 1.5
-        _resize = float(180.00/320.00) #把320*40的视频转192*144
-        _fps = 10
-        # print VideoFileClip(url)
-        clip = (VideoFileClip(url)
-                .subclip((0,_startTime),(0,_endTime))
-                .speedx(_speed)
-                .resize(_resize)
-                # .fx(vfx.freeze_region, outside_region=(170, 230, 380, 320))
-                )
-        clip.write_gif(self.save_url, fps=_fps)
 
 
 
@@ -258,27 +244,50 @@ class Magick():
     def Copy(self,in_src):
         _cmd = u"magick %s %s" %(in_src,self.save_url)
         out_str = subprocess.check_output(_cmd, shell=True)
+    def Video2Gif(self,url,save_path,startTime = 0,endTime = 6):
 
+        _startTime = float(startTime)
+        _endTime = float(endTime)
+        _speed = 1.5
+        _resize = float(180.00/320.00) #把320*40的视频转192*144
+        _fps = 10
+        # print VideoFileClip(url)
+        clip = (VideoFileClip(url)
+                .subclip((0,_startTime),(0,_endTime))
+                .speedx(_speed)
+                .resize(_resize)
+                # .fx(vfx.freeze_region, outside_region=(170, 230, 380, 320))
+                )
+        clip.write_gif(save_path, fps=_fps)
 
 import  datetime
+import sys
+print sys.argv
 if __name__ ==  "__main__":
-
-    a = datetime.datetime.now()
-
-    img1_src = r"C:\Users\Administrator\Desktop\vedio\img2gif\m1.gif"
-    img2_src = r"C:\Users\Administrator\Desktop\vedio\img2gif\h1.gif"
-    bg_src = r"C:\Users\Administrator\Desktop\vedio\img2gif\black.jpg"
-
-
-    img = r"C:\Users\Administrator\Desktop\vedio\gif\c.gif"
-    save_url = r"C:\Users\Administrator\Desktop\vedio\gif\c3.gif"
-    imgList = [img1_src,bg_src,img2_src]
-    # imgList = [img2_src,bg_src,img1_src]
-    m = Magick(save_url)
-    # m.Image2Gif(imgList)
-    m.AddWatermark(img1_src)
-    # m.Resize(img)
+    # print "Program name", sys.argv[0], sys.argv[1], sys.argv[2], sys.argv[3]
+    url = sys.argv[1]
+    save_url = sys.argv[2]
+    start_time = sys.argv[3]
+    end_time = sys.argv[4]
+    # print url,save_url,start_time,end_time
+    m = Magick()
+    m.Video2Gif(url,save_url,start_time,end_time)
 
 
-    print 'begin:',datetime.datetime.now()
+    # a = datetime.datetime.now()
+    #
+    # img1_src = r"C:\Users\Administrator\Desktop\vedio\img2gif\m1.gif"
+    # img2_src = r"C:\Users\Administrator\Desktop\vedio\img2gif\h1.gif"
+    # bg_src = r"C:\Users\Administrator\Desktop\vedio\img2gif\black.jpg"
+    #
+    #
+    # img = r"C:\Users\Administrator\Desktop\vedio\gif\c.gif"
+    # save_url = r"C:\Users\Administrator\Desktop\vedio\gif\c3.gif"
+    # imgList = [img1_src,bg_src,img2_src]
+    # # imgList = [img2_src,bg_src,img1_src]
+    # # m.Image2Gif(imgList)
+    # m.AddWatermark(img1_src)
+    #
+    #
+    # print 'begin:',datetime.datetime.now()
     # datetime.

@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILE_PATH = FilePath(BASE_DIR)
 from moviepy.editor import *
+import subprocess
 
 
 class BaseMixin(object):
@@ -641,11 +642,15 @@ class Video2Gif(BaseMixin, ListView):
             with open(img_down_path, "wb") as code:
                 code.write(data)
 
-            #视频转换
+            #GIf路径
             img_type = "gif"
             _up_path = FILE_PATH.Up(img_type,_user.id) #按用户id命名图片
-            magick = Magick(_up_path["local_path"])
-            magick.Video2Gif(0,6,img_down_path)
+
+            #视频转换
+            # magick = Magick(_up_path["local_path"])
+            # magick.Video2Gif(0,6,img_down_path)
+            _cmd = u"python %s  %s %s %s %s" % ( FILE_PATH.GetMagickPy(),img_down_path, _up_path["local_path"],0,6)
+            subprocess.check_output(_cmd, shell=True)
 
             size = 1
             _qiniu = QiNiu()
@@ -679,7 +684,7 @@ class Video2Gif(BaseMixin, ListView):
             print e
             return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
 
-class Movie():
+class Movie(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         _startTime = request.GET['startTime']
         _endTime =  request.GET['endTime']
