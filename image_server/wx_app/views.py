@@ -618,124 +618,65 @@ class UserLogin(BaseMixin, ListView):
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"用户登录错误" + e}),content_type="application/json")
 
-
-
-
-
-        #1 未注册
-
-        #2 注册未登录
-
-        #3 已登录
-
-
-
-        # print "fist:",request.session['js_code']
-        # print request.session.get('js_code',default=None)
-        # request.session['js_code'] =  "sadsa"
-        # print request.session.get('js_code',default=None)
-        #return HttpResponse(json.dumps({"status":"false","msg":u"用户登录出错" }),content_type="application/json")
-        # if request.session.get('js_code',default=None) is None:
-        #     _js_code = "001yzWfg0Mlw9A1GH8jg0bhTfg0yzWfK"
-        #     request.session['js_code'] = _js_code
-        #     print  "new:",request.session.get('js_code',default=None)
-        #     # request.session.set_expiry(60)
-        #
-        # else:
-        #     print  "has:",request.session.get('js_code',default=None)
-
-
-
-
-
-        # req = urllib2.Request(_session_url)
-        # opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
-        # response = opener.open(req)
-        # _json =  json.loads(response.read())
-        # if _json["errcode"]:
-        #     return HttpResponse(json.dumps({"status":"false","msg":u"用户登录出错" }),content_type="application/json")
-
-        # 登录成功，
-         # _json["openid"]:
-         # _json["session_key"]:
-         # _json["expires_in"]:
-        #Todo 1 小程序，
-        # 发送 js_code, session_code ,至后台
-
-        #Todo 2 当前时间+ “expires_in”，
-        # 在user表生成3rd_session:session_code , session_time过期时间（当前时间+1天）
-        # 将session_code,session_time 返回 小程序,
-        #Todo 3 小程序 storage 存储
-        #将将session_code 代替uid
-
-        #Todo 4后台根据将session_code，查找uid，再做操作
-
-        #Todo 超时，由小程序每次登陆时，检测超时，更新session_code
-
-
-        return
-
-class UserAdd(BaseMixin, ListView):
-    def post(self, request, *args, **kwargs):
+#视频转GIF
+class Video2Gif(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
         try:
-            _name = request.POST['name']
-            _wx_code = request.POST['wx_code']
-            _wx_open_id = request.POST['wx_open_id']
-            _is_public = int(request.POST['is_public'])
-            _uuid = request.POST['uuid']
+
+            session = request.GET['session']
+            video_url = request.GET['video_url']
+
+            if  User.objects.filter( session = session).exists() is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在,请重新登录"}),content_type="application/json" )
+
+            _user = User.objects.get( session = session)
 
 
-            if  User.objects.filter( wx_open_id = _wx_open_id ).exists() :
-                _user = User.objects.get( wx_open_id = _wx_open_id )
-                return HttpResponse( json.dumps({"status":"false","msg":u"用户已经登陆","uid":_user.id}),content_type="application/json" )
-            else:
-                _user = User(
-                    name = _name,
-                    wx_code = _wx_code,
-                    wx_open_id = _wx_open_id,
-                    is_public = _is_public,
-                    uuid = _uuid,
+             #下载文件
+            name = str(video_url).split("/")[-1]
+            img_down_path = FILE_PATH.Down(name)["local_path"]
+            f = urllib2.urlopen(video_url)
+            data = f.read()
+            with open(img_down_path, "wb") as code:
+                code.write(data)
+
+            #视频转换
+            img_type = "gif"
+            _up_path = FILE_PATH.Up(img_type,_user.id) #按用户id命名图片
+            magick = Magick(_up_path["local_path"])
+            magick.Video2Gif(0,6,img_down_path)
+
+            size = 1
+            _qiniu = QiNiu()
+            if _qiniu.put("",_up_path["file_name"],_up_path["local_path"]) is True: #上传原图
+                # 4 上传成，存储数据库
+                _yun_url = SETTING.QINIU_HOST + _up_path["file_name"]
+                print _yun_url
+                _img = Img(
+                    name = _up_path["file_name"],
+                    yun_url = _yun_url,
+                    size = size,
                 )
-                _user.save()
+                _img.save()
 
-                #创建新用户，附赠默认目录
-                _category = Category(
-                    name = u"默认目录",
-                    user_id = _user,
-                    is_default = 1,
-                )
-                _category.save()
-                print _user,_category
-                return HttpResponse(json.dumps({"status":"true","msg":"新用户ID:"+str(_user.id),"uid":_user.id}),content_type="application/json")
-        except Exception,e:
+                #上传的图片添加至该用户的默认目录
+                _category = Category.objects.get( user_id = _user ,is_default = 1)
+                _rel = RelCategoryImg(category = _category,img = _img )
+                _rel.save()
+
+                r_img = {
+                    "img_id":_img.id,
+                    "yun_url":_img.yun_url, # 七牛云自动缩略图
+                    "size":_img.size ,
+                    "category_name":_category.name,
+                    "category_id":_category.id,
+                }
+                return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":"上传七牛云失败"}),content_type="application/json")
+        except Exception ,e:
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":"登陆错误，请再试一次" + e}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"系统查询目录除错" + e}),content_type="application/json")
+
+#11
 
 
-#33
-# class EditorWatermark(BaseMixin, ListView):
-#     def post(self, request, *args, **kwargs):
-#         _watermarkData = request.POST['watermarkData']
-#         # _imgDecode = base64.b64decode(_imgData)
-#         _dict = {
-#             "watermarkData":_watermarkData,
-#             "imgUrl":"http://127.0.0.1:8000/static/magick/download/watermark.gif"
-#         }
-#         return HttpResponse(
-#             json.dumps(_dict),
-#             content_type="application/json"
-#         )
-# #44
-# class EditorJoin(BaseMixin, ListView):
-#     def post(self, request, *args, **kwargs):
-#         _imgFirstUrl = request.POST['imgFirstUrl']
-#         _imgSecondeUrl = request.POST['imgSecondeUrl']
-#         _dict = {
-#             "imgFirstUrl":_imgFirstUrl,
-#             "imgSecondeUrl":_imgSecondeUrl,
-#             "imgUrl":"http://127.0.0.1:8000/static/magick/download/5.gif"
-#         }
-#         return HttpResponse(
-#             json.dumps(_dict),
-#             content_type="application/json"
-#         )

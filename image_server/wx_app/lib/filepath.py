@@ -18,7 +18,9 @@ class FilePath():
             "local_path":_img_localpath,
         }
 
-    def down(self):
+    def Down(self,name="1.gif"):
+        _img_filedir = self.BASE_DIR + "/wx_app/static/magick/upload/"
+        _img_localpath = _img_filedir + name
         return {
-            "local_path":"",
+            "local_path":_img_localpath,
         }

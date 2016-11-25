@@ -45,7 +45,7 @@ class Magick():
 
         _startTime = float(startTime)
         _endTime = float(endTime)
-        _speed = 3
+        _speed = 1.5
         _resize = float(180.00/320.00) #把320*40的视频转192*144
         _fps = 10
         try:
@@ -58,7 +58,8 @@ class Magick():
                     )
             clip.write_gif(self.save_url, fps=_fps)
             return True
-        except Exception:
+        except Exception,e:
+            print e
             # logger.error(Exception)
             return False
 

@@ -9,8 +9,6 @@ urlpatterns = [
    url(r'^upload/img/$', UploadImg.as_view()),
    url(r'^upload/wx_img/$', UploadWXImg.as_view()),
    url(r'^upload/video/$', UploadVideo.as_view()),
-
-
    # url(r'^editor/watermark/$', EditorWatermark.as_view()),
    # url(r'^editor/join/$', EditorJoin.as_view()),
 
@@ -23,6 +21,7 @@ urlpatterns = [
    url(r'^img/query/$', PictureQuery.as_view()),
    url(r'^img/move/$', PictureMove.as_view()),
    url(r'^img/delete/$', PictureDelete.as_view()),
+   url(r'^img/video2gif/$', Video2Gif.as_view()),
 
 
    url(r'^category/add/$', CategoryAdd.as_view()),
@@ -32,10 +31,4 @@ urlpatterns = [
 
 
    url(r'^user/login/$', UserLogin.as_view()),
-   url(r'^user/add/$', UserAdd.as_view()),
-   url(r'^user/reset/$', UserAdd.as_view()),
-   url(r'^user/delete/$', UserAdd.as_view()),
-   url(r'^user/query/$', UserAdd.as_view()),
-   url(r'^user/identify/$', UserAdd.as_view()),
-
 ]
