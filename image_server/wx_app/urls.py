@@ -22,6 +22,7 @@ urlpatterns = [
    url(r'^img/move/$', PictureMove.as_view()),
    url(r'^img/delete/$', PictureDelete.as_view()),
    url(r'^img/video2gif/$', Video2Gif.as_view()),
+   url(r'^img/movie/$', Movie.as_view()),
 
 
    url(r'^category/add/$', CategoryAdd.as_view()),

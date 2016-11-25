@@ -27,6 +27,7 @@ from grid.lib.painter import Painter
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILE_PATH = FilePath(BASE_DIR)
+from moviepy.editor import *
 
 
 class BaseMixin(object):
@@ -678,6 +679,22 @@ class Video2Gif(BaseMixin, ListView):
             print e
             return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
 
-#11
-
+class Movie():
+    def get(self, request, *args, **kwargs):
+        _startTime = request.GET['startTime']
+        _endTime =  request.GET['endTime']
+        _save_path =  request.GET['save_path']
+        _path =  request.GET['path']
+        _speed = 1.5
+        _resize = float(180.00/320.00) #把320*40的视频转192*144
+        _fps = 10
+        # print VideoFileClip(url)
+        clip = (VideoFileClip(_path)
+                .subclip((0,_startTime),(0,_endTime))
+                .speedx(_speed)
+                .resize(_resize)
+                # .fx(vfx.freeze_region, outside_region=(170, 230, 380, 320))
+                )
+        clip.write_gif(_save_path, fps=_fps)
+        return HttpResponse(True)
 

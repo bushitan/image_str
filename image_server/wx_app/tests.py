@@ -16,33 +16,38 @@ if __name__ == '__main__':
     httpClient = None
     try:
         #下载文件
-        url = "http://7xsark.com1.z0.glb.clouddn.com/12_20161124144609.mp4"
-        name = str(url).split("/")[-1]
-        img_down_path = FILE_PATH.Down(name)["local_path"]
-        f = urllib2.urlopen(url)
-        data = f.read()
-        with open(img_down_path, "wb") as code:
-            code.write(data)
+        # url = "http://7xsark.com1.z0.glb.clouddn.com/12_20161124144609.mp4"
+        # name = str(url).split("/")[-1]
+        # img_down_path = FILE_PATH.Down(name)["local_path"]
+        # f = urllib2.urlopen(url)
+        # data = f.read()
+        # with open(img_down_path, "wb") as code:
+        #     code.write(data)
+        #
+        # #视频转换
+        # img_type = "gif"
+        # user_id = 59
+        # img_up_path = FILE_PATH.Up(img_type,user_id) #按用户id命名图片
+        # # print
+        # magick = Magick(img_up_path["local_path"])
+        # magick.Video2Gif(0,6,img_down_path)
+        #
+        #
+        # url = 'https://www.12xiong.top/wx_app/img/query/'
+        #
+        # data  = {  "img_url":"http://7xsark.com1.z0.glb.clouddn.com/0_20161025165325.gif"}
+        # data  = {  "img_url":"http://7xsark.com1.z0.glb.clouddn.com/yuan.gif?imageMogr2/thumbnail/170x240"}
+        #
+        # data = {
+        #     'uid': 10 ,
+        #     'category_id': 'null',
+        # }
 
-        #视频转换
-        img_type = "gif"
-        user_id = 59
-        img_up_path = FILE_PATH.Up(img_type,user_id) #按用户id命名图片
-        # print
-        magick = Magick(img_up_path["local_path"])
-        magick.Video2Gif(0,6,img_down_path)
-
-
-        url = 'https://www.12xiong.top/wx_app/img/query/'
-
-        data  = {  "img_url":"http://7xsark.com1.z0.glb.clouddn.com/0_20161025165325.gif"}
-        data  = {  "img_url":"http://7xsark.com1.z0.glb.clouddn.com/yuan.gif?imageMogr2/thumbnail/170x240"}
-
-        data = {
-            'uid': 10 ,
-            'category_id': 'null',
-        }
-
+        # http_str = 'http://127.0.0.1:12345/apps/' + serviceLine + '/clusters/' + clusterName
+        url = "'http://127.0.0.1:8000/img/movie"
+        # url = http_str + '/machine_info'
+        req = urllib2.Request(url) # url 转换成发起get 请求的url
+        result = urllib2.urlopen(req) # 发起GET http服务
 
         # req = urllib2.Request(url)
         # data = urllib.urlencode(data)
