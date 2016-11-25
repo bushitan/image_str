@@ -674,8 +674,9 @@ class Video2Gif(BaseMixin, ListView):
                 return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
             return HttpResponse(json.dumps({"status":"false","msg":"上传七牛云失败"}),content_type="application/json")
         except Exception ,e:
+            logger.error( e)
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":u"系统查询目录除错" + e}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
 
 #11
 

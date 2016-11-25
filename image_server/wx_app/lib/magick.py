@@ -48,20 +48,15 @@ class Magick():
         _speed = 1.5
         _resize = float(180.00/320.00) #把320*40的视频转192*144
         _fps = 10
-        try:
         # print VideoFileClip(url)
-            clip = (VideoFileClip(url)
-                    .subclip((0,_startTime),(0,_endTime))
-                    .speedx(_speed)
-                    .resize(_resize)
-                    # .fx(vfx.freeze_region, outside_region=(170, 230, 380, 320))
-                    )
-            clip.write_gif(self.save_url, fps=_fps)
-            return True
-        except Exception,e:
-            print e
-            # logger.error(Exception)
-            return False
+        clip = (VideoFileClip(url)
+                .subclip((0,_startTime),(0,_endTime))
+                .speedx(_speed)
+                .resize(_resize)
+                # .fx(vfx.freeze_region, outside_region=(170, 230, 380, 320))
+                )
+        clip.write_gif(self.save_url, fps=_fps)
+
 
 
     # 两张图片拼Gif

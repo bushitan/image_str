@@ -6,4 +6,4 @@ python-memcached==1.57
 django-smtp-ssl==1.0
 images2gif==1.0.1
 moviepy==0.2.2.11
-
+imageio==1.6
