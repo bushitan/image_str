@@ -117,3 +117,69 @@ qiniu_secret_key = '56lucORYc45sF5eDqNk63mLXsQ78n4RrubIrjtE0'
 qiniu_bucket_name = 'clickz'
 
 QINIU_HOST = 'http://7xsark.com1.z0.glb.clouddn.com/'
+
+
+
+# log配置
+LOG_FILE = "./all.log"
+
+LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': True,
+
+        'filters': {
+            'require_debug_false': {
+                '()': 'django.utils.log.RequireDebugFalse'
+                }
+            },
+        'formatters': {
+            'simple': {
+                'format': '[%(levelname)s] %(module)s : %(message)s'
+                },
+            'verbose': {
+                'format':
+                    '[%(asctime)s] [%(levelname)s] %(module)s : %(message)s'
+                }
+            },
+
+        'handlers': {
+            'null': {
+                'level': 'DEBUG',
+                'class': 'django.utils.log.NullHandler',
+                },
+            'console': {
+                'level': 'INFO',
+                'class': 'logging.StreamHandler',
+                'formatter': 'verbose'
+                },
+            'file': {
+                'level': 'INFO',
+                'class': 'logging.FileHandler',
+                'formatter': 'verbose',
+                'filename': LOG_FILE,
+                'mode': 'a',
+                },
+            'mail_admins': {
+                'level': 'ERROR',
+                'class': 'django.utils.log.AdminEmailHandler',
+                'filters': ['require_debug_false']
+                }
+            },
+        'loggers': {
+            '': {
+                'handlers': ['file', 'console'],
+                'level': 'INFO',
+                'propagate': True,
+                },
+            'django': {
+                'handlers': ['file', 'console'],
+                'level': 'DEBUG',
+                'propagate': True,
+                },
+            'django.request': {
+                'handlers': ['mail_admins', 'console'],
+                'level': 'ERROR',
+                'propagate': True,
+                },
+            }
+        }
