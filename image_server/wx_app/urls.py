@@ -9,6 +9,8 @@ urlpatterns = [
    url(r'^upload/img/$', UploadImg.as_view()),
    url(r'^upload/wx_img/$', UploadWXImg.as_view()),
    url(r'^upload/video/$', UploadVideo.as_view()),
+   url(r'^upload/token/$', UploadToken.as_view()),
+
    # url(r'^editor/watermark/$', EditorWatermark.as_view()),
    # url(r'^editor/join/$', EditorJoin.as_view()),
 
@@ -22,6 +24,9 @@ urlpatterns = [
    url(r'^img/move/$', PictureMove.as_view()),
    url(r'^img/delete/$', PictureDelete.as_view()),
    url(r'^img/video2gif/$', Video2Gif.as_view()),
+   url(r'^img/join/$', Join.as_view()),
+
+
    url(r'^img/movie/$', Movie.as_view()),
 
 

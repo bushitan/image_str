@@ -59,3 +59,15 @@ class QiNiu():
                 return HttpResponse(u"上传头像错误", status=500)
 
             return HttpResponse(u"上传头像成功!\n(注意有10分钟缓存)")
+    def getToken(self,qiniu_path,filename,path):
+        q = qiniu.Auth(qiniu_access_key, qiniu_secret_key)
+
+        key = qiniu_path + filename
+        localfile = path
+
+        # mime_type = "text/plain"
+        mime_type = "image/png"
+        params = {'x:a': 'a'}
+
+        token = q.upload_token(qiniu_bucket_name, key)
+        return token,key

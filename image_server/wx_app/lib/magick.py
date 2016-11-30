@@ -48,11 +48,11 @@ class Magick():
     # 两张图片拼Gif
     # 以第一张图片Wie模板
     # 固定128的大小
-    def Join(self,imgList=[]):
-        _out_range = 150
+    def Join(self,imgList=[],save_path=""):
+        _out_range = 180
         img1_src = imgList[0]
-        bg_src = imgList[1]
-        img2_src = imgList[2]
+        img2_src = imgList[1]
+        save_url = save_path
 
         # img1_pre_src = BASE_DIR + "/static/magick/temp/pre1.gif"
         # img2_pre_src = BASE_DIR + "/static/magick/temp/pre2.gif"
@@ -93,10 +93,10 @@ class Magick():
         subprocess.check_output(_cmd, shell=True)
 
         #gif合成
-        _cmd = u" magick  -loop 0 %s %s  %s  " % (img1_src,  img2_src, self.save_url)
+        _cmd = u" magick  -loop 0 %s %s  %s  " % (img1_src,  img2_src, save_url)
         subprocess.call(_cmd, shell=True)
 
-        _cmd = u" magick  convert -colors 100  %s  %s" % (self.save_url,self.save_url)
+        _cmd = u" magick  convert -colors 100  %s  %s" % (save_url,save_url)
         subprocess.call(_cmd, shell=True)
 
 

@@ -136,7 +136,7 @@ class UploadWXImg(BaseMixin, ListView):
         except Exception,e:
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")
-# 11
+# 没有用
 class UploadImg(BaseMixin, ListView):
     template_name = 'upload1.html'
     def get(self, request, *args, **kwargs):
@@ -204,7 +204,7 @@ class UploadImg(BaseMixin, ListView):
             return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")
 
 
-#22
+# 没有用
 class UploadVideo(BaseMixin, ListView):
     def post(self, request, *args, **kwargs):
         try:
@@ -233,6 +233,22 @@ class UploadVideo(BaseMixin, ListView):
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")
 
+
+class UploadToken(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        session = request.GET['session']
+        type = request.GET['type']
+
+        # 1 查询用户是否存在
+        if  User.objects.filter( session = session).exists() is False:
+            return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在"}),content_type="application/json" )
+        _user = User.objects.get( session = session)
+
+        _up_path = FILE_PATH.Up(type,_user.id)
+
+        _qiniu = QiNiu()
+        token,key = _qiniu.getToken("",_up_path["file_name"],_up_path["local_path"])
+        return HttpResponse(json.dumps({"status":"true","token":token,"key":key}),content_type="application/json")
 
 #55
 class PictureMy(BaseMixin, ListView):
@@ -683,6 +699,75 @@ class Video2Gif(BaseMixin, ListView):
             logger.error( e)
             print e
             return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
+
+
+#视频转GIF
+class Join(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        try:
+            session = request.GET['session']
+            first_url = request.GET['first']
+            seconde_url = request.GET['seconde']
+
+            # return  HttpResponse( json.dumps({"status":"false","1":first_url,"2":seconde_url}),content_type="application/json" )
+            if  User.objects.filter( session = session).exists() is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在,请重新登录"}),content_type="application/json" )
+            _user = User.objects.get( session = session)
+
+            def DownImg(img_url):
+             #下载文件
+                name = str(img_url).split("/")[-1]
+                img_down_path = FILE_PATH.Down(name)["local_path"]
+                print img_down_path
+                f = urllib2.urlopen(img_url)
+                data = f.read()
+                with open(img_down_path, "wb") as code:
+                    code.write(data)
+                return img_down_path
+
+            #GIf路径
+            _up_path = FILE_PATH.Up("gif",_user.id) #按用户id命名图片
+
+            _first_path = DownImg(first_url)
+            _seconde_path = DownImg(seconde_url)
+
+            #GIF拼接
+            magick = Magick()
+            magick.Join([_first_path,_seconde_path],_up_path["local_path"])
+
+
+            size = 1
+            _qiniu = QiNiu()
+            if _qiniu.put("",_up_path["file_name"],_up_path["local_path"]) is True: #上传原图
+                # 4 上传成，存储数据库
+                _yun_url = SETTING.QINIU_HOST + _up_path["file_name"]
+                print _yun_url
+                _img = Img(
+                    name = _up_path["file_name"],
+                    yun_url = _yun_url,
+                    size = size,
+                )
+                _img.save()
+
+                #上传的图片添加至该用户的默认目录
+                _category = Category.objects.get( user_id = _user ,is_default = 1)
+                _rel = RelCategoryImg(category = _category,img = _img )
+                _rel.save()
+
+                r_img = {
+                    "img_id":_img.id,
+                    "yun_url":_img.yun_url, # 七牛云自动缩略图
+                    "size":_img.size ,
+                    "category_name":_category.name,
+                    "category_id":_category.id,
+                }
+                return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":"上传七牛云失败"}),content_type="application/json")
+        except Exception ,e:
+            logger.error( e)
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
+
 
 class Movie(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
