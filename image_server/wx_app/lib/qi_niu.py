@@ -66,9 +66,9 @@ class QiNiu():
         localfile = path
 
         policy = {
-            "callbackUrl":"120.27.97.33",
-            # "callbackBody":
-            # "callbackHost":"h1",
+            "callbackUrl":"http://120.27.97.33/upload/token/",
+            "callbackBody":"key=$(key)&hash=$(etag)&w=$(imageInfo.width)&h=$(imageInfo.height)",
+            "callbackHost":"120.27.97.33"
 
             # "fsizeLimit": 1000,
             # "mimeLimit": "image/png"

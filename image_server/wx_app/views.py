@@ -233,11 +233,15 @@ class UploadVideo(BaseMixin, ListView):
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")
 
-
+KEY_USER_HASH = {} #内存，key-session对应表
 class UploadToken(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         session = request.GET['session']
-        type = request.GET['type']
+        _type = request.GET['type']
+
+        #小程序独有过滤
+        if _type == "ext-mp4":
+                _type = "mp4"
 
         # 1 查询用户是否存在
         if  User.objects.filter( session = session).exists() is False:
@@ -245,14 +249,59 @@ class UploadToken(BaseMixin, ListView):
         _user = User.objects.get( session = session)
 
         #设置上传路径
-        _up_path = FILE_PATH.Up(type,_user.id)
+        _up_path = FILE_PATH.Up(_type,_user.id)
 
         _qiniu = QiNiu()
         token,key = _qiniu.getToken("",_up_path["file_name"],_up_path["local_path"])
+
+        #保存图片用户数据
+        KEY_USER_HASH[key] = {
+            "uid":_user,
+            "type":_type
+        }
         return HttpResponse(json.dumps({"status":"true","token":token,"key":key}),content_type="application/json")
     def post(self, request, *args, **kwargs):
         try:
-            return HttpResponse(json.dumps({"status":"true","msg":u"上传成功"}),content_type="application/json")
+            key = request.POST['key']
+            _hash = request.POST['hash']
+            w = request.POST['w']
+            h = request.POST['h']
+            #图片存数据库
+            if KEY_USER_HASH.has_key(key):
+                _user = KEY_USER_HASH[key]["uid"]
+                _type = KEY_USER_HASH[key]["type"]
+                if _type == 'mp4' or _type == "MP4" or _type == "Mp4":
+                    size = 4
+                else:
+                    size = 170
+                    if _type == 'gif' or _type == "GIF" or _type == 'Gif':
+                        size = 1
+                    elif w <= h :
+                        size = 2
+                    elif w > h :
+                        size = 3
+                _img = Img(
+                    name = key,
+                    yun_url = SETTING.QINIU_HOST + key,
+                    size = size,
+                )
+                _img.save()
+
+                #上传的图片添加至该用户的默认目录
+                _category = Category.objects.get( user_id = _user ,is_default = 1)
+                _rel = RelCategoryImg(category = _category,img = _img )
+                _rel.save()
+
+                r_img = {
+                    "img_id":_img.id,
+                    "yun_url":_img.yun_url, # 七牛云自动缩略图
+                    "size":_img.size ,
+                    "category_name":_category.name,
+                    "category_id":_category.id,
+                }
+                KEY_USER_HASH.pop(key)
+                return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"网络出错，请重新上传"}),content_type="application/json")
         except Exception,e:
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")

@@ -44,18 +44,23 @@ if __name__ == '__main__':
         # }
 
         # http_str = 'http://127.0.0.1:12345/apps/' + serviceLine + '/clusters/' + clusterName
-        url = "'http://127.0.0.1:8000/img/movie"
+        url = "'http://120.27.97.33/upload/token/"
         # url = http_str + '/machine_info'
-        req = urllib2.Request(url) # url 转换成发起get 请求的url
-        result = urllib2.urlopen(req) # 发起GET http服务
+        # req = urllib2.Request(url) # url 转换成发起get 请求的url
+        # result = urllib2.urlopen(req) # 发起GET http服务
 
-        # req = urllib2.Request(url)
-        # data = urllib.urlencode(data)
-        # #enable cookie
-        # opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
-        # response = opener.open(req,data)
-        # res = response.read()
-        # print res
+
+        url = "http://120.27.97.33/upload/token/"
+        # url = "http://127.0.0.1:8000/upload/token/"
+
+        data  = {  "img_url":"http://7xsark.com1.z0.glb.clouddn.com/0_20161025165325.gif"}
+        req = urllib2.Request(url)
+        data = urllib.urlencode(data)
+        #enable cookie
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+        response = opener.open(req,data)
+        res = response.read()
+        print res
         # obj = json.loads(res)
         # print obj['img_url']
         # print obj['str_url']
