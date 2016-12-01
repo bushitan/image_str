@@ -65,9 +65,15 @@ class QiNiu():
         key = qiniu_path + filename
         localfile = path
 
-        # mime_type = "text/plain"
-        mime_type = "image/png"
-        params = {'x:a': 'a'}
+        policy = {
+            "callbackUrl":"120.27.97.33",
+            # "callbackBody":
+            # "callbackHost":"h1",
 
-        token = q.upload_token(qiniu_bucket_name, key)
+            # "fsizeLimit": 1000,
+            # "mimeLimit": "image/png"
+        }
+
+        token = q.upload_token(qiniu_bucket_name,key = key,policy = policy)
+        # token = q.upload_token(qiniu_bucket_name,key = key)
         return token,key

@@ -244,12 +244,18 @@ class UploadToken(BaseMixin, ListView):
             return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在"}),content_type="application/json" )
         _user = User.objects.get( session = session)
 
+        #设置上传路径
         _up_path = FILE_PATH.Up(type,_user.id)
 
         _qiniu = QiNiu()
         token,key = _qiniu.getToken("",_up_path["file_name"],_up_path["local_path"])
         return HttpResponse(json.dumps({"status":"true","token":token,"key":key}),content_type="application/json")
-
+    def post(self, request, *args, **kwargs):
+        try:
+            return HttpResponse(json.dumps({"status":"true","msg":u"上传成功"}),content_type="application/json")
+        except Exception,e:
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")
 #55
 class PictureMy(BaseMixin, ListView):
    pass
