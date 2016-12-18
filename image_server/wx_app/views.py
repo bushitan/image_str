@@ -268,6 +268,19 @@ class UploadToken(BaseMixin, ListView):
             h = request.POST['h']
             duration = request.POST['duration']
 
+            if duration == "" :
+                duration = 0.0
+            else :
+                duration = float(duration)
+            if w == "" :
+                w = 0
+            else :
+                w = int(w)
+            if h == "" :
+                h = 0
+            else :
+                h = int(h)
+
             #图片存数据库
             if KEY_USER_HASH.has_key(key):
                 _user = KEY_USER_HASH[key]["uid"]
