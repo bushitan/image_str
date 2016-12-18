@@ -68,7 +68,7 @@ class QiNiu():
         policy = {
             # "callbackUrl":"http://120.27.97.33/upload/token/",
             "callbackUrl":"https://www.12xiong.top/upload/token/",
-            "callbackBody":"key=$(key)&hash=$(etag)&w=$(imageInfo.width)&h=$(imageInfo.height)",
+            "callbackBody":"key=$(key)&hash=$(etag)&w=$(imageInfo.width)&h=$(imageInfo.height)&duration=$(avinfo.video.duration)",
             "callbackHost":"120.27.97.33"
 
             # "fsizeLimit": 1000,

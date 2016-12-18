@@ -266,6 +266,8 @@ class UploadToken(BaseMixin, ListView):
             _hash = request.POST['hash']
             w = request.POST['w']
             h = request.POST['h']
+            duration = request.POST['duration']
+
             #图片存数据库
             if KEY_USER_HASH.has_key(key):
                 _user = KEY_USER_HASH[key]["uid"]
@@ -284,6 +286,9 @@ class UploadToken(BaseMixin, ListView):
                     name = key,
                     yun_url = SETTING.QINIU_HOST + key,
                     size = size,
+                    width = w,
+                    height = h,
+                    duration = duration
                 )
                 _img.save()
 

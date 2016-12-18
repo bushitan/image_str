@@ -25,6 +25,13 @@ CATEGORY_ROLE= {
     1: u'默认目录'
 }
 
+LOG_LEVEL= {
+    0: u"log",
+    1: u'info',
+    2: u'warm',
+    3: u'error',
+}
+
 class User(models.Model):
     name =  models.CharField(max_length=100, verbose_name=u'名称',null=True)
     wx_open_id = models.CharField(max_length=50, verbose_name=u'微信OpenID',null=True)
@@ -44,7 +51,9 @@ class Img(models.Model):
     name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,)
     yun_url = models.TextField( verbose_name=u'云存储地址',null=True)  #url 地址需要使用Text，用Char不显示，我也不懂为啥
     size = models.IntegerField(default=170,verbose_name='高x宽最大值')
-    # height = models.IntegerField(default=170, verbose_name='高')
+    width =  models.IntegerField(default=0, verbose_name='宽',null=True)
+    height = models.IntegerField(default=0, verbose_name='高',null=True)
+    duration = models.FloatField(default=0, verbose_name='时长',null=True)
     create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
 
     class Meta:
@@ -71,3 +80,12 @@ class RelCategoryImg(models.Model):
         verbose_name_plural = verbose_name = u'目录图片关系'
         app_label = string_with_title('wx_app', u"表情")
 
+class Log(models.Model):
+    info = models.CharField(max_length=100, verbose_name=u'信息',null=True)
+    user =  models.ForeignKey(User, verbose_name=u'用户',null=True)
+    level = models.IntegerField(u'信息等级',default=0,choices=LOG_LEVEL.items(),)
+    event = models.CharField(max_length=100, verbose_name=u'信息',null=True)
+    occur_time = models.DateTimeField(u'发生时间', auto_now_add=True)
+    class Meta:
+        verbose_name_plural = verbose_name = u'日志'
+        app_label = string_with_title('wx_app', u"表情")

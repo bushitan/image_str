@@ -17,7 +17,11 @@ class CategoryAdmin(admin.ModelAdmin):
 class RelCategoryImgAdmin(admin.ModelAdmin):
     list_display = ('category','img')
     pass
+class LogAdmin(admin.ModelAdmin):
+    list_display = ('level','info','user','event')
+
 admin.site.register(User,UserAdmin)
 admin.site.register(Img,ImgAdmin)
 admin.site.register(Category,CategoryAdmin)
 admin.site.register(RelCategoryImg,RelCategoryImgAdmin)
+admin.site.register(Log,LogAdmin)
