@@ -9,13 +9,13 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('id','name',)
 
 class ImgAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id','name',)
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id','name',)
 
 class RelCategoryImgAdmin(admin.ModelAdmin):
-    list_display = ('category','img')
+    list_display = ('category_id','img_id')
     pass
 class LogAdmin(admin.ModelAdmin):
     list_display = ('level','info','user','event')

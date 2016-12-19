@@ -64,9 +64,9 @@ class Img(models.Model):
 
 class Category(models.Model):
     name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,)
-    user_id = models.ForeignKey(User, verbose_name=u'用户')
+    user_id = models.ForeignKey(User, verbose_name=u'用户',null=True)
     is_default = models.IntegerField(u'是否用户默认目录',default=0,choices=CATEGORY_ROLE.items(),)
-    parent_id = models.OneToOneField('self', verbose_name=u'父类目录',null=True,)  #自身目录
+    parent_id = models.ForeignKey('self', verbose_name=u'父类目录',null=True,)  #自身目录
     class Meta:
         verbose_name_plural = verbose_name = u'目录'
         app_label = string_with_title('wx_app', u"表情")

@@ -10,6 +10,8 @@ from django.views.generic import View, TemplateView, ListView, DetailView
 from wx_app.lib.qi_niu import QiNiu
 from wx_app.lib.magick import Magick
 from wx_app.lib.filepath import FilePath
+from wx_app.lib.logger import Logger
+log = Logger()
 
 import datetime
 import time
@@ -861,3 +863,120 @@ class Movie(BaseMixin, ListView):
         clip.write_gif(_save_path, fps=_fps)
         return HttpResponse(True)
 
+
+
+#12 标签 -增加
+class TagAdd(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        try:
+            _session = request.GET['session']
+            _category_name = request.GET['tag_name']
+            _category_parent_id = request.GET['tag_parent_id']
+            print _category_name,_category_parent_id
+            if Category.objects.filter(name = _category_name,user_id=None).exists() is False: #不允许重名
+                if _category_parent_id == "":
+                    _category = Category(
+                        name = _category_name,
+                    )
+                else:
+                    _parent = Category.objects.get( id = _category_parent_id)
+                    # Category.objects.create(
+                    #     name = _category_name,
+                    #     parent_id = _parent
+                    # )
+                    _category = Category(
+                        name = _category_name,
+                        parent_id = _parent
+                    )
+                    print _parent,_category.parent_id,_category.parent_id.id
+                _category.save()
+                c_dict = {
+                    "category_id":_category.id,
+                    "name":_category.name,
+                    # "is_default":_category.is_default,
+                }
+                return HttpResponse(json.dumps({"status":"true","category":c_dict}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"标签已存在"}),content_type="application/json")
+        except Exception ,e:
+            log.error(e,None,"TagAdd")
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"增加标签出错"}),content_type="application/json")
+
+#13 标签 - 查询
+class TagQuery(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        try:
+            self._session = request.GET['session']
+            #1 全部标签查询
+            _list = Category.objects.filter( user_id = None)
+            print _list
+            _category_list = []
+            for c in _list:
+                if c.parent_id is None:
+                    _parent_id = None
+                else:
+                    _parent_id = c.parent_id.id
+                _category_list.append({
+                    "category_id":c.id,
+                    "name":c.name,
+                    "parent_id": _parent_id,
+                })
+            return HttpResponse(json.dumps({"status":"true","category_list":_category_list}),content_type="application/json")
+
+            #2 Todo 模糊查询
+
+        except Exception ,e:
+            log.error(e,None,"TagQuery")
+            return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
+
+#13 标签 - 贴标签
+class TagImgAdd(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        try:
+            self._session = request.GET['session']
+            _category_id_list = [43]
+            # _category_id_list = list(request.GET['tag_id_list'] ) #Todo 小程序get请求还会出错
+            _img_id = request.GET['img_id']
+            print _category_id_list,type(_category_id_list)
+
+            _img = Img.objects.get( id = _img_id )
+            for c in _category_id_list:
+                # print Category.objects.filter(id = c , parent_id = None).exists()
+                if Category.objects.filter(id = c , parent_id = None).exists() is False: # 是否为父类 ， 子类绑定图片，父类不行
+                    _category = Category.objects.get( id = c )
+                    print _category
+                    if RelCategoryImg.objects.filter(img=_img , category = _category).exists() is False: #
+                        _rel = RelCategoryImg(
+                            img=_img ,
+                            category = _category,
+                        )
+                        _rel.save()
+                        print _rel
+            return HttpResponse(json.dumps({"status":"true","msg":u"标签添加成功"}),content_type="application/json")
+        except Exception ,e:
+            log.error(e,None,"TagImgAdd")
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
+
+#点击标签，查询图片
+class TagImgQuery(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        try:
+            self._session = request.GET['session']
+            _category_name = request.GET['tag_name']
+            #1 精确查询
+            _category = Category.objects.get( name = _category_name,user_id=None)  #,parent_id=None
+            _img_list = []
+            for _r in RelCategoryImg.objects.filter(category=_category):
+                _img_list.append({
+                    "img_id":_r.img.id,
+                    "yun_url":_r.img.yun_url, # 七牛云自动缩略图
+                    "size":_r.img.size
+                })
+            return HttpResponse(json.dumps({"status":"true","img_list":_img_list}),content_type="application/json")
+            #2 Todo 模糊查询
+
+        except Exception ,e:
+            log.error(e,None,"TagImgQuery")
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
