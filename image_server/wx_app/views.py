@@ -753,7 +753,7 @@ class Video2Gif(BaseMixin, ListView):
 
             #视频转换
             magick = Magick(_up_path["local_path"])
-            magick.Video2Gif(start_time,duration_time,img_down_path)
+            magick.Video2Gif(img_down_path, _up_path["local_path"],start_time,duration_time)
             # _cmd = u"python %s  %s %s %s %s" % ( FILE_PATH.GetMagickPy(),img_down_path, _up_path["local_path"],0,6)
             # subprocess.check_output(_cmd, shell=True)
 
