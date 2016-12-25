@@ -316,6 +316,9 @@ class UploadToken(BaseMixin, ListView):
                     "img_id":_img.id,
                     "yun_url":_img.yun_url, # 七牛云自动缩略图
                     "size":_img.size ,
+                    "width":_img.width,
+                    "height":_img.height,
+                    "duration":_img.duration,
                     "category_name":_category.name,
                     "category_id":_category.id,
                 }
