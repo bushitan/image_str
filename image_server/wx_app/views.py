@@ -730,6 +730,8 @@ class Video2Gif(BaseMixin, ListView):
 
             session = request.GET['session']
             video_url = request.GET['video_url']
+            start_time = request.GET['start_time']
+            duration_time = request.GET['duration_time']
 
             if  User.objects.filter( session = session).exists() is False:
                 return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在,请重新登录"}),content_type="application/json" )
@@ -750,10 +752,10 @@ class Video2Gif(BaseMixin, ListView):
             _up_path = FILE_PATH.Up(img_type,_user.id) #按用户id命名图片
 
             #视频转换
-            # magick = Magick(_up_path["local_path"])
-            # magick.Video2Gif(0,6,img_down_path)
-            _cmd = u"python %s  %s %s %s %s" % ( FILE_PATH.GetMagickPy(),img_down_path, _up_path["local_path"],0,6)
-            subprocess.check_output(_cmd, shell=True)
+            magick = Magick(_up_path["local_path"])
+            magick.Video2Gif(start_time,duration_time,img_down_path)
+            # _cmd = u"python %s  %s %s %s %s" % ( FILE_PATH.GetMagickPy(),img_down_path, _up_path["local_path"],0,6)
+            # subprocess.check_output(_cmd, shell=True)
 
             size = 1
             _qiniu = QiNiu()
