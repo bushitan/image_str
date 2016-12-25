@@ -752,10 +752,11 @@ class Video2Gif(BaseMixin, ListView):
             _up_path = FILE_PATH.Up(img_type,_user.id) #按用户id命名图片
 
             #视频转换
-            magick = Magick(_up_path["local_path"])
-            magick.Video2Gif(img_down_path, _up_path["local_path"],start_time,start_time+duration_time)
-            # _cmd = u"python %s  %s %s %s %s" % ( FILE_PATH.GetMagickPy(),img_down_path, _up_path["local_path"],0,6)
-            # subprocess.check_output(_cmd, shell=True)
+           # magick = Magick(_up_path["local_path"])
+            #magick.Video2Gif(img_down_path, _up_path["local_path"],start_time,start_time+duration_time)
+            end_time = start_time+duration_time
+            _cmd = u"python %s  %s %s %s %s" % ( FILE_PATH.GetMagickPy(),img_down_path, _up_path["local_path"],start_time,end_time)
+            subprocess.check_output(_cmd, shell=True)
 
             size = 1
             _qiniu = QiNiu()
