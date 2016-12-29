@@ -629,9 +629,14 @@ class CategoryQuery(BaseMixin, ListView):
 
 #11
 
-app_id = "wx00098b11d40e8910"
-app_secret = "34362b7f79645d0659c5950e21e892cd"
-# app_secret = "34362b7f79645d0659c5950e21e892"
+# weifeng_27@163.com
+# app_id = "wx00098b11d40e8910"
+# app_secret = "34362b7f79645d0659c5950e21e892cd"
+
+# suojun_tech_code@163.com
+app_id = "wxff79e25befbb413d"
+app_secret = "283fc3d9d4b8ba3b58601145466d4417"
+
 
 class UserLogin(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
