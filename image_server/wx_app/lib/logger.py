@@ -11,8 +11,15 @@ class Logger():
         _log.save()
         return
 
+    def log(self,info,user,event):
+        _log = Log(
+            info = info,
+            user =  user,
+            level = 0,
+            event = event,
+        )
+        _log.save()
     def info(self,**kwargs):
-
         return {
             "status":"false", #"true"
             "msg":"12321", #"true"

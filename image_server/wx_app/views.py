@@ -731,8 +731,8 @@ class UserLogin(BaseMixin, ListView):
 #视频转GIF
 class Video2Gif(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
+        _user = ""
         try:
-
             session = request.GET['session']
             video_url = request.GET['video_url']
             start_time = int( request.GET['start_time'] )
@@ -791,10 +791,12 @@ class Video2Gif(BaseMixin, ListView):
                     "category_name":_category.name,
                     "category_id":_category.id,
                 }
+                logger.log( "视频转GIF成功",_user,"Video2Gif")
                 return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
+            logger.error( "上传七牛云失败",_user,"Video2Gif")
             return HttpResponse(json.dumps({"status":"false","msg":"上传七牛云失败"}),content_type="application/json")
         except Exception ,e:
-            logger.error( e)
+            logger.error( e,_user,"Video2Gif")
             print e
             return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
 
@@ -802,6 +804,7 @@ class Video2Gif(BaseMixin, ListView):
 #视频转GIF
 class Join(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
+        _user = ""
         try:
             session = request.GET['session']
             first_url = request.GET['first']
@@ -862,10 +865,12 @@ class Join(BaseMixin, ListView):
                     "category_name":_category.name,
                     "category_id":_category.id,
                 }
+                logger.log( "GIF拼接成功",_user,"Join")
                 return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
+            logger.error( "上传七牛云失败",_user,"Join")
             return HttpResponse(json.dumps({"status":"false","msg":"上传七牛云失败"}),content_type="application/json")
         except Exception ,e:
-            logger.error( e)
+            logger.error( e,_user,"Join")
             print e
             return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
 

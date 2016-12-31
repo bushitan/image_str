@@ -69,6 +69,7 @@ class Category(models.Model):
     parent_id = models.ForeignKey('self', verbose_name=u'父类目录',null=True,)  #自身目录
     class Meta:
         verbose_name_plural = verbose_name = u'目录'
+        ordering = ['-create_time']
         app_label = string_with_title('wx_app', u"表情")
     def __unicode__(self):
         return '%s' % (self.name)
@@ -78,13 +79,14 @@ class RelCategoryImg(models.Model):
     img = models.ForeignKey(Img, verbose_name=u'图片')
     class Meta:
         verbose_name_plural = verbose_name = u'目录图片关系'
+        ordering = ['-create_time']
         app_label = string_with_title('wx_app', u"表情")
 
 class Log(models.Model):
     info = models.CharField(max_length=100, verbose_name=u'信息',null=True)
     user =  models.ForeignKey(User, verbose_name=u'用户',null=True)
     level = models.IntegerField(u'信息等级',default=0,choices=LOG_LEVEL.items(),)
-    event = models.CharField(max_length=100, verbose_name=u'信息',null=True)
+    event = models.CharField(max_length=100, verbose_name=u'所属事件',null=True)
     occur_time = models.DateTimeField(u'发生时间', auto_now_add=True)
     class Meta:
         verbose_name_plural = verbose_name = u'日志'
