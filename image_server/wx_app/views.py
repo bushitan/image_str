@@ -791,12 +791,14 @@ class Video2Gif(BaseMixin, ListView):
                     "category_name":_category.name,
                     "category_id":_category.id,
                 }
+                print "视频转GIF成功"
                 logger.log( "视频转GIF成功",_user,"Video2Gif")
                 return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
+            print "上传七牛云失败"
             logger.error( "上传七牛云失败",_user,"Video2Gif")
             return HttpResponse(json.dumps({"status":"false","msg":"上传七牛云失败"}),content_type="application/json")
         except Exception ,e:
-            logger.error( e,_user,"Video2Gif")
+            logger.error( str(e),_user,"Video2Gif")
             print e
             return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
 
