@@ -58,6 +58,7 @@ class Img(models.Model):
 
     class Meta:
         verbose_name_plural = verbose_name = u'图片'
+        ordering = ['-create_time']
         app_label = string_with_title('wx_app', u"表情")
     def __unicode__(self):
         return '%s' % (self.name)
@@ -69,7 +70,6 @@ class Category(models.Model):
     parent_id = models.ForeignKey('self', verbose_name=u'父类目录',null=True,)  #自身目录
     class Meta:
         verbose_name_plural = verbose_name = u'目录'
-        ordering = ['-create_time']
         app_label = string_with_title('wx_app', u"表情")
     def __unicode__(self):
         return '%s' % (self.name)
@@ -79,7 +79,6 @@ class RelCategoryImg(models.Model):
     img = models.ForeignKey(Img, verbose_name=u'图片')
     class Meta:
         verbose_name_plural = verbose_name = u'目录图片关系'
-        ordering = ['-create_time']
         app_label = string_with_title('wx_app', u"表情")
 
 class Log(models.Model):
