@@ -269,6 +269,8 @@ class UploadToken(BaseMixin, ListView):
             w = request.POST['w']
             h = request.POST['h']
             duration = request.POST['duration']
+            vw = request.POST['vw']
+            vh = request.POST['vh']
 
             if duration == "" :
                 duration = 0.0
@@ -289,6 +291,14 @@ class UploadToken(BaseMixin, ListView):
                 _type = KEY_USER_HASH[key]["type"]
                 if _type == 'mp4' or _type == "MP4" or _type == "Mp4":
                     size = 4
+                    _img = Img(
+                        name = key,
+                        yun_url = SETTING.QINIU_HOST + key,
+                        size = size,
+                        width = vw,
+                        height = vh,
+                        duration = duration
+                    )
                 else:
                     size = 170
                     if _type == 'gif' or _type == "GIF" or _type == 'Gif':
@@ -297,14 +307,14 @@ class UploadToken(BaseMixin, ListView):
                         size = 2
                     elif w > h :
                         size = 3
-                _img = Img(
-                    name = key,
-                    yun_url = SETTING.QINIU_HOST + key,
-                    size = size,
-                    width = w,
-                    height = h,
-                    duration = duration
-                )
+                    _img = Img(
+                        name = key,
+                        yun_url = SETTING.QINIU_HOST + key,
+                        size = size,
+                        width = w,
+                        height = h,
+                        duration = duration
+                    )
                 _img.save()
 
                 #上传的图片添加至该用户的默认目录
@@ -757,8 +767,8 @@ class Video2Gif(BaseMixin, ListView):
             _up_path = FILE_PATH.Up(img_type,_user.id) #按用户id命名图片
 
             #视频转换
-           # magick = Magick(_up_path["local_path"])
-            #magick.Video2Gif(img_down_path, _up_path["local_path"],start_time,start_time+duration_time)
+            # magick = Magick(_up_path["local_path"])
+            # magick.Video2Gif(img_down_path, _up_path["local_path"],start_time,start_time+duration_time)
             end_time = start_time+duration_time
             _cmd = u"python %s  %s %s %s %s" % ( FILE_PATH.GetMagickPy(),img_down_path, _up_path["local_path"],start_time,end_time)
             subprocess.check_output(_cmd, shell=True)
@@ -796,6 +806,53 @@ class Video2Gif(BaseMixin, ListView):
         except Exception ,e:
             print e
             return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
+
+
+#视频转GIF，不用上传，直接返回前台
+class Video2Gif_NoUpload(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        _user = ""
+        try:
+            session = request.GET['session']
+            video_url = request.GET['video_url']
+            start_time = int( request.GET['start_time'] )
+            duration_time = int(request.GET['duration_time'])
+
+            print datetime.datetime.now()
+            if  User.objects.filter( session = session).exists() is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在,请重新登录"}),content_type="application/json" )
+
+            _user = User.objects.get( session = session)
+
+            print datetime.datetime.now()
+             #下载文件
+            name = str(video_url).split("/")[-1]
+            img_down_path = FILE_PATH.Down(name)["local_path"]
+
+
+            if os.path.exists(img_down_path) is False : #文件不存在，下载
+                f = urllib2.urlopen(video_url)
+                data = f.read()
+                with open(img_down_path, "wb") as code:
+                    code.write(data)
+                #GIf路径
+            print datetime.datetime.now()
+            img_type = "gif"
+            _up_path = FILE_PATH.Up(img_type,_user.id) #按用户id命名图片
+            _local_url = "http://127.0.0.1:8000/static/magick/upload/" + _up_path["file_name"]
+            #视频转换
+            # magick = Magick(_up_path["local_path"])
+            # magick.Video2Gif(img_down_path, _up_path["local_path"],start_time,start_time+duration_time)
+            end_time = start_time+duration_time
+            _cmd = u"python %s  %s %s %s %s" % ( FILE_PATH.GetMagickPy(),img_down_path, _up_path["local_path"],start_time,end_time)
+            subprocess.check_output(_cmd, shell=True)
+
+            print datetime.datetime.now()
+            return HttpResponse(json.dumps({"status":"true","local_url": _local_url}),content_type="application/json")
+        except Exception ,e:
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
+
 
 
 #视频转GIF

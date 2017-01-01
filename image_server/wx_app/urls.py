@@ -23,7 +23,8 @@ urlpatterns = [
    url(r'^img/query/$', PictureQuery.as_view()),
    url(r'^img/move/$', PictureMove.as_view()),
    url(r'^img/delete/$', PictureDelete.as_view()),
-   url(r'^img/video2gif/$', Video2Gif.as_view()),
+   # url(r'^img/video2gif/$', Video2Gif.as_view()),
+   url(r'^img/video2gif/$', Video2Gif_NoUpload.as_view()),
    url(r'^img/join/$', Join.as_view()),
 
 
