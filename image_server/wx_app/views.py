@@ -323,7 +323,7 @@ class UploadToken(BaseMixin, ListView):
 
                 #上传的图片添加至该用户的默认目录
                 # _category = Category.objects.get( user_id = _user ,is_default = 1,id=_category_id)
-                if Category.objects.get( user_id = _user,id=_category_id).exists() is False:
+                if Category.objects.filter( user_id = _user,id=_category_id).exists() is False:
                     return HttpResponse( json.dumps({"status":"false","msg":u"用户没有此目录"}),content_type="application/json" )
 
                 _category = Category.objects.get( id=_category_id)
