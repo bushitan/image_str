@@ -817,7 +817,9 @@ class Video2Gif_NoUpload(BaseMixin, ListView):
             video_url = request.GET['video_url']
             start_time = int( request.GET['start_time'] )
             duration_time = int(request.GET['duration_time'])
-
+            width = int(request.GET['width'])
+            height = int(request.GET['height'])
+            print width,height
             print datetime.datetime.now()
             if  User.objects.filter( session = session).exists() is False:
                 return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在,请重新登录"}),content_type="application/json" )
@@ -839,12 +841,22 @@ class Video2Gif_NoUpload(BaseMixin, ListView):
             print datetime.datetime.now()
             img_type = "gif"
             _up_path = FILE_PATH.Up(img_type,_user.id) #按用户id命名图片
-            _local_url = "http://127.0.0.1:8000/static/magick/upload/" + _up_path["file_name"]
+            _local_url =  "http://www.12xiong.top/static/magick/upload/" + _up_path["file_name"]  #"http://127.0.0.1:8000
+
             #视频转换
             # magick = Magick(_up_path["local_path"])
             # magick.Video2Gif(img_down_path, _up_path["local_path"],start_time,start_time+duration_time)
-            end_time = start_time+duration_time
-            _cmd = u"python %s  %s %s %s %s" % ( FILE_PATH.GetMagickPy(),img_down_path, _up_path["local_path"],start_time,end_time)
+            end_time = start_time+duration_time  #结束时间
+
+            #裁剪大小
+            new_size = 480
+            if(width >= height):
+                resize = float(new_size)/float(width)
+            else:
+                resize = float(new_size)/float(height)
+
+            print resize
+            _cmd = u"python %s  %s %s %s %s %s" % ( FILE_PATH.GetMagickPy(),img_down_path, _up_path["local_path"],start_time,end_time,resize)
             subprocess.check_output(_cmd, shell=True)
 
             print datetime.datetime.now()
@@ -921,6 +933,59 @@ class Join(BaseMixin, ListView):
                 }
                 return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
             return HttpResponse(json.dumps({"status":"false","msg":"上传七牛云失败"}),content_type="application/json")
+        except Exception ,e:
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
+
+#视频转GIF 返回前台 不上传，
+class Join_NoUpload(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        _user = ""
+        try:
+            session = request.GET['session']
+            first_url = request.GET['first']  #原图地址
+            seconde_url = request.GET['seconde']
+            #压缩后地址 ,
+            _re_size = 180
+            _re_url = "?imageMogr2/thumbnail/%sx%s" % (_re_size,_re_size)
+            first_url_resize = first_url + _re_url
+            seconde_url_resize = seconde_url + _re_url
+
+             #为2幅图重命名
+            first_name = str(_re_size) + "_" + str(first_url).split("/")[-1]
+            seconde_name = str(_re_size) + "_" + str(seconde_url).split("/")[-1]
+
+            if  User.objects.filter( session = session).exists() is False:
+                return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在,请重新登录"}),content_type="application/json" )
+            _user = User.objects.get( session = session)
+
+            #图片重命名后，下载裁剪图，赋予新名字
+            def DownImg(img_resize_url,re_name):
+                img_down_path = FILE_PATH.Down(re_name)["local_path"]
+                f = urllib2.urlopen(img_resize_url)
+                data = f.read()
+                with open(img_down_path, "wb") as code:
+                    code.write(data)
+                return img_down_path
+
+            #GIf路径
+            _up_path = FILE_PATH.Up("gif",_user.id) #按用户id命名图片
+
+            print datetime.datetime.now()
+            if os.path.exists(first_name) is False :
+                _first_path = DownImg(first_url_resize,first_name)
+            if os.path.exists(seconde_name) is False :
+                _seconde_path = DownImg(seconde_url_resize,seconde_name)
+            print datetime.datetime.now()
+            # print _first_path,_seconde_path
+            #GIF拼接
+            print "ping:"
+            magick = Magick()
+            magick.Join_HasReize([_first_path,_seconde_path],_up_path["local_path"],_re_size)
+
+            _local_url =  "http://www.12xiong.top/static/magick/upload/" + _up_path["file_name"]  #"http://127.0.0.1:8000
+            return HttpResponse(json.dumps({"status":"true","local_url": _local_url}),content_type="application/json")
+            # return HttpResponse(json.dumps({"status":"false","msg":"上传七牛云失败"}),content_type="application/json")
         except Exception ,e:
             print e
             return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
