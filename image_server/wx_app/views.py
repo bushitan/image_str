@@ -240,6 +240,7 @@ class UploadToken(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         session = request.GET['session']
         _type = request.GET['type']
+        _category_id = request.GET['category_id']
 
         #小程序独有过滤
         if _type == "ext-mp4":
@@ -259,7 +260,8 @@ class UploadToken(BaseMixin, ListView):
         #保存图片用户数据
         KEY_USER_HASH[key] = {
             "uid":_user,
-            "type":_type
+            "type":_type,
+            "category_id":_category_id,
         }
         return HttpResponse(json.dumps({"status":"true","token":token,"key":key}),content_type="application/json")
     def post(self, request, *args, **kwargs):
@@ -289,6 +291,8 @@ class UploadToken(BaseMixin, ListView):
             if KEY_USER_HASH.has_key(key):
                 _user = KEY_USER_HASH[key]["uid"]
                 _type = KEY_USER_HASH[key]["type"]
+                _category_id = KEY_USER_HASH[key]["category_id"]
+
                 if _type == 'mp4' or _type == "MP4" or _type == "Mp4":
                     size = 4
                     _img = Img(
@@ -318,7 +322,11 @@ class UploadToken(BaseMixin, ListView):
                 _img.save()
 
                 #上传的图片添加至该用户的默认目录
-                _category = Category.objects.get( user_id = _user ,is_default = 1)
+                # _category = Category.objects.get( user_id = _user ,is_default = 1,id=_category_id)
+                if Category.objects.get( user_id = _user,id=_category_id).exists() is False:
+                    return HttpResponse( json.dumps({"status":"false","msg":u"用户没有此目录"}),content_type="application/json" )
+
+                _category = Category.objects.get( id=_category_id)
                 _rel = RelCategoryImg(category = _category,img = _img )
                 _rel.save()
 
