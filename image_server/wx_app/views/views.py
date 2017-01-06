@@ -817,7 +817,7 @@ class Video2Gif(BaseMixin, ListView):
 
 
 #视频转GIF，不用上传，直接返回前台
-class Video2Gif_NoUpload(BaseMixin, ListView):
+class Video2Gif_NoUpload_1(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         _user = ""
         try:
@@ -946,7 +946,7 @@ class Join(BaseMixin, ListView):
             return HttpResponse(json.dumps({"status":"false","msg":str(e)}),content_type="application/json")
 
 #视频转GIF 返回前台 不上传，
-class Join_NoUpload(BaseMixin, ListView):
+class Join_NoUpload_1(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         _user = ""
         try:

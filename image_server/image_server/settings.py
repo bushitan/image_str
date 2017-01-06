@@ -118,7 +118,8 @@ qiniu_bucket_name = 'clickz'
 
 QINIU_HOST = 'http://7xsark.com1.z0.glb.clouddn.com/'
 
-
+#magick文件夹路径，处理完后直接下载
+MAGICK_FILE  = os.path.join(BASE_DIR, "wx_app/static/magick/upload/")
 
 # log配置
 LOG_FILE = "./all.log"

@@ -100,12 +100,14 @@ class Magick():
         subprocess.call(_cmd, shell=True)
 
 
-    def Join_HasReize(self,imgList=[],save_path="",re_size=180):
+    def Join_HasReize(self,img_src1,type1,img_src2,type2,save_path="",re_size=180):
         _out_range = 180
 
         _re_size = re_size #显示尺寸，180x180
-        img1_src = imgList[0]
-        img2_src = imgList[1]
+        img1_src = img_src1
+        _type1 = type1
+        img2_src = img_src2
+        _type2 = type2
         save_url = save_path
 
         # img1 = self.Identity(img1_src)  #获取图片1宽高
@@ -132,8 +134,17 @@ class Magick():
         print datetime.datetime.now()
         AddBackGround(img2_src)
         print datetime.datetime.now()
+
+        #延时计算
+        _delay1 = 150
+        _delay2 = 150
+        if _type1 == 'gif' or _type1 == "GIF" or _type1 == 'Gif':
+            _delay1 = 0
+        if _type2 == 'gif' or _type2 == "GIF" or _type2 == 'Gif':
+            _delay2 = 0
+
         # #gif合成
-        _cmd = u" magick  -loop 0 %s %s  %s  " % (img1_src,  img2_src, save_url)
+        _cmd = u" magick convert  -delay %s  %s  -delay %s %s  -loop 0 %s  " % (_delay1,img1_src, _delay2 , img2_src, save_url)
         subprocess.call(_cmd, shell=True)
         print datetime.datetime.now()
 

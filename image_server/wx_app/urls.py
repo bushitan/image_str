@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls import url
-from wx_app.views import *
+from wx_app.views.views import *
+from wx_app.views.magick import *
 urlpatterns = [
 
    url(r'^$', Index.as_view()),
@@ -24,8 +25,8 @@ urlpatterns = [
    url(r'^img/move/$', PictureMove.as_view()),
    url(r'^img/delete/$', PictureDelete.as_view()),
    # url(r'^img/video2gif/$', Video2Gif.as_view()),
-   url(r'^img/video2gif/$', Video2Gif_NoUpload.as_view()),
-   url(r'^img/join/$', Join_NoUpload.as_view()),
+   # url(r'^img/video2gif/$', Video2Gif_NoUpload.as_view()),
+   # url(r'^img/join/$', Join_NoUpload.as_view()),
 
 
    url(r'^img/movie/$', Movie.as_view()),
@@ -45,4 +46,11 @@ urlpatterns = [
 
 
    url(r'^user/login/$', UserLogin.as_view()),
+
+
+   url(r'^img/video2gif/$', Video2Gif_NoUpload.as_view()),
+   url(r'^img/join/$', Join_NoUpload.as_view()),
+
+   # url(r'^magick/join/$', UserLogin.as_view()),
+
 ]
