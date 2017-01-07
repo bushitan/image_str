@@ -130,6 +130,7 @@ class Join_NoUpload(BaseMixin, ListView):
             first_url = request.GET['first']  #原图地址
             seconde_url = request.GET['seconde']
 
+            print first_url,seconde_url
             if  Login.SessionExists(session) is False:
                 return Result.Fail(msg=u"用户不存在,请重新登录")
             _user = Login.GetUser(session)
@@ -164,16 +165,20 @@ class Join_NoUpload(BaseMixin, ListView):
                 return Result.Success(local_url= _local_url)
 
             print datetime.datetime.now()
+
+            magick = Magick()
             if os.path.exists(_first_path) is False :
                 print 111
                 DownFile(first_url_resize,_first_path)
+                magick.Join_AddBackGround(_first_path, _re_size)
             if os.path.exists(_seconde_path) is False :
                 print 111
-                DownFile(seconde_url_resize,_seconde_path)
+                DownFile(seconde_url_resize,_seconde_path) #180x480图片下载地址， 本地保存地址
+                magick.Join_AddBackGround(_seconde_path, _re_size) #本地保存地址，修改成方块的大小
             print datetime.datetime.now()
 
             #GIF拼接
-            magick = Magick()
+
             magick.Join_HasReize(_first_path,first_type,_seconde_path,seconde_type,_join_path,_re_size)
 
             #返回拼接好的路径

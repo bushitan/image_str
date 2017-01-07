@@ -99,23 +99,11 @@ class Magick():
         _cmd = u" magick  convert -colors 100  %s  %s" % (save_url,save_url)
         subprocess.call(_cmd, shell=True)
 
-
-    def Join_HasReize(self,img_src1,type1,img_src2,type2,save_path="",re_size=180):
-        _out_range = 180
-
-        _re_size = re_size #显示尺寸，180x180
-        img1_src = img_src1
-        _type1 = type1
-        img2_src = img_src2
-        _type2 = type2
-        save_url = save_path
-
-        # img1 = self.Identity(img1_src)  #获取图片1宽高
-        # img1_w = float(img1['width'])
-        # img1_h = float(img1['height'])
-
-
-        def AddBackGround(img_src):
+    #将图片设置为180比例的方块，若处理失败，直接删除该图片，跳错
+    def Join_AddBackGround(self,img1_src,re_size=180):
+        try:
+            _re_size = re_size #显示尺寸，180x180
+            img_src = img1_src
             img = self.Identity(img_src)  #获取图片1宽高
             img_w = float(img['width'])
             img_h = float(img['height'])
@@ -129,24 +117,67 @@ class Magick():
             _cmd = u'magick convert -border  %sx%s -bordercolor "#000000"  %s %s' % (border_x,border_y,img_src,img_src)
             # print _cmd
             subprocess.check_output(_cmd, shell=True)
-        print datetime.datetime.now()
-        AddBackGround(img1_src)
-        print datetime.datetime.now()
-        AddBackGround(img2_src)
-        print datetime.datetime.now()
+        except Exception,e:
+            print os.remove(img1_src)  #若处理失败 , 删除该图片，跳错
+            raise e
 
-        #延时计算
-        _delay1 = 150
-        _delay2 = 150
-        if _type1 == 'gif' or _type1 == "GIF" or _type1 == 'Gif':
-            _delay1 = 0
-        if _type2 == 'gif' or _type2 == "GIF" or _type2 == 'Gif':
-            _delay2 = 0
+    def Join_HasReize(self,img_src1,type1,img_src2,type2,save_path="",re_size=180):
+        try:
+            _out_range = 180
+            _re_size = re_size #显示尺寸，180x180
+            img1_src = img_src1
+            _type1 = type1
+            img2_src = img_src2
+            _type2 = type2
+            save_url = save_path
 
-        # #gif合成
-        _cmd = u" magick convert  -delay %s  %s  -delay %s %s  -loop 0 %s  " % (_delay1,img1_src, _delay2 , img2_src, save_url)
-        subprocess.call(_cmd, shell=True)
-        print datetime.datetime.now()
+            #延时计算
+            _delay1 = 150
+            _delay2 = 150
+            if _type1 == 'gif' or _type1 == "GIF" or _type1 == 'Gif':
+                _delay1 = 0
+            if _type2 == 'gif' or _type2 == "GIF" or _type2 == 'Gif':
+                _delay2 = 0
+
+            print "delay:",_delay1,_delay2
+            # #gif合成
+            if _delay1 == 0 and _delay2 == 0:
+                _cmd = u" magick convert  %s   %s  -loop 0 %s  " % (img1_src,img2_src, save_url)  # 纯粹gif，不用延时
+            else:
+                _cmd = u" magick convert  -delay %s  %s  -delay %s %s  -loop 0 %s  " % (_delay1,img1_src, _delay2 , img2_src, save_url) #有jpg静态图片，需设置延时
+
+            subprocess.call(_cmd, shell=True)
+
+            print datetime.datetime.now()
+        except Exception,e:
+            print os.remove(save_path)  #若处理失败 , 删除该图片，跳错
+            raise e
+        # img1 = self.Identity(img1_src)  #获取图片1宽高
+        # img1_w = float(img1['width'])
+        # img1_h = float(img1['height'])
+
+
+        # def AddBackGround(img_src):
+        #     img = self.Identity(img_src)  #获取图片1宽高
+        #     img_w = float(img['width'])
+        #     img_h = float(img['height'])
+        #     if img_w >= img_h:
+        #         border_x = 0
+        #         border_y = int(( re_size - img_h ) / 2)
+        #     else:
+        #         border_x = int(( re_size - img_w ) / 2)
+        #         border_y = 0
+        #     #为图片加黑边
+        #     _cmd = u'magick convert -border  %sx%s -bordercolor "#000000"  %s %s' % (border_x,border_y,img_src,img_src)
+        #     # print _cmd
+        #     subprocess.check_output(_cmd, shell=True)
+        # print datetime.datetime.now()
+        # AddBackGround(img1_src)
+        # print datetime.datetime.now()
+        # AddBackGround(img2_src)
+        # print datetime.datetime.now()
+
+
 
         #
         # img2 = self.Identity(img2_src)  #获取图片2宽高
