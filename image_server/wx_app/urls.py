@@ -47,6 +47,7 @@ urlpatterns = [
 
    url(r'^user/login/$', UserLogin.as_view()),
 
+   url(r'^ad/title/$', AdTitle.as_view()),
 
    url(r'^img/video2gif/$', Video2Gif_NoUpload.as_view()),
    url(r'^img/join/$', Join_NoUpload.as_view()),

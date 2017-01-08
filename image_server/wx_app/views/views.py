@@ -475,7 +475,7 @@ class PictureDelete(BaseMixin, ListView):
             _img = Img.objects.get(id=_img_id)
             _category = Category.objects.get(id=_category_id)
             _rel = RelCategoryImg.objects.filter(img=_img , category_id = _category)
-            _img.delete()
+            # _img.delete()  #暂时不删除图片，只删除关系
             _rel.delete()
 
             #Todo 删除七牛云数据
@@ -1119,6 +1119,7 @@ class TagImgQuery(BaseMixin, ListView):
         try:
             self._session = request.GET['session']
             _category_name = request.GET['tag_name']
+            _page_num= int(request.GET['page_num'])
             #1 精确查询
             _category = Category.objects.get( name = _category_name,user_id=None)  #,parent_id=None
             _img_list = []
@@ -1128,7 +1129,20 @@ class TagImgQuery(BaseMixin, ListView):
                     "yun_url":_r.img.yun_url, # 七牛云自动缩略图
                     "size":_r.img.size
                 })
-            return HttpResponse(json.dumps({"status":"true","img_list":_img_list}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
+            #2 Todo 模糊查询
+
+        except Exception ,e:
+            log.error(e,None,"TagImgQuery")
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
+
+#点击标签，查询图片
+class AdTitle(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        try:
+            text = u"点击搜索有更多惊喜"
+            return HttpResponse(json.dumps({"status":"true","text":text}),content_type="application/json")
             #2 Todo 模糊查询
 
         except Exception ,e:
