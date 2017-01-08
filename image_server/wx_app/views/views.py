@@ -1147,6 +1147,6 @@ class AdTitle(BaseMixin, ListView):
             #2 Todo 模糊查询
 
         except Exception ,e:
-            log.error(e,None,"TagImgQuery")
+            log.error(e,None,self.__class__.__name__)
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"广告出错" }),content_type="application/json")
