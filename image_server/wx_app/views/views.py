@@ -1141,8 +1141,9 @@ class TagImgQuery(BaseMixin, ListView):
 class AdTitle(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         try:
-            text = u"点击搜索有更多惊喜"
-            return HttpResponse(json.dumps({"status":"true","text":text}),content_type="application/json")
+            title = u"点击搜索有更多惊喜"
+            keyword = u"今日斗图"
+            return HttpResponse(json.dumps({"status":"true","title":title,"keyword":keyword}),content_type="application/json")
             #2 Todo 模糊查询
 
         except Exception ,e:
