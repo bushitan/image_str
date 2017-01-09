@@ -1143,7 +1143,13 @@ class AdTitle(BaseMixin, ListView):
         try:
             title = u"点击搜索有更多惊喜"
             keyword = u"今日斗图"
-            return HttpResponse(json.dumps({"status":"true","title":title,"keyword":keyword}),content_type="application/json")
+            search_key = ["搞笑","笑屎了","今日斗图"]
+            return HttpResponse(json.dumps({
+                "status":"true",
+                "title":title,
+                "keyword":keyword,
+                "search_key":search_key
+            }),content_type="application/json")
             #2 Todo 模糊查询
 
         except Exception ,e:
