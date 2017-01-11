@@ -78,3 +78,17 @@ class QiNiu():
         token = q.upload_token(qiniu_bucket_name,key = key,policy = policy)
         # token = q.upload_token(qiniu_bucket_name,key = key)
         return token,key
+
+    def delete(self,key):
+        # try:
+            #初始化Auth状态
+        q = qiniu.Auth(qiniu_access_key, qiniu_secret_key)
+        #初始化BucketManager
+        bucket = qiniu.BucketManager(q)
+        #删除bucket_name 中的文件 key  #你要测试的空间， 并且这个key在你空间中存在
+        ret, info = bucket.delete(qiniu_bucket_name, key)
+        print(info)
+            # return True
+        # except Exception as e:
+        #     print 'error',e
+        #     return False

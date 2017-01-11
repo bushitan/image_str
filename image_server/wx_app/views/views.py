@@ -31,7 +31,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILE_PATH = FilePath(BASE_DIR)
 from moviepy.editor import *
 import subprocess
-
+from django.db import transaction #事务
+from wx_app.lib.logger import Logger
+Logger = Logger()
 
 class BaseMixin(object):
     def get_context_data(self, *args, **kwargs):
@@ -463,7 +465,17 @@ class PictureMove(BaseMixin, ListView):
 #88  图片删除  删除图片、图片目录关系
 class PictureDelete(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
+        _user = ""
         try:
+            session = request.GET['session']
+            # print "name",_category_name
+
+            if   User.objects.filter( session = session).exists() is False:
+                return HttpResponse(
+                    json.dumps({"status":"false","msg":u"用户不存在"}),
+                    content_type="application/json"
+                )
+            _user = User.objects.get( session = session)
 
             _img_id = request.GET['img_id']
             _category_id = request.GET['category_id']
@@ -475,10 +487,25 @@ class PictureDelete(BaseMixin, ListView):
             _img = Img.objects.get(id=_img_id)
             _category = Category.objects.get(id=_category_id)
             _rel = RelCategoryImg.objects.filter(img=_img , category_id = _category)
-            # _img.delete()  #暂时不删除图片，只删除关系
-            _rel.delete()
 
-            #Todo 删除七牛云数据
+            #存在多个关系，只删除该关系
+            #存在1个关系，删除图片
+            _index_num = RelCategoryImg.objects.filter(img=_img).count()
+            # _img.delete()  #暂时不删除图片，只删除关系
+            if _index_num > 1 :
+                print "index:", _index_num
+                _rel.delete()
+                Logger.log( "delete rel:" +_img.name ,_user,self.__class__.__name__ )
+            else:
+                print "index:",_index_num
+                with transaction.atomic(): #事务
+                    print _img.name
+                    _qiniu = QiNiu() #删除七牛云数据
+                    _qiniu.delete(_img.name) #先删除七牛云
+                    _rel.delete() #删除关系，删除图片
+                    _img.delete()  #暂时不删除图片，只删除关系
+                Logger.log( "delete rel img qini:" +_img.name ,_user,self.__class__.__name__ )
+
             _dict = {
                 "status":"true",
                 "img_id":_img_id,
@@ -489,8 +516,9 @@ class PictureDelete(BaseMixin, ListView):
                 content_type="application/json"
             )
         except Exception ,e:
-                print e
-                return HttpResponse(json.dumps({"status":"false","msg":u"删除图片出错"+ e}),content_type="application/json")
+            print e
+            Logger.error(str(e),_user,self.__class__.__name__)
+            return HttpResponse(json.dumps({"status":"false","msg":u"删除图片出错"+ e}),content_type="application/json")
 
 class PictureAdd(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
