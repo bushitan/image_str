@@ -34,6 +34,7 @@ import subprocess
 from django.db import transaction #事务
 from wx_app.lib.logger import Logger
 Logger = Logger()
+import  image_server.settings as SETTINGS
 
 class BaseMixin(object):
     def get_context_data(self, *args, **kwargs):
@@ -1046,8 +1047,6 @@ class Movie(BaseMixin, ListView):
         clip.write_gif(_save_path, fps=_fps)
         return HttpResponse(True)
 
-
-
 #12 标签 -增加
 class TagAdd(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
@@ -1142,24 +1141,70 @@ class TagImgAdd(BaseMixin, ListView):
             return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
 
 #点击标签，查询图片
+class CacheClear(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        try:
+            dir =  [
+                SETTINGS.BASE_DIR + "/cache_today.txt",
+                SETTINGS.BASE_DIR + "/cache_yf.txt",
+                SETTINGS.BASE_DIR + "/cache_xm.txt"
+            ]
+            for d in dir:
+                with open(d, 'w+') as fr: #缓存没有内容，查询写入缓存
+                    pass
+            return HttpResponse(u"清除缓存成功",content_type="application/json")
+        except Exception ,e:
+            log.error(e,None,"TagImgQuery")
+            print e
+            return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
+#点击标签，查询图片
 class TagImgQuery(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         try:
             self._session = request.GET['session']
             _category_name = request.GET['tag_name']
             _page_num= int(request.GET['page_num'])
-            #1 精确查询
-            _category = Category.objects.get( name = _category_name,user_id=None)  #,parent_id=None
-            _img_list = []
-            for _r in RelCategoryImg.objects.filter(category=_category):
-                _img_list.append({
-                    "img_id":_r.img.id,
-                    "yun_url":_r.img.yun_url, # 七牛云自动缩略图
-                    "size":_r.img.size
-                })
-            return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
-            #2 Todo 模糊查询
 
+            def Recommend(name):
+                _category = Category.objects.get( name = name,user_id=19)  #,parent_id=None
+                _img_list = []
+                for _r in RelCategoryImg.objects.filter(category=_category):
+                    _img_list.append({
+                        "img_id":_r.img.id,
+                        "yun_url":_r.img.yun_url, # 七牛云自动缩略图
+                        "size":_r.img.size
+                    })
+                return _img_list
+                # print _category_name
+            if(_category_name == u"今日斗图" or _category_name == u"斗图研发部" or _category_name == u"斗图项目部" ):
+                dir =  SETTINGS.BASE_DIR + "/cache_today.txt"
+                if(_category_name == u"斗图研发部"):
+                    dir =  SETTINGS.BASE_DIR + "/cache_yf.txt"
+                if(_category_name == u"斗图项目部"):
+                    dir =  SETTINGS.BASE_DIR + "/cache_xm.txt"
+
+                with open(dir, 'r') as f: #缓存有内容，读取返回
+                    print f.read()
+                    if f.read() == "":
+                       pass
+                    else:
+                        o = json.load(f)
+                        return HttpResponse(json.dumps(o),content_type="application/json")
+                with open(dir, 'w+') as fr: #缓存没有内容，查询写入缓存
+                    _img_list = Recommend(_category_name)
+                    json_query = {"status":"true","img_list":_img_list , "page_num":_page_num}
+                    fr.write(json.dumps(json_query))
+                    return HttpResponse(json.dumps(json_query),content_type="application/json")
+            else : #其他目录查数据库
+                _category = Category.objects.get( name = _category_name,user_id=None)  #,parent_id=None
+                _img_list = []
+                for _r in RelCategoryImg.objects.filter(category=_category):
+                    _img_list.append({
+                        "img_id":_r.img.id,
+                        "yun_url":_r.img.yun_url, # 七牛云自动缩略图
+                        "size":_r.img.size
+                    })
+                return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
         except Exception ,e:
             log.error(e,None,"TagImgQuery")
             print e
@@ -1178,8 +1223,6 @@ class AdTitle(BaseMixin, ListView):
                 "keyword":keyword,
                 "search_key":search_key
             }),content_type="application/json")
-            #2 Todo 模糊查询
-
         except Exception ,e:
             log.error(e,None,self.__class__.__name__)
             print e

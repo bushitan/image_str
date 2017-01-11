@@ -166,4 +166,13 @@ def main():
 # 每次请求耗时(秒): 0.0158619999886
 # 每秒承载请求数: 63.0437524096
 # 错误数量: 82
-if __name__ == "__main__": main()
+import  image_server.settings as SETTINGS
+if __name__ == "__main__":
+    # main()
+    dir =  SETTINGS.BASE_DIR + "/cache_today.txt"
+    fileHandler = open(dir,'a+')   #或者调用open()函数
+    # fileHandler.write("\r\n")
+    fileHandler.seek(0)
+    contents = fileHandler.read()
+    print contents
+    fileHandler.close()

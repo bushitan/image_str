@@ -39,9 +39,9 @@ class User(models.Model):
     wx_expires_in = models.FloatField( verbose_name=u'微信SessionKey过期时间',null=True,blank=True)
     session = models.CharField (max_length=128, verbose_name=u'Django的session',null=True,blank=True)
     expires = models.FloatField( verbose_name=u'Django的session过期时间',null=True,blank=True)
-
     is_public = models.IntegerField(u'是否管理员',default=0,choices=USER_ROLE.items())
     uuid =  models.CharField(max_length=32, verbose_name=u'uuid标识',null=True,blank=True)
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
     class Meta:
         verbose_name_plural = verbose_name = u'用户'
         app_label = string_with_title('wx_app', u"表情")
@@ -54,7 +54,7 @@ class Img(models.Model):
     width =  models.IntegerField(default=0, verbose_name='宽',null=True,blank=True)
     height = models.IntegerField(default=0, verbose_name='高',null=True,blank=True)
     duration = models.FloatField(default=0, verbose_name='时长',null=True,blank=True)
-    create_time = models.DateTimeField(u'创建时间', auto_now_add=True,blank=True)
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
 
     class Meta:
         verbose_name_plural = verbose_name = u'图片'
@@ -68,6 +68,7 @@ class Category(models.Model):
     user_id = models.ForeignKey(User, verbose_name=u'用户',null=True,blank=True)
     is_default = models.IntegerField(u'是否用户默认目录',default=0,choices=CATEGORY_ROLE.items(),)
     parent_id = models.ForeignKey('self', verbose_name=u'父类目录',null=True,blank=True)  #自身目录
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
     class Meta:
         verbose_name_plural = verbose_name = u'目录'
         app_label = string_with_title('wx_app', u"表情")
@@ -77,8 +78,10 @@ class Category(models.Model):
 class RelCategoryImg(models.Model):
     category = models.ForeignKey(Category, verbose_name=u'目录')
     img = models.ForeignKey(Img, verbose_name=u'图片')
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
     class Meta:
         verbose_name_plural = verbose_name = u'目录图片关系'
+        ordering = ['-create_time']
         app_label = string_with_title('wx_app', u"表情")
 
 class Log(models.Model):

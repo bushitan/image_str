@@ -43,6 +43,7 @@ urlpatterns = [
    url(r'^tag/query/$', TagQuery.as_view()),
    url(r'^tag/img_add/$', TagImgAdd.as_view()),
    url(r'^tag/img_query/$', TagImgQuery.as_view()),
+   url(r'^tag/cache_clear/$', CacheClear.as_view()),
 
 
    url(r'^user/login/$', UserLogin.as_view()),

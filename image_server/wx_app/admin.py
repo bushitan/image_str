@@ -12,7 +12,7 @@ class ImgAdmin(admin.ModelAdmin):
     list_display = ('id','name',)
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id','name',)
+    list_display = ('id','name','user_id')
 
 class RelCategoryImgAdmin(admin.ModelAdmin):
     list_display = ('category_id','img_id')
