@@ -1166,7 +1166,7 @@ class TagImgQuery(BaseMixin, ListView):
             _page_num= int(request.GET['page_num'])
 
             def Recommend(name):
-                _category = Category.objects.get( name = name,user_id=19)  #,parent_id=None
+                _category = Category.objects.get( name = name,user_id=1)  #,parent_id=None
                 _img_list = []
                 for _r in RelCategoryImg.objects.filter(category=_category):
                     _img_list.append({
