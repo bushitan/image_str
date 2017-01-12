@@ -743,6 +743,15 @@ class UserLogin(BaseMixin, ListView):
                         is_default = 1,
                     )
                     _category.save()
+
+                    _id_list = [8,13,12,11,10]
+                    for i in _id_list:
+                        _img = Img.objects.get(id=i)
+                        _rel = RelCategoryImg(
+                            img=_img ,
+                            category = _category
+                        )
+                        _rel.save()
                     #登陆成功 ，返回session
                     return HttpResponse(json.dumps({"status":"true","session":_new_session }),content_type="application/json")
             else : #session 存在，
@@ -1216,7 +1225,7 @@ class AdTitle(BaseMixin, ListView):
         try:
             title = u"点击搜索有更多惊喜"
             keyword = u"今日斗图"
-            search_key = ["搞笑","笑屎了","今日斗图"]
+            search_key = ["今日斗图","斗图研发部","斗图项目部"]
             return HttpResponse(json.dumps({
                 "status":"true",
                 "title":title,
