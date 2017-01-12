@@ -124,7 +124,8 @@ qiniu_access_key = 'bK5xWj0a-TBIljlxHYOHuQib9HYF_9Ft-HtP8tEb'
 qiniu_secret_key = '56lucORYc45sF5eDqNk63mLXsQ78n4RrubIrjtE0'
 qiniu_bucket_name = 'clickz'
 
-QINIU_HOST = 'http://7xsark.com1.z0.glb.clouddn.com/'
+# QINIU_HOST = 'http://7xsark.com1.z0.glb.clouddn.com/'
+QINIU_HOST = 'http://image.12xiong.top/'
 
 #magick文件夹路径，处理完后直接下载
 MAGICK_FILE  = os.path.join(BASE_DIR, "wx_app/static/magick/upload/")
