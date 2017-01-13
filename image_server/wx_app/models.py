@@ -48,6 +48,7 @@ class User(models.Model):
     def __unicode__(self):
         return '%s' % (self.name)
 class Img(models.Model):
+    user_id = models.ForeignKey(User, verbose_name=u'用户',null=True,blank=True)
     name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,blank=True)
     yun_url = models.TextField( verbose_name=u'云存储地址',null=True,blank=True)  #url 地址需要使用Text，用Char不显示，我也不懂为啥
     size = models.IntegerField(default=170,verbose_name='高x宽最大值')

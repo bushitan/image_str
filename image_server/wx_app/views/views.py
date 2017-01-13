@@ -299,6 +299,7 @@ class UploadToken(BaseMixin, ListView):
                 if _type == 'mp4' or _type == "MP4" or _type == "Mp4":
                     size = 4
                     _img = Img(
+                        user_id = _user,
                         name = key,
                         yun_url = SETTING.QINIU_HOST + key,
                         size = size,
@@ -315,6 +316,7 @@ class UploadToken(BaseMixin, ListView):
                     elif w > h :
                         size = 3
                     _img = Img(
+                        user_id = _user,
                         name = key,
                         yun_url = SETTING.QINIU_HOST + key,
                         size = size,
@@ -348,7 +350,7 @@ class UploadToken(BaseMixin, ListView):
             return HttpResponse(json.dumps({"status":"false","msg":u"网络出错，请重新上传"}),content_type="application/json")
         except Exception,e:
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + str(e)}),content_type="application/json")
 #55
 class PictureMy(BaseMixin, ListView):
    pass
@@ -727,31 +729,32 @@ class UserLogin(BaseMixin, ListView):
                     #登陆成功 ，返回session
                     return HttpResponse(json.dumps({"status":"true","session":_new_session }),content_type="application/json")
                 else:
-                    #不存在，新增用户
-                    _user = User(
-                        wx_open_id = _json["openid"],
-                        wx_session_key =  _json["session_key"],
-                        wx_expires_in = _expires_in,
-                        session = _new_session,
-                        expires = _new_expires,
-                    )
-                    _user.save()
-                    #新增默认目录
-                    _category = Category(
-                        name = u"默认目录",
-                        user_id = _user,
-                        is_default = 1,
-                    )
-                    _category.save()
-
-                    _id_list = [8,13,12,11,10]
-                    for i in _id_list:
-                        _img = Img.objects.get(id=i)
-                        _rel = RelCategoryImg(
-                            img=_img ,
-                            category = _category
+                    with transaction.atomic(): #事务
+                        #不存在，新增用户
+                        _user = User(
+                            wx_open_id = _json["openid"],
+                            wx_session_key =  _json["session_key"],
+                            wx_expires_in = _expires_in,
+                            session = _new_session,
+                            expires = _new_expires,
                         )
-                        _rel.save()
+                        _user.save()
+                        #新增默认目录
+                        _category = Category(
+                            name = u"默认目录",
+                            user_id = _user,
+                            is_default = 1,
+                        )
+                        _category.save()
+
+                        _id_list = [8,13,12,11,10]
+                        for i in _id_list:
+                            _img = Img.objects.get(id=i)
+                            _rel = RelCategoryImg(
+                                img=_img ,
+                                category = _category
+                            )
+                            _rel.save()
                     #登陆成功 ，返回session
                     return HttpResponse(json.dumps({"status":"true","session":_new_session }),content_type="application/json")
             else : #session 存在，

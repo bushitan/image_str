@@ -9,7 +9,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('id','name',)
 
 class ImgAdmin(admin.ModelAdmin):
-    list_display = ('id','name',)
+    list_display = ('id','name','user_id')
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id','name','user_id')
