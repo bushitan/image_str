@@ -274,6 +274,7 @@ class UploadToken(BaseMixin, ListView):
             w = request.POST['w']
             h = request.POST['h']
             duration = request.POST['duration']
+            fsize = request.POST['fsize']
             vw = request.POST['vw']
             vh = request.POST['vh']
 
@@ -302,6 +303,7 @@ class UploadToken(BaseMixin, ListView):
                         user_id = _user,
                         name = key,
                         yun_url = SETTING.QINIU_HOST + key,
+                        fsize = fsize,
                         size = size,
                         width = vw,
                         height = vh,
@@ -319,6 +321,7 @@ class UploadToken(BaseMixin, ListView):
                         user_id = _user,
                         name = key,
                         yun_url = SETTING.QINIU_HOST + key,
+                        fsize = fsize,
                         size = size,
                         width = w,
                         height = h,
