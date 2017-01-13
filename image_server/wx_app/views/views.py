@@ -399,7 +399,7 @@ class PictureQuery(BaseMixin, ListView):
 
                 return HttpResponse(json.dumps({"status":"true","img_list":_img_list}),content_type="application/json")
             #2
-
+            print "category_name:+"
             _category_name = request.GET['category_name']
             print _category_name
             if _uid == "null" and _category_name != "null" :
@@ -1126,29 +1126,36 @@ class TagQuery(BaseMixin, ListView):
             log.error(e,None,"TagQuery")
             return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
 
-#13 标签 - 贴标签
+#13 标签 - 贴标签 批量
 class TagImgAdd(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         try:
             self._session = request.GET['session']
-            category_id = int(request.GET['tag_id']) #Todo 小程序get请求还会出错
+            category_id = int(request.GET['tag_id'])
             print "category_id",category_id
-            _img_id = request.GET['img_id']
 
-            _img = Img.objects.get( id = _img_id )
+            _img_id_list = request.GET['img_id_list'].split(',') #字符串转数组
+            print _img_id_list
+
             # for c in _category_id_list:
                 # print Category.objects.filter(id = c , parent_id = None).exists()
             if Category.objects.filter(id = category_id , parent_id = None).exists() is False: # 是否为父类 ， 子类绑定图片，父类不行
-
                 _category = Category.objects.get( id = category_id )
 
-                if RelCategoryImg.objects.filter(img=_img , category = _category).exists() is False: #
-                    _rel = RelCategoryImg(
-                        img=_img ,
-                        category = _category,
-                    )
-                    _rel.save()
-                    print _rel
+                with transaction.atomic(): #事务
+                    for _img_id in _img_id_list:#挨个查询标签
+                        _img = Img.objects.get( id = _img_id )
+                        print _img
+
+                        if RelCategoryImg.objects.filter(img=_img , category = _category).exists() is False: #
+                            _rel = RelCategoryImg(
+                                img=_img ,
+                                category = _category,
+                            )
+
+                            print _rel
+                            _rel.save()
+                            # print _rel
             return HttpResponse(json.dumps({"status":"true","msg":u"标签添加成功"}),content_type="application/json")
         except Exception ,e:
             log.error(e,None,"TagImgAdd")
