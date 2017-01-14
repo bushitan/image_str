@@ -1181,7 +1181,7 @@ class CacheClear(BaseMixin, ListView):
             return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
 #点击标签，查询图片
 
-KEY_WORD=[ u"今日斗图",u"斗鸡吧",u"新图研发",u"福",u"灵魂画师",u"帮助"]
+KEY_WORD=[ u"今日斗图",u"斗鸡吧",u"拼接素材",u"福",u"灵魂画师",u"帮助"]
 
 class TagImgQuery(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
