@@ -750,7 +750,7 @@ class UserLogin(BaseMixin, ListView):
                         )
                         _category.save()
 
-                        _id_list = [8,13,12,11,10]
+                        _id_list = [236]
                         for i in _id_list:
                             _img = Img.objects.get(id=i)
                             _rel = RelCategoryImg(
@@ -1180,6 +1180,9 @@ class CacheClear(BaseMixin, ListView):
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
 #点击标签，查询图片
+
+KEY_WORD=[ u"今日斗图",u"斗鸡吧",u"新图研发",u"福",u"灵魂画师",u"帮助"]
+
 class TagImgQuery(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         try:
@@ -1198,25 +1201,29 @@ class TagImgQuery(BaseMixin, ListView):
                     })
                 return _img_list
                 # print _category_name
-            if(_category_name == u"今日斗图" or _category_name == u"斗图研发部" or _category_name == u"斗图项目部" ):
-                dir =  SETTINGS.BASE_DIR + "/cache_today.txt"
-                if(_category_name == u"斗图研发部"):
-                    dir =  SETTINGS.BASE_DIR + "/cache_yf.txt"
-                if(_category_name == u"斗图项目部"):
-                    dir =  SETTINGS.BASE_DIR + "/cache_xm.txt"
+            # if(_category_name == KEY_WORD[0] or _category_name == KEY_WORD[1] or _category_name == KEY_WORD[2]
+            #    or _category_name == KEY_WORD[3] or _category_name == KEY_WORD[4] or _category_name == KEY_WORD[5]):
+            #     dir =  SETTINGS.BASE_DIR + "/cache_1.txt"
+            #     if(_category_name == KEY_WORD[1]):
+            #         dir =  SETTINGS.BASE_DIR + "/cache_2.txt"
+            #     if(_category_name == KEY_WORD[1]):
+            #         dir =  SETTINGS.BASE_DIR + "/cache_3.txt"
 
-                with open(dir, 'r') as f: #缓存有内容，读取返回
-                    print f.read()
-                    if f.read() == "":
-                       pass
-                    else:
-                        o = json.load(f)
-                        return HttpResponse(json.dumps(o),content_type="application/json")
-                with open(dir, 'w+') as fr: #缓存没有内容，查询写入缓存
-                    _img_list = Recommend(_category_name)
-                    json_query = {"status":"true","img_list":_img_list , "page_num":_page_num}
-                    fr.write(json.dumps(json_query))
-                    return HttpResponse(json.dumps(json_query),content_type="application/json")
+            for i in range(0,len(KEY_WORD)):
+                if(_category_name == KEY_WORD[i]):
+                    dir =  SETTINGS.BASE_DIR + "/cache_" + str(i) +".txt"
+                    with open(dir, 'r') as f: #缓存有内容，读取返回
+                        print f.read()
+                        if f.read() == "":  # 怀疑每次都进不去
+                           pass
+                        else:
+                            o = json.load(f)
+                            return HttpResponse(json.dumps(o),content_type="application/json")
+                    with open(dir, 'w+') as fr: #缓存没有内容，查询写入缓存
+                        _img_list = Recommend(_category_name)
+                        json_query = {"status":"true","img_list":_img_list , "page_num":_page_num}
+                        fr.write(json.dumps(json_query))
+                        return HttpResponse(json.dumps(json_query),content_type="application/json")
             else : #其他目录查数据库
                 _category = Category.objects.get( name = _category_name,user_id=None)  #,parent_id=None
                 _img_list = []
@@ -1236,9 +1243,9 @@ class TagImgQuery(BaseMixin, ListView):
 class AdTitle(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         try:
-            title = u"点击搜索有更多惊喜"
-            keyword = u"今日斗图"
-            search_key = ["今日斗图","斗图研发部","斗图项目部"]
+            title = u"图片来自网络，侵权、吐槽、点赞请联系微信:bushitan"
+            keyword = KEY_WORD[0]
+            search_key = [KEY_WORD[0],KEY_WORD[1],KEY_WORD[2]]
             return HttpResponse(json.dumps({
                 "status":"true",
                 "title":title,
