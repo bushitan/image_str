@@ -1225,10 +1225,9 @@ class TagImgQuery(BaseMixin, ListView):
                             return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
                     with open(dir, 'w+') as fr: #缓存没有内容，查询写入缓存
                         _img_list = Recommend(_category_name)
-                        _img_list,_page_num = ReturnPageRange(_img_list,_page_num)
-                        json_query = {"status":"true","img_list":_img_list , "page_num":_page_num}
-                        fr.write(json.dumps(json_query)) #记录到txt中
-                        return HttpResponse(json.dumps(json_query),content_type="application/json")
+                        fr.write(json.dumps( {"status":"true","img_list":_img_list , "page_num":_page_num})) #所有表情，记录到txt中
+                        _img_list,_page_num = ReturnPageRange(_img_list,_page_num) #切割传输
+                        return HttpResponse(json.dumps( {"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
             else : #其他目录查数据库
                 _category = Category.objects.get( name = _category_name,user_id=None)  #,parent_id=None
                 _img_list = []
