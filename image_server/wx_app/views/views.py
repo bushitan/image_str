@@ -1190,6 +1190,15 @@ class TagImgQuery(BaseMixin, ListView):
             _category_name = request.GET['tag_name']
             _page_num= int(request.GET['page_num'])
 
+            _page_range = 20
+            def ReturnPageRange(img_list):
+                count = _page_num*_page_range
+                if count >= len(img_list):
+                    return img_list
+                else:
+                    index = (_page_num - 1) * _page_range
+                    return img_list[index:count]
+
             def Recommend(name):
                 _category = Category.objects.get( name = name,user_id=1)  #,parent_id=None
                 _img_list = []
@@ -1200,14 +1209,6 @@ class TagImgQuery(BaseMixin, ListView):
                         "size":_r.img.size
                     })
                 return _img_list
-                # print _category_name
-            # if(_category_name == KEY_WORD[0] or _category_name == KEY_WORD[1] or _category_name == KEY_WORD[2]
-            #    or _category_name == KEY_WORD[3] or _category_name == KEY_WORD[4] or _category_name == KEY_WORD[5]):
-            #     dir =  SETTINGS.BASE_DIR + "/cache_1.txt"
-            #     if(_category_name == KEY_WORD[1]):
-            #         dir =  SETTINGS.BASE_DIR + "/cache_2.txt"
-            #     if(_category_name == KEY_WORD[1]):
-            #         dir =  SETTINGS.BASE_DIR + "/cache_3.txt"
 
             for i in range(0,len(KEY_WORD)):
                 if(_category_name == KEY_WORD[i]):
@@ -1218,11 +1219,13 @@ class TagImgQuery(BaseMixin, ListView):
                            pass
                         else:
                             o = json.load(f)
-                            return HttpResponse(json.dumps(o),content_type="application/json")
+                            _img_list = ReturnPageRange(o["img_list"])
+                            return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
                     with open(dir, 'w+') as fr: #缓存没有内容，查询写入缓存
                         _img_list = Recommend(_category_name)
+                        _img_list = ReturnPageRange(_img_list)
                         json_query = {"status":"true","img_list":_img_list , "page_num":_page_num}
-                        fr.write(json.dumps(json_query))
+                        fr.write(json.dumps(json_query)) #记录到txt中
                         return HttpResponse(json.dumps(json_query),content_type="application/json")
             else : #其他目录查数据库
                 _category = Category.objects.get( name = _category_name,user_id=None)  #,parent_id=None
@@ -1233,6 +1236,7 @@ class TagImgQuery(BaseMixin, ListView):
                         "yun_url":_r.img.yun_url, # 七牛云自动缩略图
                         "size":_r.img.size
                     })
+                    _img_list = ReturnPageRange(_img_list) #获取图片范围
                 return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
         except Exception ,e:
             log.error(e,None,"TagImgQuery")
