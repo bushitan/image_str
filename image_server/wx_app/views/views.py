@@ -1221,11 +1221,11 @@ class TagImgQuery(BaseMixin, ListView):
                            pass
                         else:
                             o = json.load(f)
-                            _img_list,_page_num = ReturnPageRange(o["img_list"])
+                            _img_list,_page_num = ReturnPageRange(o["img_list"],_page_num)
                             return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
                     with open(dir, 'w+') as fr: #缓存没有内容，查询写入缓存
                         _img_list = Recommend(_category_name)
-                        _img_list,_page_num = ReturnPageRange(_img_list)
+                        _img_list,_page_num = ReturnPageRange(_img_list,_page_num)
                         json_query = {"status":"true","img_list":_img_list , "page_num":_page_num}
                         fr.write(json.dumps(json_query)) #记录到txt中
                         return HttpResponse(json.dumps(json_query),content_type="application/json")
@@ -1238,7 +1238,7 @@ class TagImgQuery(BaseMixin, ListView):
                         "yun_url":_r.img.yun_url, # 七牛云自动缩略图
                         "size":_r.img.size
                     })
-                    _img_list,_page_num = ReturnPageRange(_img_list) #获取图片范围
+                    _img_list,_page_num = ReturnPageRange(_img_list,_page_num) #获取图片范围
                 return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
         except Exception ,e:
             log.error(e,None,"TagImgQuery")
