@@ -1188,8 +1188,9 @@ class TagImgQuery(BaseMixin, ListView):
         try:
             self._session = request.GET['session']
             _category_name = request.GET['tag_name']
-            _page_num= int(request.GET['page_num'])
+            self._page_num= int(request.GET['page_num'])
 
+            #按20的范围。读取表情
             _page_range = 20
             def ReturnPageRange(img_list):
                 count = _page_num*_page_range
@@ -1197,6 +1198,7 @@ class TagImgQuery(BaseMixin, ListView):
                     return img_list
                 else:
                     index = (_page_num - 1) * _page_range
+                    self._page_num = self._page_num + 1
                     return img_list[index:count]
 
             def Recommend(name):
@@ -1220,11 +1222,11 @@ class TagImgQuery(BaseMixin, ListView):
                         else:
                             o = json.load(f)
                             _img_list = ReturnPageRange(o["img_list"])
-                            return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
+                            return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":self._page_num}),content_type="application/json")
                     with open(dir, 'w+') as fr: #缓存没有内容，查询写入缓存
                         _img_list = Recommend(_category_name)
                         _img_list = ReturnPageRange(_img_list)
-                        json_query = {"status":"true","img_list":_img_list , "page_num":_page_num}
+                        json_query = {"status":"true","img_list":_img_list , "page_num":self._page_num}
                         fr.write(json.dumps(json_query)) #记录到txt中
                         return HttpResponse(json.dumps(json_query),content_type="application/json")
             else : #其他目录查数据库
@@ -1237,7 +1239,7 @@ class TagImgQuery(BaseMixin, ListView):
                         "size":_r.img.size
                     })
                     _img_list = ReturnPageRange(_img_list) #获取图片范围
-                return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
+                return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":self._page_num}),content_type="application/json")
         except Exception ,e:
             log.error(e,None,"TagImgQuery")
             print e
