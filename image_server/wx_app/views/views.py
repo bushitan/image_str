@@ -1195,10 +1195,10 @@ class TagImgQuery(BaseMixin, ListView):
             _page_range = 20
             def ReturnPageRange(img_list,page_num):
                 count = _page_num*_page_range
+                index = (_page_num - 1) * _page_range
                 if count >= len(img_list):
-                    return [img_list,page_num]
-                else:
-                    index = (_page_num - 1) * _page_range
+                    return [img_list[index:len(img_list)],page_num]
+                else :
                     return [img_list[index:count], page_num + 1]
 
             def Recommend(name):
