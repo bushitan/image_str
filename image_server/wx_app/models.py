@@ -32,6 +32,11 @@ LOG_LEVEL= {
     3: u'error',
 }
 
+STEP_FREE = {
+    0:u"空闲，可下一步",
+    1:u"非空闲，不能下一步",
+}
+
 class User(models.Model):
     name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,blank=True)
     wx_open_id = models.CharField(max_length=50, verbose_name=u'微信OpenID',null=True,blank=True)
@@ -95,3 +100,49 @@ class Log(models.Model):
     class Meta:
         verbose_name_plural = verbose_name = u'日志'
         app_label = string_with_title('wx_app', u"表情")
+
+
+#一起画
+
+#主题
+class Theme(models.Model):
+    name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,blank=True)
+    user_id = models.ForeignKey(User, verbose_name=u'发起用户',null=True,blank=True)
+    # sn =  models.CharField(max_length=32, verbose_name=u'主题序列号',null=True,blank=True)
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
+    class Meta:
+        verbose_name_plural = verbose_name = u'绘画主题'
+        app_label = string_with_title('wx_app', u"表情")
+    def __unicode__(self):
+        return '%s' % (self.name)
+
+#主题与参与用户记录，用户查询自己参与的所有主题
+class RelThemeUser(models.Model):
+    theme = models.ForeignKey(Theme, verbose_name=u'主题')
+    user = models.ForeignKey(User, verbose_name=u'参与用户')
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
+    class Meta:
+        verbose_name_plural = verbose_name = u'绘画主题与参与用户关系'
+        ordering = ['-create_time']
+        app_label = string_with_title('wx_app', u"表情")
+
+#绘画步骤，1个主题对应多个步骤
+# 创立之初，用户为空，用户可抢，用户填上；其他则不可抢
+class Step(models.Model):
+    theme_id = models.ForeignKey(Theme, verbose_name=u'主题',null=True,blank=True)
+    user_id = models.ForeignKey(User, verbose_name=u'参与用户',null=True,blank=True)
+    img_id = models.ForeignKey(Img, verbose_name=u'图片',null=True,blank=True)
+    number = models.IntegerField(u'步数',default=1,null=True,blank=True)
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
+    next_user =  models.IntegerField( verbose_name=u'下一个用户',null=True,blank=True)
+    # next_user =  models.ForeignKey(User, verbose_name=u'下一个用户',null=True,blank=True)
+    # is_free  = models.IntegerField(u'是否可抢',default=0,choices=STEP_FREE.items(),)
+    # name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,blank=True)
+    # key =  models.CharField(max_length=32, verbose_name=u'步骤标记',null=True,blank=True)
+
+    class Meta:
+        verbose_name_plural = verbose_name = u'绘画步骤'
+        app_label = string_with_title('wx_app', u"表情")
+    def __unicode__(self):
+        return '%s' % (self.name)
+

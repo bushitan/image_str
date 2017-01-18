@@ -3,6 +3,7 @@
 from django.conf.urls import url
 from wx_app.views.views import *
 from wx_app.views.magick import *
+from wx_app.views.painter import *
 urlpatterns = [
 
    url(r'^$', Index.as_view()),
@@ -52,6 +53,14 @@ urlpatterns = [
 
    url(r'^img/video2gif/$', Video2Gif_NoUpload.as_view()),
    url(r'^img/join/$', Join_NoUpload.as_view()),
+
+
+   url(r'^painter/start/$', Start.as_view()),
+   url(r'^painter/continue/$', Continue.as_view()),
+   url(r'^painter/snatch/$', Snatch.as_view()),
+   url(r'^painter/theme_query/$', ThemeQuery.as_view()),
+   url(r'^painter/step_query/$', StepQuery.as_view()),
+
 
    # url(r'^magick/join/$', UserLogin.as_view()),
 

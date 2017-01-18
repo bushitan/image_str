@@ -8,6 +8,10 @@ class Result():
         self.status = "true"
         return self.__Response(*args, **kwargs)
 
+    def Problem(self, *args, **kwargs):
+        self.status = "false"
+        self.code = 3
+        return self.__Response(*args, **kwargs)
     def Fail(self, *args, **kwargs):
         self.status = "false"
         self.code = 2
