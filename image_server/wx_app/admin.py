@@ -31,7 +31,7 @@ class ThemeAdmin(admin.ModelAdmin):
 class RelThemeUserAdmin(admin.ModelAdmin):
     list_display = ('id','theme_id','user_id')
 class StepAdmin(admin.ModelAdmin):
-    list_display = ('id','number',"next_user",'theme_id','img_id','user_id')
+    list_display = ('id','number',"next_user",'theme_id','img_url','user_id')
 
 admin.site.register(Theme,ThemeAdmin)
 admin.site.register(RelThemeUser,RelThemeUserAdmin)

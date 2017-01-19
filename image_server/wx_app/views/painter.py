@@ -67,7 +67,7 @@ class Start(BaseMixin, ListView):
         try:
             _session = request.GET['session']
             _theme_name = request.GET['theme_name']
-            _img_id = request.GET['img_id']
+            _img_url = request.GET['img_url']
 
             if  Login.SessionExists(_session) is False:
                 return Result.Fail(msg=u"用户不存在,请重新登录")
@@ -75,27 +75,34 @@ class Start(BaseMixin, ListView):
 
 
             with transaction.atomic(): # 事务，同时创建 theme,step,rel_theme_user
+                print "OK1"
                 _theme = Theme( name = _theme_name ,user_id = _user)
                 _theme.save()
-
-                _rel = RelThemeUser( theme_id = _theme ,user_id = _user)
+                print "OK2" , _theme , _user
+                _rel = RelThemeUser( theme = _theme ,user = _user)
                 _rel.save()
-
+                print "OK3"
                 # 创建第1步，该步可以抢
-                _step = Step(theme_id = _theme ,user_id = _user,img_id = _img_id,number = 1,is_free=0)
+                print _theme,_theme.id
+                _step = Step(theme_id = _theme,user_id = _user,img_url = _img_url)
                 _step.save()
+                print "OK4"
 
-            _share = {
-                "theme_id":_theme.id,
-                "step_id":_step.id,
-                "step_number":_step.number,
-            }
+            # _share = {
+            #     "theme_id":_theme.id,
+            #     "step_id":_step.id,
+            #     "step_number":_step.number,
+            # }
             Log.log(u"创建绘画主题成功",_user,self.__class__.__name__)
-            return Result.Success(share= _share)
+            return Result.Success(
+                theme_id= _theme.id,
+                step_id = _step.id,
+                step_number = _step.number,
+            )
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),_user,self.__class__.__name__)
+            Log.error(str(e),self.__class__.__name__)
             return Result.Fail(msg= str(e))
 
 # 2 创建step 继续玩
@@ -106,7 +113,7 @@ class Continue(BaseMixin, ListView):
         try:
             _session = request.GET['session']
             _theme_id = request.GET['theme_id']
-            _img_id = request.GET['img_id']
+            _img_url = request.GET['img_url']
             _step_id = request.GET['step_id']
             _step_number = request.GET['step_number']
 
@@ -135,7 +142,7 @@ class Continue(BaseMixin, ListView):
                 _new_number = _current_step.number + 1
                 # 创建第1步，该步可以抢  Todo _theme_id 直接查询可能会出错
                 # 下一步的用户为空
-                _step = Step(theme_id = _theme_id ,user_id = _user,img_id = _img_id,number = _new_number)
+                _step = Step(theme_id = _theme_id ,user_id = _user,img_url = _img_url,number = _new_number)
                 _step.save()
 
             _share = {
@@ -143,7 +150,12 @@ class Continue(BaseMixin, ListView):
                 "step_id":_step.id,
             }
             Log.log(u"创建绘画主题成功",_user,self.__class__.__name__)
-            return Result.Success(share= _share)
+            # return Result.Success(share= _share)
+            return Result.Success(
+                theme_id= _theme.id,
+                step_id = _step.id,
+                step_number = _step.number,
+            )
         except Exception ,e:
             print Exception,e
             logger.error(e)
@@ -168,23 +180,22 @@ class Snatch(BaseMixin, ListView):
                 _current_step = Step.objects.get(id=_step_id )
                 if _current_step.next_user is not None:
                     # Log.log(u"",_user,self.__class__.__name__)
-                    return Result.Problem(msg=u"来晚了，画布已经被抢了")
+                    return Result.Success(is_success="false",title=u"没抢到",content=u"来晚了，画布已经被抢了")
 
                 #能抢，上一步is_free = 1 ，别的就不能抢了
                 _current_step.next_user = _user.id
                 _current_step.save()
 
-                _img = Img.objects.get(id = _current_step.img_id )
-                _theme = Theme.objects.get(id = _current_step._theme_id )
-
-            _step={
-                "step_id":_current_step,
-                "img_id":_img.id,
-                "img_yun_url":_img.yun_url,
-                "theme_name":_theme.name,
-            }
+                print  _current_step.theme_id.id
+                _theme = Theme.objects.get(id = _current_step.theme_id.id )
+                print _theme
+            # _step={
+            #     "step_id":_current_step.id,
+            #     "img_url":_current_step.img_url,
+            #     "theme_name":_theme.name,
+            # }
             Log.log(u"抢画成功",_user,self.__class__.__name__)
-            return Result.Success(step= _step)
+            return Result.Success( is_success="true",step_id=_current_step.id,img_url=_current_step.img_url,theme_name= _theme.name )
         except Exception ,e:
             print Exception,e
             logger.error(e)
@@ -205,10 +216,12 @@ class ThemeQuery(BaseMixin, ListView):
             _rel_obj_list = RelThemeUser.objects.filter(user_id=_user )
             _theme_list = []
             for r in _rel_obj_list:
-                _theme_list.append({
-                    "theme_name",r.name,
-                    "them_id",r.id,
-                })
+                if r.lift != 2: # 该 theme没有被删除
+                    _theme_list.append({
+                        "theme_name",r.name,
+                        "theme_id",r.id,
+                        "theme_lift",r.lift,
+                    })
             Log.log(u"查询用户主题成功",_user,self.__class__.__name__)
             return Result.Success(theme_list= _theme_list)
         except Exception ,e:
@@ -232,18 +245,62 @@ class StepQuery(BaseMixin, ListView):
 
 
             _theme = Theme.objects.get(id=_theme_id )
-            _step_obj_list = Step.objects.filter(user_id=_theme )
+            _step_obj_list = Step.objects.filter(theme_id=_theme )
             _step_list = []
             for s in _step_obj_list:
-                _img = Img.objects.get(id=s.img_id )
                 _step_list.append({
-                    "theme_name":_theme.name,
-                    "img_yun_url":_img.yun_url,
-                    "step_number":_step.number,
+                    "img_url":s.img_url,
+                    "step_number":s.number,
                 })
+            # _theme_dict = {
+            #     "theme_name":_theme.name,
+            #     "step_list":_step_list,
+            # }
+            Log.log(u"获取主题内容成功",_user,self.__class__.__name__)
+            return Result.Success(theme_name=_theme.name,step_list=_step_list)
+        except Exception ,e:
+            print Exception,e
+            logger.error(e)
+            Log.error(str(e),_user,self.__class__.__name__)
+            return Result.Fail(msg= str(e))
 
-            Log.log(u"查询所有步骤成功",_user,self.__class__.__name__)
-            return Result.Success(step_list= _step_list)
+# 6 查询用户是否正在参与活动，
+# 正在参加，nextuser.number == count
+class JoinLatest(BaseMixin, ListView):
+
+    def get(self, request, *args, **kwargs):
+        _user = ""
+        try:
+            _session = request.GET['session']
+
+            if  Login.SessionExists(_session) is False:
+                return Result.Fail(msg=u"用户不存在,请重新登录")
+            _user = Login.GetUser(_session)
+
+            if  Step.objects.filter(next_user=_user.id ).exists() is False:
+                return Result.Success(is_join="false")
+
+            # print Step.objects.get(next_user=_user.id ),_user.id,_user
+            _step_latest = Step.objects.filter(next_user= int(_user.id) ).latest()
+            # print _step_latest,_step_latest.theme_id,_step_latest.img_url
+            # _step_latest = Step.objects.latest(next_user=_user.id )
+            # print "OK", Step.objects.filter(theme_id=_step_latest.theme_id ) , _step_latest.theme_id
+            _count = Step.objects.filter(theme_id=_step_latest.theme_id ).count()
+
+            print "OK1"
+            if _count == _step_latest.number:
+                print  _count, _step_latest.number
+                return Result.Success(is_join="false")
+            else:
+                print "ing"
+                Log.log(u"用户正在参与互动",_user,self.__class__.__name__)
+                return Result.Success(
+                    is_join="true",
+                    theme_id= _step_latest.theme_id,
+                    theme_name = _step_latest.theme_id.name,
+                    step_id=_step_latest.id,
+                    img_url = _step_latest.img_url,
+                )
         except Exception ,e:
             print Exception,e
             logger.error(e)

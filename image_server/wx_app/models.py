@@ -36,7 +36,11 @@ STEP_FREE = {
     0:u"空闲，可下一步",
     1:u"非空闲，不能下一步",
 }
-
+THEME_LIFT = {
+    0:u"激活",
+    1:u"不激活",
+    2:u"删除",
+}
 class User(models.Model):
     name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,blank=True)
     wx_open_id = models.CharField(max_length=50, verbose_name=u'微信OpenID',null=True,blank=True)
@@ -109,6 +113,7 @@ class Theme(models.Model):
     name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,blank=True)
     user_id = models.ForeignKey(User, verbose_name=u'发起用户',null=True,blank=True)
     # sn =  models.CharField(max_length=32, verbose_name=u'主题序列号',null=True,blank=True)
+    lift =  models.IntegerField(u'生命周期',default=0,choices=THEME_LIFT.items(),)
     create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
     class Meta:
         verbose_name_plural = verbose_name = u'绘画主题'
@@ -131,7 +136,8 @@ class RelThemeUser(models.Model):
 class Step(models.Model):
     theme_id = models.ForeignKey(Theme, verbose_name=u'主题',null=True,blank=True)
     user_id = models.ForeignKey(User, verbose_name=u'参与用户',null=True,blank=True)
-    img_id = models.ForeignKey(Img, verbose_name=u'图片',null=True,blank=True)
+    # img_id = models.ForeignKey(Img, verbose_name=u'图片',null=True,blank=True)
+    img_url = models.TextField( verbose_name=u'图片地址',null=True,blank=True)  #直接对应图片地址，避免Img误删，做删除联合查询
     number = models.IntegerField(u'步数',default=1,null=True,blank=True)
     create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
     next_user =  models.IntegerField( verbose_name=u'下一个用户',null=True,blank=True)
@@ -143,6 +149,8 @@ class Step(models.Model):
     class Meta:
         verbose_name_plural = verbose_name = u'绘画步骤'
         app_label = string_with_title('wx_app', u"表情")
+        ordering = ['-create_time']
+        get_latest_by = 'create_time'
     def __unicode__(self):
-        return '%s' % (self.name)
+        return '%s' % (self.number)
 

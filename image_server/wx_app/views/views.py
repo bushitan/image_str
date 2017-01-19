@@ -709,7 +709,7 @@ class UserLogin(BaseMixin, ListView):
 
         try:
             # raise NameError("There is a name error","in test.py")
-
+            print "1:",_session
             if  User.objects.filter( session = _session ).exists() is False: #查session不存在,更新整个用户
 
                 _json = WX_GetSession(_session_url)
@@ -761,8 +761,9 @@ class UserLogin(BaseMixin, ListView):
                     #登陆成功 ，返回session
                     return HttpResponse(json.dumps({"status":"true","session":_new_session }),content_type="application/json")
             else : #session 存在，
+                print "2:",_session
                 _user = User.objects.get( session = _session )
-
+                print _user
                 if time.time() > _user.wx_expires_in : #wx_session 过期
                     _json = WX_GetSession(_session_url)
                     if _json["errcode"] : #登陆信息错误，结束
