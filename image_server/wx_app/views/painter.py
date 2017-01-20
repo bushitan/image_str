@@ -308,12 +308,10 @@ PAINTER_STEP_FREE = 1
 PAINTER_STEP_BUSY = 2
 PAINTER_STEP_SHARE = 3
 class JoinLatest(BaseMixin, ListView):
-
     def get(self, request, *args, **kwargs):
         _user = ""
         try:
             _session = request.GET['session']
-
             if  Login.SessionExists(_session) is False:
                 return Result.Fail(msg=u"用户不存在,请重新登录")
             _user = Login.GetUser(_session)
@@ -329,25 +327,25 @@ class JoinLatest(BaseMixin, ListView):
 
             # 该步骤 next_user 为空，未分享
             print "share:",_step_latest,_step_latest.next_user
-            if _step_latest.next_user is None:
+            # if _step_latest.next_user is None:
+            #     return Result.Success(
+            #         join_status = PAINTER_STEP_SHARE,
+            #         theme_id = _step_latest.theme_id.id,
+            #         theme_name = _step_latest.theme_id.name,
+            #         step_id = _step_latest.id,
+            #         img_url = _step_latest.img_url,
+            #     )
+            # else:
+            if _step_latest.next_user == int(_user.id):
                 return Result.Success(
-                    join_status = PAINTER_STEP_SHARE,
+                    join_status = PAINTER_STEP_BUSY,
                     theme_id = _step_latest.theme_id.id,
                     theme_name = _step_latest.theme_id.name,
                     step_id = _step_latest.id,
                     img_url = _step_latest.img_url,
                 )
             else:
-                if _step_latest.next_user == int(_user.id):
-                    return Result.Success(
-                        join_status = PAINTER_STEP_BUSY,
-                        theme_id = _step_latest.theme_id.id,
-                        theme_name = _step_latest.theme_id.name,
-                        step_id = _step_latest.id,
-                        img_url = _step_latest.img_url,
-                    )
-                else:
-                    return Result.Success(join_status = PAINTER_STEP_FREE)
+                return Result.Success(join_status = PAINTER_STEP_FREE)
         except Exception ,e:
             print Exception,e
             logger.error(e)
