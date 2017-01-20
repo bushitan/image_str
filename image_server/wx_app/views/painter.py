@@ -282,12 +282,13 @@ class StepQuery(BaseMixin, ListView):
         try:
             _session = request.GET['session']
             _theme_id = request.GET['theme_id']
-
+            print _session,_theme_id
             if  Login.SessionExists(_session) is False:
                 return Result.Fail(msg=u"用户不存在,请重新登录")
+            print 1
             _user = Login.GetUser(_session)
-
-
+            print 2
+            print _user
             _theme = Theme.objects.get(id=_theme_id )
             _step_obj_list = Step.objects.filter(theme_id=_theme )
             _step_list = []
@@ -300,7 +301,9 @@ class StepQuery(BaseMixin, ListView):
             #     "theme_name":_theme.name,
             #     "step_list":_step_list,
             # }
-            Log.log(u"获取主题内容成功",_user,self.__class__.__name__)
+            # print _user
+            print 3
+            # Log.log(u"获取主题内容成功",'',self.__class__.__name__)
             return Result.Success(theme_name=_theme.name,step_list=_step_list)
         except Exception ,e:
             print Exception,e
