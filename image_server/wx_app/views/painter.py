@@ -178,7 +178,7 @@ class Continue(BaseMixin, ListView):
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),_user,self.__class__.__name__)
+            Log.error(str(e),'',self.__class__.__name__)
             return Result.Fail(msg= str(e))
 
 # 3 抢step
@@ -188,7 +188,7 @@ class Snatch(BaseMixin, ListView):
         _user = ""
         try:
             _session = request.GET['session']
-            # _theme_id = request.GET['theme_id']
+            _theme_id = request.GET['theme_id']
             # _img_id = request.GET['img_id']
             _step_id = request.GET['step_id']
 
@@ -196,9 +196,18 @@ class Snatch(BaseMixin, ListView):
                 return Result.Fail(msg=u"用户不存在,请重新登录")
             _user = Login.GetUser(_session)
 
+
+            print _theme_id,_step_id
+
             with transaction.atomic(): # 事务，继续游戏，加入,step,rel_theme_user
-                print 1
-                _current_step = Step.objects.get(id=_step_id )
+                _content = "抢画回复内容"
+                if _theme_id != "" :
+                    print _theme_id
+                    _current_step = Step.objects.filter(theme_id= _theme_id ).latest()
+                    _content = u"抢画成功，记得分享"
+                else:
+                    _current_step = Step.objects.get(id=_step_id )
+                    _content = u'画完点"找人画两笔",继续分享画哦',
                 print _current_step.next_user , _current_step.id
                 if _current_step.next_user is not None:
                     # Log.log(u"",_user,self.__class__.__name__)
@@ -217,11 +226,12 @@ class Snatch(BaseMixin, ListView):
             #     "img_url":_current_step.img_url,
             #     "theme_name":_theme.name,
             # }
-            Log.log(u"抢画成功",_user,self.__class__.__name__)
+            # Log.log(u"抢画成功",_user,self.__class__.__name__)
+            # Log.log(u"抢画成功",'',self.__class__.__name__)
             return Result.Success(
                 is_success="true",
                 title=u"抢画成功",
-                content=u'画完点"找人画两笔",继续分享画哦',
+                content=_content,
                 step_id=_current_step.id,
                 img_url=_current_step.img_url,
                 theme_name= _theme.name
@@ -229,7 +239,7 @@ class Snatch(BaseMixin, ListView):
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),'',self.__class__.__name__)
+            # Log.error(str(e),'',self.__class__.__name__)
             return Result.Fail(msg= str(e))
 
 # 4 用户查询参加的所有Theme主题
@@ -262,7 +272,7 @@ class ThemeQuery(BaseMixin, ListView):
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),_user,self.__class__.__name__)
+            Log.error(str(e),'',self.__class__.__name__)
             return Result.Fail(msg= str(e))
 
 # 5 用户查询指定主题下，所有的step步骤，用player播放
@@ -295,7 +305,7 @@ class StepQuery(BaseMixin, ListView):
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),_user,self.__class__.__name__)
+            Log.error(str(e),'',self.__class__.__name__)
             return Result.Fail(msg= str(e))
 
 # 6 查询用户是否正在参与活动，
@@ -349,7 +359,7 @@ class JoinLatest(BaseMixin, ListView):
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),_user,self.__class__.__name__)
+            Log.error(str(e),'',self.__class__.__name__)
             return Result.Fail(msg= str(e))
         #  next_user 存在，判断是否为用户
 
