@@ -334,13 +334,17 @@ class JoinLatest(BaseMixin, ListView):
             _user = Login.GetUser(_session)
 
             print "user:",_user.id
-            #用户从未参加
+            # 1 用户从未参加
             if  Step.objects.filter(next_user= int(_user.id) ).exists() is False:
                 print False
                 return Result.Success(join_status = PAINTER_STEP_FREE,user_id = _user.id,)
 
             #用户最近参加记录,查user ，参与者
             # _step_latest = Step.objects.filter(next_user= int(_user.id) ).latest()
+            # 2 用户从未创建画布
+            if  Step.objects.filter(user_id= _user ).exists() is False:
+                return Result.Success(join_status = PAINTER_STEP_FREE,user_id = _user.id,)
+
             _step_latest = Step.objects.filter(user_id= _user ).latest()
 
             # 该步骤 next_user 为空，未分享
@@ -354,6 +358,7 @@ class JoinLatest(BaseMixin, ListView):
             #         img_url = _step_latest.img_url,
             #     )
             # else:
+            # 3 下一个用户  ==  请求用户，正在参加活动
             if _step_latest.next_user == int(_user.id):
                 return Result.Success(
                     join_status = PAINTER_STEP_BUSY,
@@ -363,7 +368,7 @@ class JoinLatest(BaseMixin, ListView):
                     img_url = _step_latest.img_url,
                     user_id = _user.id,
                 )
-            else:
+            else:  # 4 下一个用户不是本人，空闲状态
                 return Result.Success(join_status = PAINTER_STEP_FREE,user_id = _user.id,)
         except Exception ,e:
             print Exception,e
