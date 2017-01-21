@@ -4,7 +4,6 @@ class Logger():
     def error(self,info,user,event):
         _log = Log(
             info = info,
-            user =  user,
             level = 3,
             event = event,
         )
@@ -14,7 +13,6 @@ class Logger():
     def log(self,info,user,event):
         _log = Log(
             info = info,
-            user =  user,
             level = 0,
             event = event,
         )
