@@ -11,7 +11,7 @@ from wx_app.lib.qi_niu import QiNiu
 from wx_app.lib.magick import Magick
 from wx_app.lib.filepath import FilePath
 from wx_app.lib.logger import Logger
-Log = Logger()
+LoggerObj = Logger()
 
 
 from wx_app.lib.login import Login
@@ -108,7 +108,7 @@ class Start(BaseMixin, ListView):
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),self.__class__.__name__)
+            LoggerObj.error(str(e),self.__class__.__name__)
             return Result.Fail(msg= str(e))
 
 # 2 创建step 继续玩
@@ -178,7 +178,7 @@ class Continue(BaseMixin, ListView):
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),'',self.__class__.__name__)
+            LoggerObj.error(str(e),'',self.__class__.__name__)
             return Result.Fail(msg= str(e))
 
 # 3 抢step
@@ -272,7 +272,7 @@ class ThemeQuery(BaseMixin, ListView):
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),'',self.__class__.__name__)
+            LoggerObj.error(str(e),'',self.__class__.__name__)
             return Result.Fail(msg= str(e))
 
 # 5 用户查询指定主题下，所有的step步骤，用player播放
@@ -312,7 +312,7 @@ class StepQuery(BaseMixin, ListView):
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),'',self.__class__.__name__)
+            LoggerObj.error(str(e),'',self.__class__.__name__)
             return Result.Fail(msg= str(e))
 
 # 6 查询用户是否正在参与活动，
@@ -368,7 +368,7 @@ class JoinLatest(BaseMixin, ListView):
         except Exception ,e:
             print Exception,e
             logger.error(e)
-            Log.error(str(e),'',self.__class__.__name__)
+            LoggerObj.error(str(e),'',self.__class__.__name__)
             return Result.Fail(msg= str(e))
         #  next_user 存在，判断是否为用户
 
