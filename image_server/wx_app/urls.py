@@ -2,6 +2,7 @@
 
 from django.conf.urls import url
 from wx_app.views.views import *
+from wx_app.views.app import *
 from wx_app.views.magick import *
 from wx_app.views.painter import *
 urlpatterns = [
@@ -19,6 +20,7 @@ urlpatterns = [
 
    url(r'^picture/my/$', PictureMy.as_view()),
    url(r'^picture/hot/$', PictureHot.as_view()),
+
 
 
    url(r'^img/add/$', PictureAdd.as_view()),
@@ -47,7 +49,8 @@ urlpatterns = [
    url(r'^tag/cache_clear/$', CacheClear.as_view()),
 
 
-   url(r'^user/login/$', UserLogin.as_view()),
+   url(r'^user/info/$', GetUserInfo.as_view()), #获取用户信息
+   url(r'^user/login/$', UserLogin.as_view()),  #用户登录 ，这两个应该合在一起
 
    url(r'^ad/title/$', AdTitle.as_view()),
 

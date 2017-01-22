@@ -338,16 +338,21 @@ class JoinLatest(BaseMixin, ListView):
             if  Step.objects.filter(next_user= int(_user.id) ).exists() is False:
                 print False
                 return Result.Success(join_status = PAINTER_STEP_FREE,user_id = _user.id,)
-            else:
-                _step_latest = Step.objects.get( next_user= int(_user.id) )
-                return Result.Success(
-                    join_status = PAINTER_STEP_BUSY,
-                    theme_id = _step_latest.theme_id.id,
-                    theme_name = _step_latest.theme_id.name,
-                    step_id = _step_latest.id,
-                    img_url = _step_latest.img_url,
-                    user_id = _user.id,
-                )
+            else: # 2 用户已经参加过
+                _step_latest = Step.objects.filter( next_user= int(_user.id) ).latest()
+                _theme = _step_latest.theme_id
+                _number = _step_latest.number
+                if _number == Step.objects.filter( theme_id = _theme ).count():  # 2.1 当前step的number等于，主题theme的步骤总数
+                    return Result.Success(
+                        join_status = PAINTER_STEP_BUSY,
+                        theme_id = _step_latest.theme_id.id,
+                        theme_name = _step_latest.theme_id.name,
+                        step_id = _step_latest.id,
+                        img_url = _step_latest.img_url,
+                        user_id = _user.id,
+                    )
+                else:  # 2.2 已经分享了的，number不等于theme的总数
+                     return Result.Success(join_status = PAINTER_STEP_FREE,user_id = _user.id,)
             #用户最近参加记录,查user ，参与者
             # _step_latest = Step.objects.filter(next_user= int(_user.id) ).latest()
             # 2 用户从未创建画布
