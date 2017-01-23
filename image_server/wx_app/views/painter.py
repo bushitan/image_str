@@ -157,23 +157,27 @@ class Snatch(BaseMixin, ListView):
                 return Result.Fail(msg=u"用户不存在,请重新登录")
             _user = Login.GetUser(_session)
 
-            #判断能不能抢
-            _step_latest = Step.objects.filter( next_user= int(_user.id) ).latest()
-            _theme = _step_latest.theme_id
-            _number = _step_latest.number
-            # 2.1 当前step的number等于，主题theme的步骤总数
-            if _number == Step.objects.filter( theme_id = _theme ).count():
-                return Result.Success(
-                    is_success="no_snatch",
-                    title=u"不能抢啦",
-                    content=u"请先完成原来的画，有始有终哦",
-                    join_status = PAINTER_STEP_BUSY,
-                    theme_id = _step_latest.theme_id.id,
-                    theme_name = _step_latest.theme_id.name,
-                    step_id = _step_latest.id,
-                    img_url = _step_latest.img_url,
-                    user_id = _user.id,
-                )
+            #用户从未登录
+            if  Step.objects.filter(next_user= int(_user.id) ).exists() is False:
+                pass
+            else:
+                #判断能不能抢
+                _step_latest = Step.objects.filter( next_user= int(_user.id) ).latest()
+                _theme = _step_latest.theme_id
+                _number = _step_latest.number
+                # 2.1 当前step的number等于，主题theme的步骤总数
+                if _number == Step.objects.filter( theme_id = _theme ).count():
+                    return Result.Success(
+                        is_success="no_snatch",
+                        title=u"不能抢啦",
+                        content=u"请先完成原来的画，有始有终哦",
+                        join_status = PAINTER_STEP_BUSY,
+                        theme_id = _step_latest.theme_id.id,
+                        theme_name = _step_latest.theme_id.name,
+                        step_id = _step_latest.id,
+                        img_url = _step_latest.img_url,
+                        user_id = _user.id,
+                    )
 
             #能抢
             with transaction.atomic(): # 事务，继续游戏，加入,step,rel_theme_user
