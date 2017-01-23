@@ -201,7 +201,7 @@ class Snatch(BaseMixin, ListView):
                 _current_step.save()
                 _theme = _current_step.theme_id
                  # 3 主题用户关系不存在，加入关系表
-                if RelThemeUser.objects.filter(theme= _theme ).exists() is False:
+                if RelThemeUser.objects.filter(theme= _theme ,user = _user ).exists() is False:
                     print 'Snatch add Rel_theme_user False'
                     _rel = RelThemeUser( theme = _theme ,user = _user)
                     _rel.save()
