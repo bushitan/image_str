@@ -321,3 +321,12 @@ class JoinLatest(BaseMixin, ListView):
             logger.error(e)
             LoggerObj.error(str(e),'',self.__class__.__name__)
             return Result.Fail(msg= str(e))
+
+
+class Color(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        # _colors =  ['#6326b6','#000032', '#FF0bb0', '#FcA5b0', '#FFFF00', '#208010', '#0b40FF', '#fff55f',]
+        _colors = ['#666666','#000000', '#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#ffffff',]
+        # paint_color = '#fff55f'
+        _paint_color = '#666666'
+        return Result.Success(colors = _colors,paint_color = _paint_color )

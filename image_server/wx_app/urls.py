@@ -64,6 +64,7 @@ urlpatterns = [
    url(r'^painter/theme_query/$', ThemeQuery.as_view()),
    url(r'^painter/step_query/$', StepQuery.as_view()),
    url(r'^painter/join_latest/$', JoinLatest.as_view()),
+   url(r'^painter/color/$', Color.as_view()),
 
 
    # url(r'^magick/join/$', UserLogin.as_view()),
