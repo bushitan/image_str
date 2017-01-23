@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 from wx_app.views.views import *
-from wx_app.views.app import *
+from wx_app.views.user import *
 from wx_app.views.magick import *
 from wx_app.views.painter import *
 urlpatterns = [
