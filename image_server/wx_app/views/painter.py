@@ -189,7 +189,7 @@ class Snatch(BaseMixin, ListView):
                 # 1.2 painter 只传递step_id
                 else:
                     _current_step = Step.objects.get(id=_step_id )
-                    _content = u'画完点"找人画两笔",继续分享画哦',
+                    _content = u'画完点"找人画两笔",继续分享画哦'
 
                 # 2 抢不成功
                 if _current_step.next_user is not None:
