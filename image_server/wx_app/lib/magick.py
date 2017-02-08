@@ -145,7 +145,7 @@ class Magick():
                 _cmd = u" magick convert  %s   %s  -loop 0 %s  " % (img1_src,img2_src, save_url)  # 纯粹gif，不用延时
             if _delay1 != 0 and _delay2 == 0:  #第一张图片，第二张GIF
                 print "wait"
-                _cmd = u" magick convert  -delay %s  %s   %s  -loop 0 %s  " % (_delay1,img1_src,img2_src, save_url) #有jpg静态图片，需设置延时
+                _cmd = u" magick convert  -delay %s  %s -delay 0  %s  -loop 0 %s  " % (_delay1,img1_src,img2_src, save_url) #有jpg静态图片，需设置延时
             if _delay1 == 0 and _delay2 != 0:  #第一张GIF，第二张图片
                 print "type 3"
                 _cmd = u" magick convert %s  -delay %s %s  -loop 0 %s  " % (img1_src, _delay2 , img2_src, save_url) #有jpg静态图片，需设置延时
