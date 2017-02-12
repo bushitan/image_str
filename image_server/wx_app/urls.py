@@ -5,6 +5,8 @@ from wx_app.views.views import *
 from wx_app.views.user import *
 from wx_app.views.magick import *
 from wx_app.views.painter import *
+from wx_app.views.bot import *
+
 urlpatterns = [
 
    url(r'^$', Index.as_view()),
@@ -65,6 +67,11 @@ urlpatterns = [
    url(r'^painter/step_query/$', StepQuery.as_view()),
    url(r'^painter/join_latest/$', JoinLatest.as_view()),
    url(r'^painter/color/$', Color.as_view()),
+
+
+   url(r'^bot/index/$', BotIndex.as_view()),
+   url(r'^bot/login/callback/$', LoginCallback.as_view()),
+   url(r'^bot/update_reply/$', UpdateReply.as_view()),
 
 
    # url(r'^magick/join/$', UserLogin.as_view()),
