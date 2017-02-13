@@ -30,7 +30,7 @@ class Core(object):
         self.useHotReload, self.hotReloadDir = False, 'itchat.pkl'
         self.receivingRetryCount = 5
     def login(self, enableCmdQR=False, picDir=None, qrCallback=None,
-            loginCallback=None, exitCallback=None,uuid=None):
+            loginCallback=None, exitCallback=None,uuid=None,receiveCallback=None):
         ''' log in like web wechat does
             for log in
                 - a QR code will be downloaded and opened

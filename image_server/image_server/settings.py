@@ -16,6 +16,8 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# BASE_HOST =  'http://www.12xiong.top/' #阿里云地址
+BASE_HOST =  'http://192.168.200.28:8000/' #阿里云地址
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/

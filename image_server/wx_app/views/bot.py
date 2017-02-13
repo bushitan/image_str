@@ -79,64 +79,62 @@ USER = {}
 # class BotIndex(BaseMixin, ListView):
 SUB_LIST = []
 USER_REPLY = {}
+USER_INFO = [{
+    "user_info":{"id":"1", "user_name":""},
+    "is_login":False,
+    "uuid":"",
+    "auto_reply":{"1":"123","2":"wqe"},
+    "talk_data":"",
+}]
+def GetUser(uid):
+    for user in USER_INFO:
+        if user["user_info"]["id"] == uid: #启动时候添加回复
+            return user
+    return False
+
 class BotIndex(ListView):
     template_name = 'bot_index.html'
     qr_url = ""
     # init_file_name = 5
     def get(self, request, *args, **kwargs):
 
-        # 1 是否有账号，有：启动微信加载回复信息你，没有：未登录进测试版
-        _account = request.GET.get("account", "")
-        if _account :
-            for u in USER_ACCOUNT:
-                if u["account"] == _account: #启动时候添加回复
-                    _reply = u['reply']
-                    self.key1 = _reply.keys()[0]
-                    self.value1 = _reply[self.key1]
-                    self.key2 = _reply.keys()[1]
-                    self.value2 = _reply[self.key2]
-
-
-                    uuid = get_QRuuid()
-                    self.uuid = uuid
-                    self.qr_url = '%s/qrcode/%s' % (BASE_URL, uuid)
-                    # _cmd = u'python H:\Code\Python\Git\image_str\image_server\wx_app\lib/robote/new_itchat.py  ' + uuid
-
-                    with open('E:\CarcerWorld\code\Python\git\image_str\image_server\wx_app\lib/robote/1.txt', "wb") as w:
-                       w.write(str(_reply))
-                    _cmd = u'python E:\CarcerWorld\code\Python\git\image_str\image_server\wx_app\lib/robote/new_itchat.py  ' + uuid +"  1"
-                    print _cmd
-                    subprocess.Popen(_cmd, shell=True)
-
-        # uuid = get_QRuuid()
-        # self.uuid = uuid
-        # self.qr_url = '%s/qrcode/%s' % (BASE_URL, uuid)
-        # _cmd = u'python H:\Code\Python\Git\image_str\image_server\wx_app\lib/robote/new_itchat.py  ' + uuid
-        # _cmd = u'python H:\Code\Python\Git\image_str\image_server\wx_app\static/r_itchat.py '
-        # subprocess.Popen(_cmd, shell=True)
-
-
+        _uid = request.GET.get("uid", "")
+        user = GetUser(_uid)
+        if user : #已登录
+            self.uid = _uid
+            uuid = get_QRuuid()
+            self.uuid = uuid
+            user["uuid"] = uuid #用户同步uuid
+            self.auto_reply = user["auto_reply"] #准备将回复模板传到前端
+            self.qr_url = '%s/qrcode/%s' % (BASE_URL, uuid) #二维码链接
+            _filePath = SETTING.BASE_DIR + '\wx_app\lib/robote/new_itchat.py '
+            _cmd = u'python '+ _filePath + uuid
+            subprocess.Popen(_cmd, shell=True) #启动项目
+        else:#未登录情况
+            self.uuid = 123
+            self.auto_reply = None
+            pass
         return super(BotIndex, self).get(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
         context =super(BotIndex, self).get_context_data(**kwargs)
         context['qr_url'] = self.qr_url
+        context['uid'] = self.uid
         context['uuid'] = self.uuid
-        context['key1'] = self.key1
-        context['value1'] = self.value1
-        context['key2'] = self.key2
-        context['value2'] = self.value2
+        context['auto_reply'] = self.auto_reply
         return context
     def get_queryset(self):
         pass
     def post(self, request, *args, **kwargs):
         print "OK",requests
-        _uuid = self.request.POST.get("uuid", "")
-        print _uuid
-        _reply = self.request.POST.get("reply", "")
+        _uid = request.POST.get("uid", "")
+        user = GetUser(_uid)
+        _reply = request.POST.get("reply", "")
         print _reply
         _reply_dict = json.loads(_reply)
-        USER_REPLY[_uuid] = _reply_dict  #直接更改user_reply 的key
-        mydict = {}
+        print _reply_dict
+        print user
+        user["auto_reply"] = _reply_dict  #直接更改user_reply 的key
+        mydict = {"msg":u"回复模板设置成功"}
         return HttpResponse(
             json.dumps(mydict),
             content_type="application/json"
@@ -147,16 +145,16 @@ USER_ACCOUNT = [
     "secret":'1',
      'reply':{"1":"231","2":"432"}}
 ]
-class LoginUser(ListView):
+class UserLogin(ListView):
     template_name = 'bot_login_user.html'
     def get(self, request, *args, **kwargs):
         uuid = request.GET.get("uuid", "")
         is_login =  request.GET.get("is_login", "")
         user_name =  request.GET.get("user_name", "")
         print 123,uuid,is_login,user_name
-        return super(LoginUser, self).get(request, *args, **kwargs)
+        return super(UserLogin, self).get(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
-        context =super(LoginUser, self).get_context_data(**kwargs)
+        context =super(UserLogin, self).get_context_data(**kwargs)
         # context['qr_url'] = self.qr_url
         # context['uuid'] = self.uuid
         return context
@@ -200,13 +198,34 @@ class LoginCallback(ListView):
             content_type="application/json"
         )
 
-class UpdateReply(ListView):
+class ReceiveCallback(ListView):
     def get(self, request, *args, **kwargs):
-        _uuid = request.GET.get("uuid", "")
+        uuid = request.GET.get("uuid", "")
+        # is_login =  request.GET.get("is_login", "")
+        # user_name =  request.GET.get("user_name", "")
+
+        print uuid
+        #Todo uuid查询用户
+        user = USER_INFO[0]
+
+        print "ReceiveCallback:", user["auto_reply"]
+        mydict = {
+            "auto_reply":user["auto_reply"]
+        }
         return HttpResponse(
-            json.dumps(USER_REPLY[_uuid]),
+            json.dumps(mydict),
             content_type="application/json"
         )
+
+
+class UpdateReply(ListView):
+    def get(self, request, *args, **kwargs):
+        pass
+        # _uuid = request.GET.get("uuid", "")
+        # return HttpResponse(
+        #     json.dumps(USER_REPLY[_uuid]),
+        #     content_type="application/json"
+        # )
 
 
 

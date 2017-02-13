@@ -39,7 +39,7 @@
     $('#login').click(function(){
         $.ajax({
             type:"POST",
-            url:"/bot/login/user/",
+            url:"/bot/user/login/",
             data:{
 				"account":$('#account').val(),
 				"secret":$('#secret').val()

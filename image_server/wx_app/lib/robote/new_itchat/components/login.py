@@ -25,7 +25,7 @@ def load_login(core):
     core.logout            = logout
 
 def login(self, enableCmdQR=False, picDir=None, qrCallback=None,
-        loginCallback=None, exitCallback=None,uuid=None):
+        loginCallback=None, exitCallback=None,uuid=None,receiveCallback=None):
     if self.alive:
         logger.warning('itchat has already logged in.')
         return
@@ -86,13 +86,13 @@ def login(self, enableCmdQR=False, picDir=None, qrCallback=None,
     self.show_mobile_login()
     self.get_contact(True)
     if hasattr(loginCallback, '__call__'):
-        r = loginCallback(uuid = self.uuid, isLogin = True,userName=self.storageClass.userName)
+        r = loginCallback( isLogin = True,userName=self.storageClass.userName)
     else:
         utils.clear_screen()
         if os.path.exists(picDir or config.DEFAULT_QR):
             os.remove(picDir or config.DEFAULT_QR)
         logger.info('Login successfully as %s' % self.storageClass.nickName)
-    self.start_receiving(exitCallback)
+    self.start_receiving(exitCallback,receiveCallback)
 
 def get_QRuuid(self):
     url = '%s/jslogin' % config.BASE_URL
@@ -224,12 +224,15 @@ def show_mobile_login(self):
     r = self.s.post(url, data=json.dumps(data), headers=headers)
     return ReturnValue(rawResponse=r)
 
-def start_receiving(self, exitCallback=None, getReceivingFnOnly=False):
+def start_receiving(self, exitCallback=None, receiveCallback = None, getReceivingFnOnly=False):
     self.alive = True
     def maintain_loop():
         retryCount = 0
         while self.alive:
             try:
+                if hasattr(receiveCallback, '__call__'):
+                    receiveCallback()
+
                 i = sync_check(self)
                 if i is None:
                     self.alive = False

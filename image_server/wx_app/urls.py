@@ -70,8 +70,10 @@ urlpatterns = [
 
 
    url(r'^bot/index/$', BotIndex.as_view()),
-   url(r'^bot/login/user/$', LoginUser.as_view()),
-   url(r'^bot/login/callback/$', LoginCallback.as_view()),
+   url(r'^bot/user/login/$', UserLogin.as_view()),
+   url(r'^bot/login_callback/$', LoginCallback.as_view()),
+   url(r'^bot/receive_callback/$', ReceiveCallback.as_view()),
+
    url(r'^bot/update_reply/$', UpdateReply.as_view()),
 
 
