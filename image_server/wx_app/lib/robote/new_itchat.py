@@ -122,11 +122,12 @@ class loginCallBack:
         self.uuid = uuid
 
     def __call__(self , isLogin = None ,userName = None):
+        print str(uuid) + "user login..."
         url =  BASE_HOST + "bot/login_callback/"
-        params = { 'uuid':self.uuid ,'is_login':True,'user_name':userName}
+        params = { 'uuid':self.uuid ,'is_login':isLogin,'user_name':userName}
         s = requests.Session()
         postQr = s.get(url, params=params)
-        print postQr
+        print "itchat post logincallback success:", postQr
         # Todo 登陆成功，同步 自动回复列表
 
 #上传数据至服务器，并下载将要执行的操作
@@ -141,7 +142,7 @@ class Receive():
         params = { 'uuid':self.uuid}
         s = requests.Session()
         postQr = s.get(url, params=params)
-        print "Receive:", postQr
+        # print "Receive:", postQr
         _dict = json.loads(postQr.text)
 
         #Todo 如果存在auto_reply，更新自动回复
@@ -150,7 +151,7 @@ class Receive():
             AUTO_REPLY.clear()
             for i in _reply_dict:
                 AUTO_REPLY[i] = _reply_dict[i]
-        print "Receive:",AUTO_REPLY
+        # print "Receive:",AUTO_REPLY
 
         # params = { 'uuid':self.uuid,}
         # s = requests.Session()
@@ -159,6 +160,14 @@ class Receive():
         # print json.loads(postQr.text)
         # return json.loads(postQr.text)
 
+#退出
+class Exit():
+    uuid = None
+    def __init__(self,uuid):
+        self.uuid = uuid
+    def __call__(self):
+        print  str(uuid) + "user exit..."
+
 import sys
 if __name__ == '__main__':
     # print 'len',len(sys.argv),sys.argv
@@ -166,7 +175,9 @@ if __name__ == '__main__':
     print 534543, uuid
     loginCall = loginCallBack(uuid)
     receive =  Receive(uuid)
-    itchat.auto_login(uuid=uuid,loginCallback=loginCall , receiveCallback=receive) #hack 做设置回调
+    exit = Exit(uuid)
+
+    itchat.auto_login(uuid=uuid,loginCallback = loginCall , receiveCallback = receive , exitCallback = exit ) #hack 做设置回调
     itchat.run()
 
 

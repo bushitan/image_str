@@ -82,11 +82,14 @@ def login(self, enableCmdQR=False, picDir=None, qrCallback=None,
                 break
         if isLoggedIn: break
         logger.info('Log in time out, reloading QR code')
+        print '111 Log in time out'
+        r = loginCallback( isLogin = False,userName=self.storageClass.userName) # time out
+        sys.exit()
     self.web_init()
     self.show_mobile_login()
     self.get_contact(True)
     if hasattr(loginCallback, '__call__'):
-        r = loginCallback( isLogin = True,userName=self.storageClass.userName)
+        r = loginCallback( isLogin = True,userName=self.storageClass.userName) # login success
     else:
         utils.clear_screen()
         if os.path.exists(picDir or config.DEFAULT_QR):

@@ -29,7 +29,7 @@
 
 
 <body>
-    <div class="login">
+    <div id="qr" class="qr">
         <img src="{{qr_url}}" />
     </div>
     <div class="bot_info">
@@ -63,9 +63,29 @@
         </ul>
          <input type="button" value="设置回复" id="set_reply" />
     </div>
+
+    <!--<div>-->
+        <!--<ul>-->
+            <!--<li>-->
+                <!--<span>账号</span>-->
+                <!--<span>-->
+                    <!--<input type="text" id="account"  />-->
+                <!--</span>-->
+            <!--</li>-->
+            <!--<li>-->
+                <!--<span>密码</span>-->
+                <!--<span>-->
+                    <!--<input type="text" id="secret" />-->
+                <!--</span>-->
+            <!--</li>-->
+        <!--</ul>-->
+        <!--<input type="button" value="登陆" id="login" />-->
+        <!--<input type="button" value="注册" id="register" />-->
+    <!--</div>-->
 </body>
 
 <script language="javascript" type="text/javascript">
+
     $('#set_reply').click(function(){
         var _reply_obj = {}
         _reply_obj[$('#key1').val()] = $('#value1').val()
@@ -77,7 +97,7 @@
             type:"POST",
             url:"/bot/index/",
             data:{
-				"uid":'{{uid}}',
+				"uuid":'{{uuid}}',
                 "reply":_json
 			},
             beforeSend:function(xhr){
@@ -97,5 +117,65 @@
         });
         return false;
     });
+
+    var interval
+    UserIsQR()
+    function UserIsQR(){
+        $.ajax({
+            type:"POST",
+            url:"/bot/qr/status/",
+            data:{
+				"uuid":'{{uuid}}'
+			},
+            beforeSend:function(xhr){
+                xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+            },
+            success:function(data,textStatus){
+				console.log(data );
+                if (data.qr_status == "true"){
+                    console.log("1:",data.msg)
+                    $("#qr").hide()
+//                    clearInterval(interval)
+                }
+                else{
+                    console.log("2:",data.msg)
+                    UserIsQR()
+//                    setTimeout(UserIsQR,500)
+                }
+//				window.location.href = data.url;
+//                $("#comment").val("");
+//                $(".vmaig-comment ul").prepend(data);
+            },
+            error:function(XMLHttpRequest, textStatus, errorThrown){
+                alert(XMLHttpRequest.responseText);
+            }
+        });
+    }
+
+//    interval = setInterval(UserIsQR,2000)
+
 </script>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

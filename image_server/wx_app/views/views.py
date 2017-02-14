@@ -1,10 +1,10 @@
 #coding:utf-8
-from django.views.decorators.csrf import csrf_exempt
-import httplib, urllib,urllib2
-from django.http import HttpResponse, Http404
-from wx_app.models import *
+import urllib2
 
-from django.views.generic import View, TemplateView, ListView, DetailView
+from django.http import HttpResponse
+from wx_app.models import *
+from django.views.generic import ListView
+
 # from grid.lib.str2img import Str2Img
 # from grid.lib.web import Web
 from wx_app.lib.qi_niu import QiNiu
@@ -19,12 +19,9 @@ import json
 import logging
 import os
 import base64
-from PIL import Image,ImageDraw,ImageFont
-import sys
 import image_server.settings as SETTING
 from PIL import Image
 
-from grid.lib.painter import Painter
 # logger
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -39,17 +39,17 @@
     $('#login').click(function(){
         $.ajax({
             type:"POST",
-            url:"/bot/user/login/",
+            url:"/user/login/",
             data:{
-				"account":$('#account').val(),
-				"secret":$('#secret').val()
+				"user_name":$('#account').val(),
+				"password":$('#secret').val()
 			},
             beforeSend:function(xhr){
                 xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
             },
             success:function(data,textStatus){
 				console.log(data );
-                url = "http://192.168.200.28:8000/bot/index/?account=" + data.account
+                url = "http://192.168.200.28:8000/bot/index/?uid=" + data.uid
 				window.location.href = url;
 //                $("#comment").val("");
 //                $(".vmaig-comment ul").prepend(data);
@@ -64,11 +64,11 @@
     $('#register').click(function(){
         $.ajax({
             type:"POST",
-            url:"/bot/login/user/",
+            url:"/user/login/",
             data:{
 				"register":true,
-				"account":$('#account').val(),
-				"secret":$('#secret').val()
+				"user_name":$('#account').val(),
+				"password":$('#secret').val()
 			},
             beforeSend:function(xhr){
                 xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
