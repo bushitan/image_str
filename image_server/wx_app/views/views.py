@@ -662,7 +662,7 @@ class CategoryQuery(BaseMixin, ListView):
             # 1 用户名下的所有目录
             # 目录下包含的图片
             _list = Category.objects.filter( user_id = _uid)
-            print _list
+            # print _list
             _category_list = []
             for c in _list:
                 _category_list.append({
@@ -787,7 +787,7 @@ class UserLogin(BaseMixin, ListView):
                 return HttpResponse(json.dumps({"status":"true","session":_session }),content_type="application/json")
         except Exception ,e:
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":u"用户登录错误" + e}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"用户登录错误"}),content_type="application/json")
 
 #视频转GIF
 class Video2Gif(BaseMixin, ListView):
@@ -1061,6 +1061,7 @@ class Movie(BaseMixin, ListView):
         clip.write_gif(_save_path, fps=_fps)
         return HttpResponse(True)
 
+SYSTEM_USER_ID = 2
 #12 标签 -增加
 class TagAdd(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
@@ -1069,7 +1070,7 @@ class TagAdd(BaseMixin, ListView):
             _category_name = request.GET['tag_name']
             _category_parent_id = request.GET['tag_parent_id']
             print _category_name,_category_parent_id
-            if Category.objects.filter(name = _category_name,user_id=None).exists() is False: #不允许重名
+            if Category.objects.filter(name = _category_name,user_id=SYSTEM_USER_ID).exists() is False: #不允许重名
                 if _category_parent_id == "":
                     _category = Category(
                         name = _category_name,
@@ -1104,8 +1105,9 @@ class TagQuery(BaseMixin, ListView):
         try:
             self._session = request.GET['session']
             #1 全部标签查询
-            _list = Category.objects.filter( user_id = None)
-            print _list
+            print "SYSTEM_USER_ID:",SYSTEM_USER_ID,
+            _list = Category.objects.filter( user_id = SYSTEM_USER_ID)
+            # print _list
             _category_list = []
             for c in _list:
                 if c.parent_id is None:
@@ -1216,7 +1218,8 @@ class TagImgQuery(BaseMixin, ListView):
                 if(_category_name == KEY_WORD[i]):
                     dir =  SETTINGS.BASE_DIR + "/cache_" + str(i) +".txt"
                     with open(dir, 'r') as f: #缓存有内容，读取返回
-                        print f.read()
+                        # print f.read()
+                        r = f.read()
                         if f.read() == "":  # 怀疑每次都进不去
                            pass
                         else:
