@@ -157,16 +157,16 @@ class BotIndex(ListView):
 # ]
 import math
 
-class UserLogin(ListView):
+class BotUserLogin(ListView):
     template_name = 'bot_login_user.html'
     def get(self, request, *args, **kwargs):
         # uuid = request.GET.get("uuid", "")
         # is_login =  request.GET.get("is_login", "")
         # user_name =  request.GET.get("user_name", "")
         # print 123,uuid,is_login,user_name
-        return super(UserLogin, self).get(request, *args, **kwargs)
+        return super(BotUserLogin, self).get(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
-        context =super(UserLogin, self).get_context_data(**kwargs)
+        context =super(BotUserLogin, self).get_context_data(**kwargs)
         # context['qr_url'] = self.qr_url
         # context['uuid'] = self.uuid
         return context

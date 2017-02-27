@@ -369,6 +369,7 @@ class PictureQuery(BaseMixin, ListView):
             _category_id = request.GET['category_id']
 
             # print "name",_category_name
+            print session
             _uid = User.objects.get( session = session)
             # print "_category_id",_category_id
             #1
@@ -426,7 +427,7 @@ class PictureQuery(BaseMixin, ListView):
             # return HttpResponse(json.dumps({"status":"true","img_list":"OK"}),content_type="application/json")
         except Exception ,e:
             print e
-            return HttpResponse(json.dumps({"status":"false","msg":u"系统查询图片除错" + e}),content_type="application/json")
+            return HttpResponse(json.dumps({"status":"false","msg":u"系统查询图片除错"}),content_type="application/json")
 
 #77  移动图片
 class PictureMove(BaseMixin, ListView):
@@ -1179,7 +1180,8 @@ class CacheClear(BaseMixin, ListView):
             return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
 #点击标签，查询图片
 
-KEY_WORD=[ u"今日斗图",u"斗鸡吧",u"拼接素材",u"福",u"灵魂画师",u"帮助"]
+# KEY_WORD=[ u"今日斗图",u"斗鸡吧",u"拼接素材",u"福",u"灵魂画师",u"帮助"]
+KEY_WORD=[ u"今日斗图",u"纯文字",u"拼接素材",u"福",u"灵魂画师"]
 
 class TagImgQuery(BaseMixin, ListView):
 
