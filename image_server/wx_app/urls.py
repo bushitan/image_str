@@ -5,7 +5,6 @@ from wx_app.views.views import *
 from wx_app.views.user import *
 from wx_app.views.magick import *
 from wx_app.views.painter import *
-# from wx_app.views.bot import *
 
 urlpatterns = [
 
@@ -68,17 +67,5 @@ urlpatterns = [
    url(r'^painter/join_latest/$', JoinLatest.as_view()),
    url(r'^painter/color/$', Color.as_view()),
 
-
-   # url(r'^bot/index/$', BotIndex.as_view()),
-   # url(r'^bot/user/login/$', BotUserLogin.as_view()),
-   # url(r'^bot/qr/status/$', QRStatus.as_view()),
-   #
-   # url(r'^bot/login_callback/$', LoginCallback.as_view()),
-   # url(r'^bot/receive_callback/$', ReceiveCallback.as_view()),
-   #
-   # url(r'^bot/update_reply/$', UpdateReply.as_view()),
-
-
-   # url(r'^magick/join/$', UserLogin.as_view()),
 
 ]
