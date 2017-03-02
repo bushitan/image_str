@@ -1210,7 +1210,9 @@ class TagImgQuery(BaseMixin, ListView):
                     _img_list.append({
                         "img_id":_r.img.id,
                         "yun_url":_r.img.yun_url, # 七牛云自动缩略图
-                        "size":_r.img.size
+                        "size":_r.img.size,
+                        "width":_r.img.width,
+                        "height":_r.img.height,
                     })
                 return _img_list
 
@@ -1238,7 +1240,9 @@ class TagImgQuery(BaseMixin, ListView):
                     _img_list.append({
                         "img_id":_r.img.id,
                         "yun_url":_r.img.yun_url, # 七牛云自动缩略图
-                        "size":_r.img.size
+                        "size":_r.img.size,
+                        "width":_r.img.width,
+                        "height":_r.img.height,
                     })
                     _img_list,_page_num = ReturnPageRange(_img_list,_page_num) #获取图片范围
                 return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
