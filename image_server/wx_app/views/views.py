@@ -1251,7 +1251,8 @@ class TagImgQuery(BaseMixin, ListView):
 class AdTitle(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         try:
-            title = u"图片来自网络，侵权、吐槽、点赞请联系微信:bushitan"
+            # title = u"图片来自网络，侵权、吐槽、点赞请联系微信:bushitan"
+            title = u"找斗图组织，加群主微信号:yy141111yb"
             keyword = KEY_WORD[0]
             search_key = [KEY_WORD[0],KEY_WORD[1],KEY_WORD[2]]
             return HttpResponse(json.dumps({
