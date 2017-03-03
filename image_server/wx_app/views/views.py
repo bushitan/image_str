@@ -235,6 +235,8 @@ class UploadVideo(BaseMixin, ListView):
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + e}),content_type="application/json")
 
+
+
 KEY_USER_HASH = {} #内存，key-session对应表
 class UploadToken(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
@@ -524,6 +526,28 @@ class PictureDelete(BaseMixin, ListView):
             Logger.error(str(e),_user,self.__class__.__name__)
             return HttpResponse(json.dumps({"status":"false","msg":u"删除图片出错"+ e}),content_type="application/json")
 
+from wx_app.lib.utils.qiniu_url_add import QiNiuUrlAdd
+#通过url，增加图片
+class PictureAddByUrl(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+
+        _img_url = request.GET['img_url']
+        _uid = 1
+        user = User.objects.get( id = _uid )
+        _session = user.session
+        _local_path = SETTINGS.BASE_DIR + r"\wx_app\static\qiniu\\"
+        if os.path.exists(_local_path) is False:
+            os.makedirs(_local_path)
+        print _session
+        QiNiuUrlAdd(
+            pre_url=_img_url,
+            qiniu_path = "",
+            local_path = _local_path,
+            session=_session,
+        )
+        return HttpResponse(json.dumps({"status":"true","msg":u"url添加图片成功" }),content_type="application/json")
+        # return HttpResponse(json.dumps({"status":"true" }),content_type="application/json")
+
 class PictureAdd(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         try:
@@ -682,6 +706,7 @@ class CategoryQuery(BaseMixin, ListView):
 # weifeng_27@163.com
 # app_id = "wx00098b11d40e8910"
 # app_secret = "34362b7f79645d0659c5950e21e892cd"
+
 
 # suojun_tech_code@163.com
 app_id = "wxff79e25befbb413d"

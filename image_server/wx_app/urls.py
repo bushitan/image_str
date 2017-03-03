@@ -28,6 +28,7 @@ urlpatterns = [
    url(r'^img/query/$', PictureQuery.as_view()),
    url(r'^img/move/$', PictureMove.as_view()),
    url(r'^img/delete/$', PictureDelete.as_view()),
+   url(r'^img/add/url$', PictureAddByUrl.as_view()),  #用户登录 ，这两个应该合在一起
    # url(r'^img/video2gif/$', Video2Gif.as_view()),
    # url(r'^img/video2gif/$', Video2Gif_NoUpload.as_view()),
    # url(r'^img/join/$', Join_NoUpload.as_view()),
