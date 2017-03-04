@@ -17,7 +17,11 @@ import subprocess,json
 #img_local_path 图片的本地文件路径+文件名+后缀
 def QiNiuUrlAdd(pre_url,qiniu_path,local_path,session):
 	# if img_url is None:
-	img_down_path = local_path + pre_url.split("/")[-1]
+	img_name = pre_url.split("/")[-1]
+	if img_name == "":
+		img_name = "1.gif"
+	img_down_path = local_path + img_name
+
 	img_down(pre_url,img_down_path) #下载文件
 	img_type = img_resize(img_down_path) # 获取图片的type，重命名，改大小
 	img_upload(qiniu_path,img_type,img_down_path,session) # 七牛路径 图片全名，图片上传路径
