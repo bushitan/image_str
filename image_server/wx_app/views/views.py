@@ -530,13 +530,14 @@ from wx_app.lib.utils.qiniu_url_add import QiNiuUrlAdd
 #通过url，增加图片
 class PictureAddByUrl(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
-
-        _img_url = request.GET['img_url']
-        _uid = 1
+        _uid = request.GET['uid']
         user = User.objects.get( id = _uid )
         _session = user.session
-
         return HttpResponse(json.dumps({"status":"true","session":_session }),content_type="application/json")
+        # _img_url = request.GET['img_url']
+        # _uid = 1
+        # user = User.objects.get( id = _uid )
+        # _session = user.session
         # _local_path = SETTINGS.BASE_DIR + r"\wx_app\static\qiniu\\"
         # if os.path.exists(_local_path) is False:
         #     os.makedirs(_local_path)
