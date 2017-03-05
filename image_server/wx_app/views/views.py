@@ -535,17 +535,19 @@ class PictureAddByUrl(BaseMixin, ListView):
         _uid = 1
         user = User.objects.get( id = _uid )
         _session = user.session
-        _local_path = SETTINGS.BASE_DIR + r"\wx_app\static\qiniu\\"
-        if os.path.exists(_local_path) is False:
-            os.makedirs(_local_path)
-        print _session
-        QiNiuUrlAdd(
-            pre_url=_img_url,
-            qiniu_path = "",
-            local_path = _local_path,
-            session=_session,
-        )
-        return HttpResponse(json.dumps({"status":"true","msg":u"url添加图片成功" }),content_type="application/json")
+
+        return HttpResponse(json.dumps({"status":"true","session":_session }),content_type="application/json")
+        # _local_path = SETTINGS.BASE_DIR + r"\wx_app\static\qiniu\\"
+        # if os.path.exists(_local_path) is False:
+        #     os.makedirs(_local_path)
+        # print _session
+        # QiNiuUrlAdd(
+        #     pre_url=_img_url,
+        #     qiniu_path = "",
+        #     local_path = _local_path,
+        #     session=_session,
+        # )
+        # return HttpResponse(json.dumps({"status":"true","msg":u"url添加图片成功" }),content_type="application/json")
         # return HttpResponse(json.dumps({"status":"true" }),content_type="application/json")
 
 class PictureAdd(BaseMixin, ListView):
