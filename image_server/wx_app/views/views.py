@@ -528,7 +528,7 @@ class PictureDelete(BaseMixin, ListView):
 
 from wx_app.lib.utils.qiniu_url_add import QiNiuUrlAdd
 #通过url，增加图片
-class PictureAddByUrl(BaseMixin, ListView):
+class UserGetSession(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         _uid = request.GET['uid']
         user = User.objects.get( id = _uid )
