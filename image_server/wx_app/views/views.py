@@ -1262,7 +1262,7 @@ class TagImgQuery(BaseMixin, ListView):
                         _img_list,_page_num = ReturnPageRange(_img_list,_page_num) #切割传输
                         return HttpResponse(json.dumps( {"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
             else : #其他目录查数据库
-                _category = Category.objects.get( name = _category_name,user_id=None)  #,parent_id=None
+                _category = Category.objects.get( name = _category_name,user_id=2)  #,parent_id=None
                 _img_list = []
                 for _r in RelCategoryImg.objects.filter(category=_category):
                     _img_list.append({
