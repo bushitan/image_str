@@ -12,7 +12,7 @@ class ImgAdmin(admin.ModelAdmin):
     list_display = ('id','name','user_id')
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id','name','parent_id','user_id')
+    list_display = ('id','name','parent_id','user_id','sn')
     search_fields = ('user_id__name',)
 
 class RelCategoryImgAdmin(admin.ModelAdmin):

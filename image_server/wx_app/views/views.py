@@ -1146,7 +1146,13 @@ class TagQuery(BaseMixin, ListView):
                     "category_id":c.id,
                     "name":c.name,
                     "parent_id": _parent_id,
+                    "sn":c.sn,
                 })
+
+            #排序
+            _category_list.sort(lambda x,y: -cmp(x['sn'], y['sn']))  #从高到低
+            _category_list = sorted(_category_list, key=lambda x:x['sn'])
+            print _category_list
             return HttpResponse(json.dumps({"status":"true","category_list":_category_list}),content_type="application/json")
 
             #2 Todo 模糊查询

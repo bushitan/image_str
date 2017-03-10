@@ -78,6 +78,7 @@ class Category(models.Model):
     name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,blank=True)
     user_id = models.ForeignKey(User, verbose_name=u'用户',null=True,blank=True)
     is_default = models.IntegerField(u'是否用户默认目录',default=0,choices=CATEGORY_ROLE.items(),)
+    sn = models.IntegerField(u'排序号',default=0,null=True,blank=True)
     parent_id = models.ForeignKey('self', verbose_name=u'父类目录',null=True,blank=True)  #自身目录
     create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
     class Meta:
