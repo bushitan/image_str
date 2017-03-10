@@ -126,10 +126,20 @@ class Magick():
             _out_range = 180
             _re_size = re_size #显示尺寸，180x180
             img1_src = img_src1
-            _type1 = type1
+            _type1 = type1.lower()
             img2_src = img_src2
-            _type2 = type2
+            _type2 = type2.lower()
             save_url = save_path
+
+            #png 转变为jpg
+            if _type1 == "png":
+                temp1_src =  img1_src
+                img1_src = temp1_src.split(".")[0] + ".jpg"
+                subprocess.call("magick convert %s -background white -flatten %s" %(temp1_src,img1_src), shell=True)
+            if _type2 == "png":
+                temp2_src =  img2_src
+                img2_src = temp2_src.split(".")[0] + ".jpg"
+                subprocess.call("magick convert %s -background white -flatten %s" %(temp2_src,img2_src), shell=True)
 
             #延时计算
             _delay1 = 150
