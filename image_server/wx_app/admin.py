@@ -14,6 +14,10 @@ class ImgAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id','name','parent_id','user_id','sn')
     search_fields = ('user_id__name',)
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "parent_id":
+            kwargs["queryset"] = Category.objects.filter(user_id = 2)
+        return super(CategoryAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class RelCategoryImgAdmin(admin.ModelAdmin):
     list_display = ('category_id','img_id')
