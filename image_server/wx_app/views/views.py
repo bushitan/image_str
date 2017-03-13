@@ -1278,7 +1278,7 @@ class TagImgQuery(BaseMixin, ListView):
                         "width":_r.img.width,
                         "height":_r.img.height,
                     })
-                    _img_list,_page_num = ReturnPageRange(_img_list,_page_num) #获取图片范围
+                _img_list,_page_num = ReturnPageRange(_img_list,_page_num) #获取图片范围
                 return HttpResponse(json.dumps({"status":"true","img_list":_img_list , "page_num":_page_num}),content_type="application/json")
         except Exception ,e:
             log.error(e,None,"TagImgQuery")
