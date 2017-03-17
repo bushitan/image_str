@@ -76,6 +76,7 @@ class Img(models.Model):
 
 class Category(models.Model):
     name =  models.CharField(max_length=100, verbose_name=u'名称',null=True,blank=True)
+    des = models.TextField( verbose_name=u'描述',null=True,blank=True)
     user_id = models.ForeignKey(User, verbose_name=u'用户',null=True,blank=True)
     is_default = models.IntegerField(u'是否用户默认目录',default=0,choices=CATEGORY_ROLE.items(),)
     sn = models.IntegerField(u'排序号',default=0,null=True,blank=True)

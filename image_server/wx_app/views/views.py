@@ -1147,6 +1147,7 @@ class TagQuery(BaseMixin, ListView):
                     "name":c.name,
                     "parent_id": _parent_id,
                     "sn":c.sn,
+                    "des":c.des,
                 })
 
             #排序
