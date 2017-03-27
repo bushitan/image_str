@@ -156,3 +156,28 @@ class Step(models.Model):
     def __unicode__(self):
         return '%s' % (self.number)
 
+
+ARTICLE_SHOW = {
+    1:u"显示",
+    0:u"隐藏",
+}
+class Article(models.Model):
+    title = models.CharField(max_length=100, verbose_name=u'标题')
+    swiper = models.TextField(verbose_name=u'轮播图',null=True,blank=True)
+    summary = models.TextField(verbose_name=u'摘要')
+    content = models.TextField(verbose_name=u'正文')
+    is_show = models.IntegerField(u'是否显示文章',default=1,choices=ARTICLE_SHOW.items(),)
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
+
+    def get_tags(self):
+        return self.tags.split(',')
+
+    class Meta:
+        verbose_name_plural = verbose_name = u'文章'
+        ordering = ['-create_time']
+        # ordering = ['rank', '-is_top', '-pub_time', '-create_time']
+        app_label = string_with_title('wx_app', u"表情")
+
+    def __unicode__(self):
+            return self.title
+

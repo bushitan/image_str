@@ -178,12 +178,78 @@
 #     fileHandler.close()
 
 
-from django.test import TestCase, Client
-
-from wx_app.views import *
+# from django.test import TestCase, Client
+#
+# from wx_app.views import *
 # from core.tests import create_user
 
-class ViewTest(TestCase):
-    def test(self):
-        response = self.client.get('/user/login')
-        self.failUnlessEqual('abc', response.content)
+# class ViewTest(TestCase):
+#     def test(self):
+#         response = self.client.get('/user/login')
+#         self.failUnlessEqual('abc', response.content)
+# import os,sys
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+#
+# from django.core.management import execute_from_command_line
+#
+# load_env()
+# execute_from_command_line(sys.argv)
+# from  wx_app.lib.utils.wx_login import WxUserLogin
+# if __name__ == "__main__":
+#
+#
+# 	code = "051rqeXE0IKuwh2A9TZE0XFnXE0rqeXR"
+# 	session = "051XgwH40A6C6H1U2dJ40G1zH40XgwHV1488348914.3"
+# 	WxUserLogin(code,session)
+
+from django.conf import settings
+settings.configure()
+from wx_app.models import *
+import os
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "DjangoHelloworld.settings");
+django.setup()  #添加的代码
+_list = Category.objects.filter( user_id = 2)
+# print _list
+_category_list = []
+for c in _list:
+	if c.parent_id is None:
+		_parent_id = None
+	else:
+		_parent_id = c.parent_id.id
+	_category_list.append({
+		"category_id":c.id,
+		"name":c.name,
+		"parent_id": _parent_id,
+		"sn":c.sn,
+	})
+
+#排序
+_category_list.sort(lambda x,y: cmp(x['sn'], y['sn']))
+_category_list = sorted(_category_list, key=lambda x:x['sn'])
+
+print _category_list
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,3 +3,4 @@ import views
 import user
 import magick
 import painter
+import blog

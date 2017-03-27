@@ -5,6 +5,7 @@ from wx_app.views.views import *
 from wx_app.views.user import *
 from wx_app.views.magick import *
 from wx_app.views.painter import *
+from wx_app.views.blog import *
 
 urlpatterns = [
 
@@ -69,4 +70,6 @@ urlpatterns = [
    url(r'^painter/color/$', Color.as_view()),
 
 
+   url(r'^blog/article/list/$', EmojiArticleList.as_view()),
+   url(r'^blog/article/$', EmojiBlog.as_view()),
 ]
