@@ -86,7 +86,7 @@ class Category(models.Model):
         verbose_name_plural = verbose_name = u'目录'
         app_label = string_with_title('wx_app', u"表情")
     def __unicode__(self):
-        return '%s' % (self.name)
+        return '%s' % (self.id)
 
 class RelCategoryImg(models.Model):
     category = models.ForeignKey(Category, verbose_name=u'目录')

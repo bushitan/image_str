@@ -70,3 +70,4 @@ class ArticleAdmin(admin.ModelAdmin):
     #     js=("//tinymce.cachefly.net/4.0/tinymce.min.js","/static/js/edit.js")
 
 admin.site.register(Article,ArticleAdmin)
+
