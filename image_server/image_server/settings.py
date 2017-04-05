@@ -109,7 +109,8 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# USE_TZ = True #标准UTC时间，
+USE_TZ = False #计算机所在地时间#
 
 
 # Static files (CSS, JavaScript, Images)
