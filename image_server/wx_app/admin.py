@@ -20,7 +20,8 @@ class CategoryAdmin(admin.ModelAdmin):
         return super(CategoryAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class RelCategoryImgAdmin(admin.ModelAdmin):
-    list_display = ('category_id','img_id')
+    list_display = ('id','category_id','img_id','create_time',)
+    search_fields = ('category__name',)
     pass
 class LogAdmin(admin.ModelAdmin):
     list_display = ('id','level','info','user','event')

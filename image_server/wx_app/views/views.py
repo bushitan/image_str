@@ -526,8 +526,10 @@ class PictureDelete(BaseMixin, ListView):
             Logger.error(str(e),_user,self.__class__.__name__)
             return HttpResponse(json.dumps({"status":"false","msg":u"删除图片出错"+ e}),content_type="application/json")
 
-from wx_app.lib.utils.qiniu_url_add import QiNiuUrlAdd
+
+
 #通过url，增加图片
+# 获取“系统”用户的session
 class UserGetSession(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         _uid = request.GET['uid']
@@ -1218,7 +1220,7 @@ class CacheClear(BaseMixin, ListView):
 #点击标签，查询图片
 
 # KEY_WORD=[ u"今日斗图",u"斗鸡吧",u"拼接素材",u"福",u"灵魂画师",u"帮助"]
-KEY_WORD=[ u"今日斗图",u"纯文字",u"拼接素材",u"福",u"灵魂画师"]
+KEY_WORD=[u"纯文字",u"拼接素材",u"福",u"灵魂画师"]
 
 class TagImgQuery(BaseMixin, ListView):
 
@@ -1271,7 +1273,8 @@ class TagImgQuery(BaseMixin, ListView):
             else : #其他目录查数据库
                 _category = Category.objects.get( name = _category_name,user_id=2)  #,parent_id=None
                 _img_list = []
-                for _r in RelCategoryImg.objects.filter(category=_category):
+                rel_list = RelCategoryImg.objects.filter(category=_category)
+                for _r in rel_list:
                     _img_list.append({
                         "img_id":_r.img.id,
                         "yun_url":_r.img.yun_url, # 七牛云自动缩略图
@@ -1286,13 +1289,30 @@ class TagImgQuery(BaseMixin, ListView):
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"查询标签出错" }),content_type="application/json")
 
+import random
+# 在今日斗图目录中，将图片随机置顶
+CATEGORY_JIN_RI_DOU_TU = 6
+class TagImgRandom(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        rel = RelCategoryImg.objects.filter(category=CATEGORY_JIN_RI_DOU_TU).order_by("create_time")
+        new_index_list = [random.randint(0, 20),random.randint(21, 120)] #随机两张
+        for index in new_index_list:
+            r = rel[index]
+            r.create_time =  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            r.save()
+            print r.img.id, r.img.yun_url,r.create_time
+        return HttpResponse(json.dumps({"status":"true"}),content_type="application/json")
+
+
+
 #点击标签，查询图片
 class AdTitle(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         try:
             # title = u"图片来自网络，侵权、吐槽、点赞请联系微信:bushitan"
             title = u"找斗图组织，加群主微信号:yy141111yb"
-            keyword = KEY_WORD[0]
+            # keyword = KEY_WORD[0]
+            keyword = u"今日斗图"
             search_key = [KEY_WORD[0],KEY_WORD[1],KEY_WORD[2]]
             return HttpResponse(json.dumps({
                 "status":"true",

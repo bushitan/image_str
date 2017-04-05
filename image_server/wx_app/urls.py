@@ -50,7 +50,7 @@ urlpatterns = [
    url(r'^tag/img_add/$', TagImgAdd.as_view()),
    url(r'^tag/img_query/$', TagImgQuery.as_view()),
    url(r'^tag/cache_clear/$', CacheClear.as_view()),
-
+   url(r'^tag/random/$',  TagImgRandom.as_view()), #将后边的图片随机置顶
 
    url(r'^user/info/$', GetUserInfo.as_view()), #获取用户信息
    url(r'^user/login/$', UserLogin.as_view()),  #用户登录 ，这两个应该合在一起
