@@ -1295,7 +1295,8 @@ CATEGORY_JIN_RI_DOU_TU = 6
 class TagImgRandom(BaseMixin, ListView):
     def get(self, request, *args, **kwargs):
         rel = RelCategoryImg.objects.filter(category=CATEGORY_JIN_RI_DOU_TU).order_by("create_time")
-        new_index_list = [random.randint(0, 20),random.randint(21, 120)] #随机两张
+        # new_index_list = [random.randint(0, 20),random.randint(21, 120)] #随机两张
+        new_index_list = [random.randint(0, 200)] #随机一张
         for index in new_index_list:
             r = rel[index]
             r.create_time =  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
