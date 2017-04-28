@@ -162,13 +162,13 @@ ARTICLE_SHOW = {
     0:u"隐藏",
 }
 class Article(models.Model):
-    title = models.CharField(max_length=100, verbose_name=u'标题')
+    title = models.CharField(max_length=100, verbose_name=u'标题',null=True,blank=True)
     swiper = models.TextField(verbose_name=u'轮播图',null=True,blank=True)
-    summary = models.TextField(verbose_name=u'摘要')
-    content = models.TextField(verbose_name=u'正文')
+    summary = models.TextField(verbose_name=u'摘要',null=True,blank=True)
+    content = models.TextField(verbose_name=u'正文',null=True,blank=True)
     is_show = models.IntegerField(u'是否显示文章',default=1,choices=ARTICLE_SHOW.items(),)
     create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
-
+    tao_bao = models.TextField(verbose_name=u'淘宝链接',null=True,blank=True)
     def get_tags(self):
         return self.tags.split(',')
 

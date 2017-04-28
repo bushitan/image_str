@@ -46,6 +46,7 @@ class EmojiBlog(ListView):
 			"swiper": a.swiper.replace('\r\n','').split(",") , #轮播图
 			"title":a.title,
 			"art":_art,
+			"tao_bao":eval(a.tao_bao),
 			# "img_id":_img_id,
 			# "category_id":_category_id,
 		}
