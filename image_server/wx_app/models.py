@@ -181,3 +181,17 @@ class Article(models.Model):
     def __unicode__(self):
             return self.title
 
+
+class UserBack(models.Model):
+    user = models.ForeignKey(User, verbose_name=u'用户',null=True,blank=True)
+    back = models.TextField(verbose_name=u'反馈信息',null=True,blank=True)
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
+    class Meta:
+        verbose_name_plural = verbose_name = u'用户反馈'
+        ordering = ['-create_time']
+        # ordering = ['rank', '-is_top', '-pub_time', '-create_time']
+        app_label = string_with_title('wx_app', u"表情")
+
+    def __unicode__(self):
+            return self.back
+

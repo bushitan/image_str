@@ -54,6 +54,8 @@ urlpatterns = [
 
    url(r'^user/info/$', GetUserInfo.as_view()), #获取用户信息
    url(r'^user/login/$', UserLogin.as_view()),  #用户登录 ，这两个应该合在一起
+   url(r'^user/back/$', AddUserBack.as_view()), #收集用户反馈信息
+
 
    url(r'^ad/title/$', AdTitle.as_view()),
 

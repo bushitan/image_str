@@ -72,3 +72,7 @@ class ArticleAdmin(admin.ModelAdmin):
 
 admin.site.register(Article,ArticleAdmin)
 
+
+class UserBackAdmin(admin.ModelAdmin):
+    list_display = ('user','back',)
+admin.site.register(UserBack,UserBackAdmin)

@@ -81,3 +81,21 @@ class GetUserInfo(BaseMixin, ListView):
             logger.error(e)
             LoggerObj.error(str(e),'',self.__class__.__name__)
             return HttpResponse(json.dumps({"status":"false","msg":u"查询用户信息出错" + str(e)}),content_type="application/json")
+
+
+class AddUserBack(BaseMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        session = request.GET['session']
+        _back = request.GET['back']
+
+
+        if  User.objects.filter( session = session).exists() is False:
+            _uid = None
+        else:
+            _uid = User.objects.get( session = session)
+        _user_back = UserBack(
+            user = _uid,
+            back = _back
+        )
+        _user_back.save()
+        return HttpResponse(json.dumps({"status":"true","msg":"感谢您提供的宝贵意见"}),content_type="application/json")
