@@ -162,6 +162,7 @@ ARTICLE_SHOW = {
     0:u"隐藏",
 }
 class Article(models.Model):
+    cover = models.CharField(max_length=100, verbose_name=u'封面图片',null=True,blank=True)
     title = models.CharField(max_length=100, verbose_name=u'标题',null=True,blank=True)
     swiper = models.TextField(verbose_name=u'轮播图',null=True,blank=True)
     summary = models.TextField(verbose_name=u'摘要',null=True,blank=True)
