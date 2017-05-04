@@ -7,18 +7,22 @@ import json
 
 
 class EmojiArticleList(ListView):
-    def get(self, request, *args, **kwargs):
+	def get(self, request, *args, **kwargs):
+		#用户点击“同款”标签记录
+		user_log = UserLog(action = "same_list" )
+		user_log.save()
+
 		temp_list = Article.objects.filter()
 		_art_list = []
 		for i in range(0,len(temp_list)):
-			_art_list.append({
-				"art_id":temp_list[i].id,
-				"cover":temp_list[i].cover,
-				"swiper": temp_list[i].swiper.replace('\r\n','').split(","),
-				"title":temp_list[i].title,
-				"summary":temp_list[i].summary
-			})
-
+			if temp_list[i].is_show == 1:
+				_art_list.append({
+					"art_id":temp_list[i].id,
+					"cover":temp_list[i].cover,
+					"swiper": temp_list[i].swiper.replace('\r\n','').split(","),
+					"title":temp_list[i].title,
+					"summary":temp_list[i].summary
+				})
 		_dict = {
 			"status":"true",
 			"art_list":_art_list,
@@ -28,8 +32,13 @@ class EmojiArticleList(ListView):
 			content_type="application/json"
 		)
 class EmojiBlog(ListView):
-    def get(self, request, *args, **kwargs):
+	def get(self, request, *args, **kwargs):
 		_art_id = request.GET['art_id']
+
+		#用户浏览文章记录
+		user_log = UserLog(action = "same_view" ,data = str(_art_id) )
+		user_log.save()
+		print user_log.id
 		a = Article.objects.get(id = _art_id )
 		print a
 		_content_list = a.content.split("$")
@@ -42,6 +51,7 @@ class EmojiBlog(ListView):
 				_art.append({"style":"text","msg":_content_list[i]})
 
 		print a.swiper.replace('\r\n','').split(",")
+		print "232" , a.tao_bao
 		_dict = {
 			"status":"true",
 			"swiper": a.swiper.replace('\r\n','').split(",") , #轮播图

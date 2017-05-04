@@ -76,3 +76,8 @@ admin.site.register(Article,ArticleAdmin)
 class UserBackAdmin(admin.ModelAdmin):
     list_display = ('user','back',)
 admin.site.register(UserBack,UserBackAdmin)
+
+
+class UserLogAdmin(admin.ModelAdmin):
+    list_display = ('user','action','data',)
+admin.site.register(UserLog,UserLogAdmin)
