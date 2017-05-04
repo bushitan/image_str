@@ -13,6 +13,7 @@ class EmojiArticleList(ListView):
 		for i in range(0,len(temp_list)):
 			_art_list.append({
 				"art_id":temp_list[i].id,
+				"cover":temp_list[i].cover,
 				"swiper": temp_list[i].swiper.replace('\r\n','').split(","),
 				"title":temp_list[i].title,
 				"summary":temp_list[i].summary
