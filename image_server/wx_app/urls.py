@@ -74,4 +74,5 @@ urlpatterns = [
 
    url(r'^blog/article/list/$', EmojiArticleList.as_view()),
    url(r'^blog/article/$', EmojiBlog.as_view()),
+   url(r'^blog/taobao/$', Taobao.as_view()),
 ]

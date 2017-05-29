@@ -65,3 +65,18 @@ class EmojiBlog(ListView):
 			json.dumps(_dict),
 			content_type="application/json"
 		)
+
+import xlrd
+class Taobao(ListView):
+	def get(self, request, *args, **kwargs):
+		_dict = {}
+		return HttpResponse(
+			json.dumps(_dict),
+			content_type="application/json"
+		)
+
+		# _art_id = request.GET['art_id']
+		data = xlrd.open_workbook('2.xls') # 打开xls文件
+		table = data.sheets()[0] # 打开第一张表
+		nrows = table.nrows # 获取表的行数
+		print nrows
