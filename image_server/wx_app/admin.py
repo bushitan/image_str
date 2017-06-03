@@ -31,6 +31,14 @@ admin.site.register(Category,CategoryAdmin)
 admin.site.register(RelCategoryImg,RelCategoryImgAdmin)
 admin.site.register(Log,LogAdmin)
 
+# gahter 英雄帖
+class RelMasterUserImgAdmin(admin.ModelAdmin):
+    list_display = ('id','user_id','img_id','create_time',)
+admin.site.register(RelMasterUserImg,RelMasterUserImgAdmin)
+class MasterAdmin(admin.ModelAdmin):
+    list_display = ('id','user_id','title','logo_url','prize_url','is_gather_open',)
+admin.site.register(Master,MasterAdmin)
+
 #一起画
 class ThemeAdmin(admin.ModelAdmin):
     list_display = ('id','name','user_id')

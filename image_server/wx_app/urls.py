@@ -7,6 +7,7 @@ from wx_app.views.magick import *
 from wx_app.views.painter import *
 from wx_app.views.blog import *
 from wx_app.views.gather import *
+from wx_app.views.v_qiniu import *
 
 urlpatterns = [
 
@@ -77,7 +78,9 @@ urlpatterns = [
    url(r'^blog/article/$', EmojiBlog.as_view()),
    url(r'^blog/taobao/$', Taobao.as_view()),
 
+   #七牛上传
 
+   url(r'^qiniu/upload/$', QiNiuUpload.as_view()),
 
    #gather英雄帖
    url(r'^gather/get_user_info/$', GetUserInfo.as_view()),

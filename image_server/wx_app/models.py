@@ -108,6 +108,30 @@ class Log(models.Model):
         app_label = string_with_title('wx_app', u"表情")
 
 
+GATHER_OPEN = {
+    0:u"关闭，不接受求图",
+    1:u"打开，可以求图",
+}
+#Master的信息
+class Master(models.Model):
+    user= models.ForeignKey(User, verbose_name=u'master用户',null=True,blank=True)
+    title = models.CharField(max_length=100, verbose_name=u'标题',null=True,blank=True)
+    logo_url = models.TextField( verbose_name=u'头像icon',null=True,blank=True)
+    prize_url = models.TextField( verbose_name=u'奖励图片',null=True,blank=True)
+    is_gather_open = models.IntegerField(u'是否接受求图',default=1,choices=GATHER_OPEN.items(),)
+    class Meta:
+        verbose_name_plural = verbose_name = u'发帖者'
+        app_label = string_with_title('wx_app', u"表情")
+#Master的收集表
+class RelMasterUserImg(models.Model):
+    user= models.ForeignKey(User, verbose_name=u'master用户',null=True,blank=True)
+    img = models.ForeignKey(Img, verbose_name=u'收到图片')
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
+    class Meta:
+        verbose_name_plural = verbose_name = u'匿名回复图片'
+        ordering = ['-create_time']
+        app_label = string_with_title('wx_app', u"表情")
+
 #一起画
 
 #主题

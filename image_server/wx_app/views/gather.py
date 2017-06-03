@@ -16,22 +16,29 @@ user = {
 class SetUserInfo(ListView):
 	def get(self, request, *args, **kwargs):
 
+		session = request.GET['session']
 		logo = request.GET['logo']
 		title = request.GET['title']
 		prize_url = request.GET['prize_url']
 		is_gather_open = request.GET['is_gather_open']
+		print session,
+		print logo,
+		print title
+		print prize_url
+		print is_gather_open,type(is_gather_open)
+		if  User.objects.filter( session = session).exists() is False:
+			return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在,请重新登录"}),content_type="application/json" )
+		_user = User.objects.get( session = session)
+		_master = Master.objects.get(user = _user)
+		_master.title = title,
+		_master.logo_url = logo,
+		_master.prize_url = prize_url,
+		# _master.is_gather_open = 0,
+		_master.save()
 
-		print user
-		user['logo'] = logo
-		user['title'] = title
-		user['prize_url'] = prize_url
-		user['is_gather_open'] = is_gather_open
-
-		print user ,"OK"
-
-		_dict = {
-			"status":"true",
-		}
+		# _dict = {
+		# 	"status":"true",
+		# }
 		return HttpResponse(
 			json.dumps({"status":"true"}),
 			content_type="application/json"
@@ -40,9 +47,45 @@ class SetUserInfo(ListView):
 
 class GetUserInfo(ListView):
 	def get(self, request, *args, **kwargs):
-		_dict = {}
+		session = request.GET['session']
+		print ' in GetUserInfo ',session
+		if  User.objects.filter( session = session).exists() is False:
+			return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在,请重新登录"}),content_type="application/json" )
+		_user = User.objects.get( session = session)
+		if  Master.objects.filter( user = _user).exists() is False: #新注册master
+			_master = Master(user = _user)
+			_master.save()
+			_master_info = {
+				"nick_name":u'丰兄',
+				'logo':_master.logo_url,
+				'title':_master.title,
+				'prize_url':_master.prize_url,
+				'is_gather_open':_master.is_gather_open,
+			}
+			return HttpResponse( json.dumps({"status":"true","master_info":_master_info,"rel_master_img":[]}),content_type="application/json" )
+		else: #master已经有，查询
+			_master = Master.objects.get(user = _user)
+			_master_info = { #查信息
+				"nick_name":u'丰兄',
+				'logo':_master.logo_url,
+				'title':_master.title,
+				'prize_url':_master.prize_url,
+				'is_gather_open':_master.is_gather_open,
+			}
+
+			_rel = RelMasterUserImg.objects.filter(user = _user) #查图片
+			_img_list = []
+			for _r in _rel:
+				_img_list.append({
+					"img_id":_r.img.id,
+					"yun_url":_r.img.yun_url, # 七牛云自动缩略图
+					"size":_r.img.size ,
+					"width":_r.img.width,
+					"height":_r.img.height,
+					"duration":_r.img.duration,
+				})
 		return HttpResponse(
-			json.dumps({"status":"true","user_info":user}),
+			json.dumps({"status":"true","master_info":_master_info,"img_list":_img_list,}),
 			content_type="application/json"
 		)
 
@@ -50,38 +93,35 @@ class GetUserInfo(ListView):
 #获取发帖人的信息
 class GetMasterInfo(ListView):
 	def get(self, request, *args, **kwargs):
-		master_session = request.GET['master_session']
-
-		_dict = {}
+		master_id = request.GET['master_id']
+		# if Master.objects.filter( id = master_id).exists() is False:
+		# 	return HttpResponse( json.dumps({"status":"false","msg":u"master用户不存在,请重新登录"}),content_type="application/json" )
+	 	_master = Master.objects.get( id = master_id)
+		_master_info = {
+			"nick_name":u'丰兄',
+			'logo':_master.logo_url,
+			'title':_master.title,
+			'prize_url':_master.prize_url,
+			'is_gather_open':_master.is_gather_open,
+		}
 		return HttpResponse(
-			json.dumps({"status":"true","user_info":user}),
+			json.dumps({"status":"true","master_info":_master_info}),
 			content_type="application/json"
 		)
 
 #帮助发帖人
 class HelpMaster(ListView):
 	def get(self, request, *args, **kwargs):
+		pass
 		# todo
-		# 将用户的图片， 绑定到master的名下
-		# logo = request.GET['logo']
-		# title = request.GET['title']
-		# prize_url = request.GET['prize_url']
-		# is_gather_open = request.GET['is_gather_open']
+		# print user ,"OK"
 		#
-		# print user
-		# user['logo'] = logo
-		# user['title'] = title
-		# user['prize_url'] = prize_url
-		# user['is_gather_open'] = is_gather_open
-
-		print user ,"OK"
-
-		_dict = {
-			"status":"true",
-		}
-		return HttpResponse(
-			json.dumps({"status":"true"}),
-			content_type="application/json"
-		)
+		# _dict = {
+		# 	"status":"true",
+		# }
+		# return HttpResponse(
+		# 	json.dumps({"status":"true"}),
+		# 	content_type="application/json"
+		# )
 
 

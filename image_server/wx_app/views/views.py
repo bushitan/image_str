@@ -778,6 +778,7 @@ class UserLogin(BaseMixin, ListView):
                         )
                         _category.save()
 
+
                         _id_list = [236]
                         for i in _id_list:
                             _img = Img.objects.get(id=i)
