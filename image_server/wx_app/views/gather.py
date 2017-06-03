@@ -17,25 +17,28 @@ class SetUserInfo(ListView):
 	def get(self, request, *args, **kwargs):
 
 		session = request.GET['session']
-		logo = request.GET['logo']
-		title = request.GET['title']
-		prize_url = request.GET['prize_url']
-		is_gather_open = request.GET['is_gather_open']
-		print session,
+		logo = request.GET.get('logo',"")
+		nick_name = request.GET.get('nick_name',"")
+		title =request.GET.get('title',"")
+		prize_url = request.GET.get('prize_url',"")
+		is_gather_open = int(request.GET.get('is_gather_open',""))
+		print session,type(title)
 		print logo,
-		print title
+		print title,type(title)
 		print prize_url
 		print is_gather_open,type(is_gather_open)
 		if  User.objects.filter( session = session).exists() is False:
 			return HttpResponse( json.dumps({"status":"false","msg":u"用户不存在,请重新登录"}),content_type="application/json" )
 		_user = User.objects.get( session = session)
-		_master = Master.objects.get(user = _user)
-		_master.title = title,
-		_master.logo_url = logo,
-		_master.prize_url = prize_url,
-		# _master.is_gather_open = 0,
-		_master.save()
-
+		#bug 用save方式，会把字符串变tuple保存
+		#filter有update，get没有
+		Master.objects.filter(user = _user).update(
+			logo_url = logo,
+			nick_name = nick_name,
+			title = title,
+			prize_url = prize_url,
+			is_gather_open = is_gather_open,
+		)
 		# _dict = {
 		# 	"status":"true",
 		# }

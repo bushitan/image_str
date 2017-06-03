@@ -115,6 +115,7 @@ GATHER_OPEN = {
 #Master的信息
 class Master(models.Model):
     user= models.ForeignKey(User, verbose_name=u'master用户',null=True,blank=True)
+    nick_name = models.CharField(max_length=32, verbose_name=u'昵称',null=True,blank=True)
     title = models.CharField(max_length=100, verbose_name=u'标题',null=True,blank=True)
     logo_url = models.TextField( verbose_name=u'头像icon',null=True,blank=True)
     prize_url = models.TextField( verbose_name=u'奖励图片',null=True,blank=True)

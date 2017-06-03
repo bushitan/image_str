@@ -46,9 +46,11 @@ KEY_USER_HASH = {} #内存，key-session对应表
 
 class QiNiuUpload( ListView):
     def get(self, request, *args, **kwargs):
-        session = request.GET['session']
-        _type = request.GET['type']
-        _upload_info =  request.POST.get('upload_info',"")
+        session = request.GET.get('session',"")
+        _type = request.GET.get('type',"")
+        #上传到指定目录
+        #为空，上传到默认目录
+        _category_id =  request.GET.get('category_id',"")
         # _category_id = request.GET['category_id']
 
         # return HttpResponse(json.dumps({"status":"true"}),content_type="application/json")
@@ -69,9 +71,9 @@ class QiNiuUpload( ListView):
         KEY_USER_HASH[key] = {
             "uid":_user,
             "type":_type,
-            "upload_info":_upload_info,
+            "category_id":_category_id,
         }
-        return HttpResponse(json.dumps({"status":"true","token":token,"key":key, "upload_info":_upload_info,}),content_type="application/json")
+        return HttpResponse(json.dumps({"status":"true","token":token,"key":key, "category_id":_category_id,}),content_type="application/json")
     def post(self, request, *args, **kwargs):
         try:
             key = request.POST['key']
@@ -101,10 +103,10 @@ class QiNiuUpload( ListView):
                 _user = KEY_USER_HASH[key]["uid"]
                 _type = KEY_USER_HASH[key]["type"]
                 _category_id = KEY_USER_HASH[key]["category_id"]
-                if KEY_USER_HASH[key]["upload_info"] == "":
-                    _upload_info = {"type":0}
-                else:
-                    _upload_info = KEY_USER_HASH[key]["upload_info"]
+                # if KEY_USER_HASH[key]["upload_info"] == "":
+                #     _upload_info = {"type":0}
+                # else:
+                #     _upload_info = KEY_USER_HASH[key]["upload_info"]
 
 
                 if _type == 'mp4' or _type == "MP4" or _type == "Mp4":
@@ -139,49 +141,52 @@ class QiNiuUpload( ListView):
                     )
                 _img.save()
 
-                print "type:",_upload_info["type"],type(_upload_info["type"])
-                if _upload_info["type"] == 1: #普通用户给master传图片
-                    HelpMasterAddImg(_user,_img,_upload_info)
-                if _upload_info["type"] == 2: #用户上传奖励图
-                    SetGatherPrizeImg()
-
-                if _upload_info["type"] == 0: #普通用户上传图片
+                # print "type:",_upload_info["type"],type(_upload_info["type"])
+                # if _upload_info["type"] == 1: #普通用户给master传图片
+                #     HelpMasterAddImg(_user,_img,_upload_info)
+                # if _upload_info["type"] == 2: #用户上传奖励图
+                #     SetGatherPrizeImg()
+				#
+                # if _upload_info["type"] == 0: #普通用户上传图片
                     #上传的图片添加至该用户的默认目录
-                    # _category = Category.objects.get( user_id = _user ,is_default = 1,id=_category_id)
-                    if Category.objects.filter( user_id = _user,id=_category_id).exists() is False:
-                        return HttpResponse( json.dumps({"status":"false","msg":u"用户没有此目录"}),content_type="application/json" )
+                # _category = Category.objects.get( user_id = _user ,is_default = 1,id=_category_id)
 
+                if _category_id == "": # 目录为空，查默认目录
+                    _category = Category.objects.filter( user_id = _user,is_default=1)
+                else:# 目录不为空，使用当前目录
                     _category = Category.objects.get( id=_category_id)
-                    _rel = RelCategoryImg(category = _category,img = _img )
-                    _rel.save()
+                # if Category.objects.filter( user_id = _user,id=_category_id).exists() is False:
+                #     return HttpResponse( json.dumps({"status":"false","msg":u"用户没有此目录"}),content_type="application/json" )
+                _rel = RelCategoryImg(category = _category,img = _img )
+                _rel.save()
 
-                    r_img = {
-                        "img_id":_img.id,
-                        "yun_url":_img.yun_url, # 七牛云自动缩略图
-                        "size":_img.size ,
-                        "width":_img.width,
-                        "height":_img.height,
-                        "duration":_img.duration,
-                        "category_name":_category.name,
-                        "category_id":_category.id,
-                    }
-                    KEY_USER_HASH.pop(key)
-                    return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
+                r_img = {
+                    "img_id":_img.id,
+                    "yun_url":_img.yun_url, # 七牛云自动缩略图
+                    "size":_img.size ,
+                    "width":_img.width,
+                    "height":_img.height,
+                    "duration":_img.duration,
+                    "category_name":_category.name,
+                    "category_id":_category.id,
+                }
+                KEY_USER_HASH.pop(key)
+                return HttpResponse(json.dumps({"status":"true","img":r_img}),content_type="application/json")
             return HttpResponse(json.dumps({"status":"false","msg":u"网络出错，请重新上传"}),content_type="application/json")
         except Exception,e:
             print e
             return HttpResponse(json.dumps({"status":"false","msg":u"上传图片错误" + str(e)}),content_type="application/json")
-def SetGatherPrizeImg():
-    pass
-
-def HelpMasterAddImg(user,img,upload_info):
-    #图片保存到默认目录
-    _category = Category.objects.get( user_id = user ,is_default = 1)
-    _rel = RelCategoryImg(category = _category,img = img )
-    _rel.save()
-
-    #图片给master
-    _master_uid = upload_info["master_uid"]
-    _master = RelMasterImg( user_id = _master_uid,img = img )
-    _master.save()
-    return HttpResponse(json.dumps({"status":"true","msg":u"帮助master成功"}),content_type="application/json")
+# def SetGatherPrizeImg():
+#     pass
+#
+# def HelpMasterAddImg(user,img,upload_info):
+#     #图片保存到默认目录
+#     _category = Category.objects.get( user_id = user ,is_default = 1)
+#     _rel = RelCategoryImg(category = _category,img = img )
+#     _rel.save()
+#
+#     #图片给master
+#     _master_uid = upload_info["master_uid"]
+#     _master = RelMasterUserImg( user_id = _master_uid,img = img )
+#     _master.save()
+#     return HttpResponse(json.dumps({"status":"true","msg":u"帮助master成功"}),content_type="application/json")
