@@ -59,7 +59,7 @@ class GetUserInfo(ListView):
 			_master = Master(user = _user)
 			_master.save()
 			_master_info = {
-				"nick_name":u'丰兄',
+				"nick_name":_master.nick_name,
 				'logo':_master.logo_url,
 				'title':_master.title,
 				'prize_url':_master.prize_url,
@@ -69,7 +69,7 @@ class GetUserInfo(ListView):
 		else: #master已经有，查询
 			_master = Master.objects.get(user = _user)
 			_master_info = { #查信息
-				"nick_name":u'丰兄',
+				"nick_name":_master.nick_name,
 				'logo':_master.logo_url,
 				'title':_master.title,
 				'prize_url':_master.prize_url,
@@ -101,7 +101,7 @@ class GetMasterInfo(ListView):
 		# 	return HttpResponse( json.dumps({"status":"false","msg":u"master用户不存在,请重新登录"}),content_type="application/json" )
 	 	_master = Master.objects.get( id = master_id)
 		_master_info = {
-			"nick_name":u'丰兄',
+			"nick_name":_master.nick_name,
 			'logo':_master.logo_url,
 			'title':_master.title,
 			'prize_url':_master.prize_url,
@@ -115,16 +115,16 @@ class GetMasterInfo(ListView):
 #帮助发帖人
 class HelpMaster(ListView):
 	def get(self, request, *args, **kwargs):
-		pass
+		# pass
 		# todo
 		# print user ,"OK"
 		#
-		# _dict = {
-		# 	"status":"true",
-		# }
-		# return HttpResponse(
-		# 	json.dumps({"status":"true"}),
-		# 	content_type="application/json"
-		# )
+		_dict = {
+			"status":"true",
+		}
+		return HttpResponse(
+			json.dumps({"status":"true"}),
+			content_type="application/json"
+		)
 
 
