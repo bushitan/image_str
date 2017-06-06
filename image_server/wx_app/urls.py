@@ -89,4 +89,7 @@ urlpatterns = [
    url(r'^gather/get_master_info/$', GetMasterInfo.as_view()),#获取发帖人信息
    url(r'^gather/help_master/$', HelpMaster.as_view()),#获取发帖人信息
 
+   url(r'^gather/create_master_qr/$', CreateMasterQR.as_view()),#生成小程序二维码
+
+
 ]

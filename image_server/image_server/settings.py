@@ -134,6 +134,10 @@ QINIU_HOST = 'http://image.12xiong.top/'
 #magick文件夹路径，处理完后直接下载
 MAGICK_FILE  = os.path.join(BASE_DIR, "wx_app/static/magick/upload/")
 
+# 微信小程序appid
+APP_ID = "wxff79e25befbb413d"
+APP_SECRET = "283fc3d9d4b8ba3b58601145466d4417"
+
 # log配置
 LOG_FILE = "./all.log"
 
