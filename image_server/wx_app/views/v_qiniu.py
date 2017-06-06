@@ -48,6 +48,9 @@ class QiNiuUpload( ListView):
     def get(self, request, *args, **kwargs):
         session = request.GET.get('session',"")
         _type = request.GET.get('type',"")
+        print 'ok'
+        print session,_type
+        print 123
         #上传到指定目录
         #为空，上传到默认目录
         _category_id =  request.GET.get('category_id',"")
@@ -65,6 +68,7 @@ class QiNiuUpload( ListView):
         print _type,_user.id
         #设置上传路径
         _up_path = UpFileName(_type,_user.id)
+        # _up_path["file_name"] = "1.gif"
         token,key = GetQiNiuToken("",_up_path["file_name"])
 
         #保存图片用户数据
@@ -76,14 +80,28 @@ class QiNiuUpload( ListView):
         return HttpResponse(json.dumps({"status":"true","token":token,"key":key, "category_id":_category_id,}),content_type="application/json")
     def post(self, request, *args, **kwargs):
         try:
-            key = request.POST['key']
-            _hash = request.POST['hash']
-            w = request.POST['w']
-            h = request.POST['h']
-            duration = request.POST['duration']
-            fsize = request.POST['fsize']
-            vw = request.POST['vw']
-            vh = request.POST['vh']
+            key = request.POST.get('key',"")
+            _hash = request.POST.get('hash',"")
+            w = request.POST.get('w',"")
+            h = request.POST.get('h',"")
+            duration = request.POST.get('duration',"")
+            fsize = request.POST.get('fsize',"")
+            vw = request.POST.get('vw',"")
+            vh = request.POST.get('vh',"")
+
+            # key =  '1.gif'
+            # w = 200
+            # h = 200
+            # fsize = 125
+
+            # key = request.POST['key']
+            # _hash = request.POST['hash']
+            # w = request.POST['w']
+            # h = request.POST['h']
+            # duration = request.POST['duration']
+            # fsize = request.POST['fsize']
+            # vw = request.POST['vw']
+            # vh = request.POST['vh']
 
             if duration == "" :
                 duration = 0.0
@@ -152,7 +170,7 @@ class QiNiuUpload( ListView):
                 # _category = Category.objects.get( user_id = _user ,is_default = 1,id=_category_id)
 
                 if _category_id == "": # 目录为空，查默认目录
-                    _category = Category.objects.filter( user_id = _user,is_default=1)
+                    _category = Category.objects.get( user_id = _user,is_default=1)
                 else:# 目录不为空，使用当前目录
                     _category = Category.objects.get( id=_category_id)
                 # if Category.objects.filter( user_id = _user,id=_category_id).exists() is False:
