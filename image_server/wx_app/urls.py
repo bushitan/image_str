@@ -83,8 +83,8 @@ urlpatterns = [
    url(r'^qiniu/upload/$', QiNiuUpload.as_view()),
 
    #gather英雄帖
-   url(r'^gather/get_user_info/$', GetUserInfo.as_view()),
-   url(r'^gather/set_user_info/$', SetUserInfo.as_view()),
+   url(r'^gather/get_user_info/$', GetMUserInfo.as_view()),
+   url(r'^gather/set_user_info/$', SetMUserInfo.as_view()),
 
    url(r'^gather/get_master_info/$', GetMasterInfo.as_view()),#获取发帖人信息
    url(r'^gather/help_master/$', HelpMaster.as_view()),#获取发帖人信息

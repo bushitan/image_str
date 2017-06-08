@@ -236,55 +236,77 @@
 
 
 
-str = '''
-[{
-        title:"康夫电吹风机家用大功率2300W发廊理发店学生电吹风筒静音冷热风",
-        img:"../../images/tb_img.jpg",
-        price:"185",
-        discount_price:"168",
-        sale:"18511",
-        store_url:"https://s.click.taobao.com/bcZUHow",
-        store_qr:"http://gqrcode.alicdn.com/img?type=hv&text=https%3A%2F%2Fs.click.taobao.com%2FbcZUHow%3Faf%3D3&h=300&w=300",
-    },{
-        title:"康夫电吹风机家用大功率2300W发廊理发店学生电吹风筒静音冷热风",
-        img:"../../images/tb_img.jpg",
-        price:"185",
-        discount_price:"168",
-        sale:"18511",
-        store_url:"https://s.click.taobao.com/bcZUHow",
-        store_qr:"http://gqrcode.alicdn.com/img?type=hv&text=https%3A%2F%2Fs.click.taobao.com%2FbcZUHow%3Faf%3D3&h=300&w=300",
-    }]
-'''
-str = '''{title:"康夫电吹风机家用大功率2300W发廊理发店学生电吹风筒静音冷热风",img:"../../images/tb_img.jpg",price:"185",discount_price:"168",sale:"18511",store_url:"https://s.click.taobao.com/bcZUHow",store_qr:"http://gqrcode.alicdn.com/img?type=hv&text=https%3A%2F%2Fs.click.taobao.com%2FbcZUHow%3Faf%3D3&h=300&w=300",}'''
-# str="{'title':'1'}"
-str = '''[{
-        "title":"康夫电吹风机家用大功率2300W发廊理发店学生电吹风筒静音冷热风",
-        "img":"../../images/tb_img.jpg",
-        "price":"185",
-        "discount_price":"168",
-        "sale":"18511",
-        "store_url":"https://s.click.taobao.com/bcZUHow",
-        "store_qr":"http://gqrcode.alicdn.com/img?type=hv&text=https%3A%2F%2Fs.click.taobao.com%2FbcZUHow%3Faf%3D3&h=300&w=300",
-    },{
-        "title":"康夫电吹风机家用大功率2300W发廊理发店学生电吹风筒静音冷热风",
-        "img":"../../images/tb_img.jpg",
-        "price":"185",
-        "discount_price":"168",
-        "sale":"18511",
-        "store_url":"https://s.click.taobao.com/bcZUHow",
-        "store_qr":"http://gqrcode.alicdn.com/img?type=hv&text=https%3A%2F%2Fs.click.taobao.com%2FbcZUHow%3Faf%3D3&h=300&w=300",
-    }]'''
-# print str
-import json
+# str = '''
+# [{
+#         title:"康夫电吹风机家用大功率2300W发廊理发店学生电吹风筒静音冷热风",
+#         img:"../../images/tb_img.jpg",
+#         price:"185",
+#         discount_price:"168",
+#         sale:"18511",
+#         store_url:"https://s.click.taobao.com/bcZUHow",
+#         store_qr:"http://gqrcode.alicdn.com/img?type=hv&text=https%3A%2F%2Fs.click.taobao.com%2FbcZUHow%3Faf%3D3&h=300&w=300",
+#     },{
+#         title:"康夫电吹风机家用大功率2300W发廊理发店学生电吹风筒静音冷热风",
+#         img:"../../images/tb_img.jpg",
+#         price:"185",
+#         discount_price:"168",
+#         sale:"18511",
+#         store_url:"https://s.click.taobao.com/bcZUHow",
+#         store_qr:"http://gqrcode.alicdn.com/img?type=hv&text=https%3A%2F%2Fs.click.taobao.com%2FbcZUHow%3Faf%3D3&h=300&w=300",
+#     }]
+# '''
+# str = '''{title:"康夫电吹风机家用大功率2300W发廊理发店学生电吹风筒静音冷热风",img:"../../images/tb_img.jpg",price:"185",discount_price:"168",sale:"18511",store_url:"https://s.click.taobao.com/bcZUHow",store_qr:"http://gqrcode.alicdn.com/img?type=hv&text=https%3A%2F%2Fs.click.taobao.com%2FbcZUHow%3Faf%3D3&h=300&w=300",}'''
+# # str="{'title':'1'}"
+# str = '''[{
+#         "title":"康夫电吹风机家用大功率2300W发廊理发店学生电吹风筒静音冷热风",
+#         "img":"../../images/tb_img.jpg",
+#         "price":"185",
+#         "discount_price":"168",
+#         "sale":"18511",
+#         "store_url":"https://s.click.taobao.com/bcZUHow",
+#         "store_qr":"http://gqrcode.alicdn.com/img?type=hv&text=https%3A%2F%2Fs.click.taobao.com%2FbcZUHow%3Faf%3D3&h=300&w=300",
+#     },{
+#         "title":"康夫电吹风机家用大功率2300W发廊理发店学生电吹风筒静音冷热风",
+#         "img":"../../images/tb_img.jpg",
+#         "price":"185",
+#         "discount_price":"168",
+#         "sale":"18511",
+#         "store_url":"https://s.click.taobao.com/bcZUHow",
+#         "store_qr":"http://gqrcode.alicdn.com/img?type=hv&text=https%3A%2F%2Fs.click.taobao.com%2FbcZUHow%3Faf%3D3&h=300&w=300",
+#     }]'''
+# # print str
+# import json
+#
+# decoded = eval(str)
+# print decoded
+#
+#
+import urllib2,json
 
-decoded = eval(str)
-print decoded
+# url = 'http://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=%s' % ( TIME_OUT['ACCESS_TOKEN'])
+url = "http://192.168.199.203:8001/qiniu/upload/"
 
+session = "021I0xhq0fLEBq1Eyyjq0qrlhq0I0xhH1496302722.89"
+get_url = url + "?session=%s&type=gif" %( session )
+req = urllib2.Request(get_url)
+opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+response = opener.open(req)
+print response.read()
 
-
-
-
-
+data = {
+    'key': '1.gif',
+    'hash': "",
+    'w': 200,
+    'h': 200,
+    'duration': 10,
+    'fsize': 512,
+    'vw': 0,
+    'vh': 0,
+}
+headers = {'Content-Type': 'application/json'}
+request = urllib2.Request(url = url,  headers=headers, data=json.dumps(data))
+response = urllib2.urlopen(request)
+print response.read()
 
 
 

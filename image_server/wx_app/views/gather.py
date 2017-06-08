@@ -21,7 +21,7 @@ M_PRIZE_URL = '../../images/help_tie_qr.jpg'
 
 
 #设置英雄帖用户信息
-class SetUserInfo(ListView):
+class SetMUserInfo(ListView):
 	def get(self, request, *args, **kwargs):
 		session = request.GET.get('session',"")
 		logo = request.GET.get('logo',"")
@@ -55,7 +55,7 @@ class SetUserInfo(ListView):
 		)
 
 
-class GetUserInfo(ListView):
+class GetMUserInfo(ListView):
 	def get(self, request, *args, **kwargs):
 		session = request.GET.get('session',"")
 		print ' in GetUserInfo ',session
