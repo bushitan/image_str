@@ -281,34 +281,65 @@
 # print decoded
 #
 #
-import urllib2,json
 
-# url = 'http://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=%s' % ( TIME_OUT['ACCESS_TOKEN'])
-url = "http://192.168.199.203:8001/qiniu/upload/"
+# # GET , POST 测试
+# import urllib2,json
+#
+# # url = 'http://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=%s' % ( TIME_OUT['ACCESS_TOKEN'])
+# url = "http://192.168.199.203:8001/qiniu/upload/"
+#
+# session = "021I0xhq0fLEBq1Eyyjq0qrlhq0I0xhH1496302722.89"
+# get_url = url + "?session=%s&type=gif" %( session )
+# req = urllib2.Request(get_url)
+# opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+# response = opener.open(req)
+# print response.read()
+#
+# data = {
+#     'key': '1.gif',
+#     'hash': "",
+#     'w': 200,
+#     'h': 200,
+#     'duration': 10,
+#     'fsize': 512,
+#     'vw': 0,
+#     'vh': 0,
+# }
+# headers = {'Content-Type': 'application/json'}
+# request = urllib2.Request(url = url,  headers=headers, data=json.dumps(data))
+# response = urllib2.urlopen(request)
+# print response.read()
 
-session = "021I0xhq0fLEBq1Eyyjq0qrlhq0I0xhH1496302722.89"
-get_url = url + "?session=%s&type=gif" %( session )
-req = urllib2.Request(get_url)
-opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
-response = opener.open(req)
-print response.read()
+# 打开浏览器
 
-data = {
-    'key': '1.gif',
-    'hash': "",
-    'w': 200,
-    'h': 200,
-    'duration': 10,
-    'fsize': 512,
-    'vw': 0,
-    'vh': 0,
-}
-headers = {'Content-Type': 'application/json'}
-request = urllib2.Request(url = url,  headers=headers, data=json.dumps(data))
-response = urllib2.urlopen(request)
-print response.read()
+#!/usr/bin/env python
+#-*- coding:UTF-8 -*-
+import sys
+import webbrowser
+import base64
+logo = 'aHR0cDovL3d4LnFsb2dvLmNuL21tb3Blbi92aV8zMi9RMGo0VHdHVGZUS1ZqT3VjbzM5aWF5QnlKRGFndmRIWGoxSnNyNmpHZUYwYUhrV015Z3ZWeXBtU2RFeVZtWmhydWFaZU82YTdsZTU0ZklYZnl1cGliaWNkZy8w'
+qr = 'aHR0cDovL2ltZy4xMnhpb25nLnRvcC9tYXN0ZXIvMS5qcGc'
+title = '6buE5Zu-57qi5Zu-55qu5aWl5Yip5aWl55qE'
+# prize_url = 'aHR0cDovL2ltYWdlLjEyeGlvbmcudG9wLzFfMjAxNzA2MDYxMDM2MzEuanBn'
+prize_url = 'aHR0cDovL2ltZy4xMnhpb25nLnRvcC8xMDExXzIwMTcwMjE0MjIxMTAxLmpwZw=='
+# prize_url = "aHR0cDovL2ltZy4xMnhpb25nLnRvcC8xMl8yMDE2MTIwMzE1NTI0OC5naWY_aW1hZ2VNb2dyMi90aHVtYm5haWwvMTcweDI0MC9mb3JtYXQvanBn"
 
 
+want1 = '5oOz6KaB'
+num = 'Tk86MTEyNDM="'
+mark = '6L-Z5piv56aP5Yip'
 
 
+water_5 = 'http://img.12xiong.top/help_tie_bg4.jpg?watermark/3/'  \
+  + 'image/' + logo + '/dissolve/100/gravity/North/dx/-40/dy/105/ws/0.15/'\
+  + 'text/' + want1 + '/font/5b6u6L2v6ZuF6buR/fontsize/500/fill/YmxhY2s=/dissolve/85/gravity/North/dx/35/dy/115/'\
+  + 'text/' + title + '/font/5b6u6L2v6ZuF6buR/fontsize/500/fill/YmxhY2s=/dissolve/85/gravity/North/dx/0/dy/165/'\
+  + 'image/' + prize_url + '/dissolve/15/gravity/Center/dx/0/dy/0/ws/0.2/'\
+  + 'text/' + mark + '/font/5b6u6L2v6ZuF6buR/fontsize/300/fill/cmVk/dissolve/85/gravity/Center/dx/0/dy/0/'\
+  + 'image/' + qr + '/dissolve/100/gravity/South/dx/0/dy/20/ws/0.45/'\
+  + 'text/' + num + '/font/5b6u6L2v6ZuF6buR/fontsize/300/fill/cmVk/dissolve/85/gravity/South/dx/0/dy/0/'\
 
+webbrowser.open(water_5)
+
+# http://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKVjOuco39iayByJDagvdHXj1Jsr6jGeF0aHkWMygvVypmSdEyVmZhruaZeO6a7le54fIXfyupibicdg/0
+#http://image.12xiong.top/1_20170606103631.jpg

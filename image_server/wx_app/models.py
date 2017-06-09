@@ -115,11 +115,11 @@ GATHER_OPEN = {
 #Master的信息
 class Master(models.Model):
     user= models.ForeignKey(User, verbose_name=u'master用户',null=True,blank=True)
-    nick_name = models.CharField(max_length=32, verbose_name=u'昵称',null=True,blank=True)
-    title = models.CharField(max_length=100, verbose_name=u'标题',null=True,blank=True)
+    nick_name = models.CharField(max_length=32, verbose_name=u'昵称',default="",null=True,blank=True)
+    title = models.CharField(max_length=100, verbose_name=u'标题',default="",null=True,blank=True)
     # qr_url = models.CharField(max_length=100, verbose_name=u'二维码图片',null=True,blank=True)
-    logo_url = models.TextField( verbose_name=u'头像icon',null=True,blank=True)
-    prize_url = models.TextField( verbose_name=u'奖励图片',null=True,blank=True)
+    logo_url = models.TextField( verbose_name=u'头像icon',default="",null=True,blank=True)
+    prize_url = models.TextField( verbose_name=u'奖励图片',default="",null=True,blank=True)
     is_gather_open = models.IntegerField(u'是否接受求图',default=1,choices=GATHER_OPEN.items(),)
     class Meta:
         verbose_name_plural = verbose_name = u'发帖者'

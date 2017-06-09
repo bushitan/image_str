@@ -7,17 +7,17 @@ import image_server.settings as SETTING
 
 user = {
 	'session':"",
-	'logo':"../../images/cartHL.png",
+	'logo':"http://img.12xiong.top/help_logo.png",
 	'title':'第一个主题',
 	'prize_url':'../../images/help_tie_qr.jpg',
 	'is_gather_open':1,
 }
 
-M_LOGO = "../../images/cartHL.png"
+M_LOGO = "http://img.12xiong.top/help_logo.png"
 M_QR_HOST = "http://img.12xiong.top/master/"
-M_NICK_NAME = u"默认名字"
-M_TITLE = u"默认主题"
-M_PRIZE_URL = '../../images/help_tie_qr.jpg'
+M_NICK_NAME = u"好玩的名字"
+M_TITLE = u"搞笑的图片"
+M_PRIZE_URL = "http://img.12xiong.top/help_img.png"
 
 
 #设置英雄帖用户信息
@@ -71,26 +71,28 @@ class GetMUserInfo(ListView):
 			_master.save()
 			_master_info = {
 				'master_id':_master.id,
-				"nick_name":M_NICK_NAME if _master.nick_name is None else _master.nick_name,
-				'logo': M_LOGO if _master.logo_url is None else _master.logo_url,
-				'title': M_TITLE if _master.title is None else _master.title,
+				"nick_name":M_NICK_NAME if _master.nick_name =="" else _master.nick_name,
+				'logo': M_LOGO if _master.logo_url =="" else _master.logo_url,
+				'title': M_TITLE if _master.title =="" else _master.title,
 				'qr_url':M_QR_HOST + str(_master.id) +".jpg",
-				'prize_url':M_PRIZE_URL if _master.prize_url is None else _master.prize_url,
+				'prize_url':M_PRIZE_URL if _master.prize_url =="" else _master.prize_url,
 				'is_gather_open':_master.is_gather_open,
 			}
+			print 'M_LOGO',  M_LOGO if _master.logo_url is None else _master.logo_url
 			return HttpResponse( json.dumps({"status":"true","master_info":_master_info,"rel_master_img":[]}),content_type="application/json" )
 		else: #master已经有，查询
 			_master = Master.objects.get(user = _user)
 			print ' in GetUserInfo have',_master.title
 			_master_info = { #查信息
 				'master_id':_master.id,
-				"nick_name":M_NICK_NAME if _master.nick_name is None else _master.nick_name,
-				'logo': M_LOGO if _master.logo_url is None else _master.logo_url,
-				'title': M_TITLE if _master.title is None else _master.title,
+				"nick_name":M_NICK_NAME if _master.nick_name =="" else _master.nick_name,
+				'logo': M_LOGO if _master.logo_url =="" else _master.logo_url,
+				'title': M_TITLE if _master.title =="" else _master.title,
 				'qr_url':M_QR_HOST + str(_master.id) +".jpg",
-				'prize_url':M_PRIZE_URL if _master.prize_url is None else _master.prize_url,
+				'prize_url':M_PRIZE_URL if _master.prize_url =="" else _master.prize_url,
 				'is_gather_open':_master.is_gather_open,
 			}
+			print 'M_LOGO',  M_LOGO if _master.logo_url is None else _master.logo_url
 			print _master_info
 
 			_rel = RelMasterUserImg.objects.filter(user = _user) #查图片
@@ -119,10 +121,10 @@ class GetMasterInfo(ListView):
 		# 	return HttpResponse( json.dumps({"status":"false","msg":u"master用户不存在,请重新登录"}),content_type="application/json" )
 	 	_master = Master.objects.get( id = master_id)
 		_master_info = {
-			"nick_name":M_NICK_NAME if _master.nick_name is None else _master.nick_name,
-			'logo': M_LOGO if _master.logo_url is None else _master.logo_url,
-			'title': M_TITLE if _master.title is None else _master.title,
-			'prize_url':M_PRIZE_URL if _master.prize_url is None else _master.prize_url,
+			"nick_name":M_NICK_NAME if _master.nick_name == ""  else _master.nick_name,
+			'logo': M_LOGO if _master.logo_url == ""  else _master.logo_url,
+			'title': M_TITLE if _master.title  == ""  else _master.title,
+			'prize_url':M_PRIZE_URL if _master.prize_url  == ""  else _master.prize_url,
 			'is_gather_open':_master.is_gather_open,
 		}
 		return HttpResponse(
