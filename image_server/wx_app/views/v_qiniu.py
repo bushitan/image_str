@@ -21,7 +21,7 @@ def GetQiNiuToken(qiniu_path,filename):
     q = qiniu.Auth(qiniu_access_key, qiniu_secret_key)
     key = qiniu_path + filename
     policy = {
-        "callbackUrl":"http://www.12xiong.top/qiniu/upload/",
+        "callbackUrl":"https://www.12xiong.top/qiniu/upload/",
         "callbackBody":"key=$(key)&hash=$(etag)&w=$(imageInfo.width)&h=$(imageInfo.height)&duration=$(avinfo.video.duration)&fsize=$(fsize)&vw=$(avinfo.video.width)&vh=$(avinfo.video.height)",
         "callbackHost":"120.27.97.33",
         "fsizeLimit": 6815744,
