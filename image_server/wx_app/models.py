@@ -187,15 +187,20 @@ ARTICLE_SHOW = {
     1:u"显示",
     0:u"隐藏",
 }
+COVER_STYLE = {
+    0:u"图片",
+    1:u"视频",
+}
 class Article(models.Model):
     cover = models.CharField(max_length=100, verbose_name=u'封面图片',null=True,blank=True)
+    cover_style = models.IntegerField(u'封面类型',default=0,choices=COVER_STYLE.items())
     title = models.CharField(max_length=100, verbose_name=u'标题',null=True,blank=True)
-    swiper = models.TextField(verbose_name=u'轮播图',null=True,blank=True)
-    summary = models.TextField(verbose_name=u'摘要',null=True,blank=True)
+    swiper = models.CharField(max_length=200, verbose_name=u'轮播图',null=True,blank=True)
+    summary = models.CharField(max_length=100,verbose_name=u'摘要',null=True,blank=True)
     content = models.TextField(verbose_name=u'正文',null=True,blank=True)
     is_show = models.IntegerField(u'是否显示文章',default=1,choices=ARTICLE_SHOW.items(),)
     create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
-    tao_bao = models.TextField(verbose_name=u'淘宝链接',null=True,blank=True)
+    tao_bao = models.CharField(max_length=100,verbose_name=u'淘宝链接',null=True,blank=True)
     def get_tags(self):
         return self.tags.split(',')
 
@@ -208,6 +213,22 @@ class Article(models.Model):
     def __unicode__(self):
             return self.title
 
+class Story(models.Model):
+    name = models.CharField(max_length=32, verbose_name=u'故事名字',null=True,blank=True)
+    tree = models.TextField(verbose_name=u'剧情树',null=True,blank=True)
+    cover = models.CharField(max_length=100, verbose_name=u'封面图片',null=True,blank=True)
+    cover_style = models.IntegerField(u'封面类型',default=0,choices=COVER_STYLE.items())
+    title = models.CharField(max_length=100, verbose_name=u'标题',null=True,blank=True)
+    summary = models.CharField(max_length=100,verbose_name=u'摘要',null=True,blank=True)
+    is_show = models.IntegerField(u'是否显示文章',default=1,choices=ARTICLE_SHOW.items(),)
+    create_time = models.DateTimeField(u'创建时间', auto_now_add=True,null=True,blank=True)
+    class Meta:
+        verbose_name_plural = verbose_name = u'故事剧情'
+        ordering = ['-create_time']
+        # ordering = ['rank', '-is_top', '-pub_time', '-create_time']
+        app_label = string_with_title('wx_app', u"表情")
+    def __unicode__(self):
+            return self.name
 
 class UserBack(models.Model):
     user = models.ForeignKey(User, verbose_name=u'用户',null=True,blank=True)

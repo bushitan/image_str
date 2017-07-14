@@ -315,31 +315,105 @@
 #!/usr/bin/env python
 #-*- coding:UTF-8 -*-
 import sys
-import webbrowser
-import base64
-logo = 'aHR0cDovL3d4LnFsb2dvLmNuL21tb3Blbi92aV8zMi9RMGo0VHdHVGZUS1ZqT3VjbzM5aWF5QnlKRGFndmRIWGoxSnNyNmpHZUYwYUhrV015Z3ZWeXBtU2RFeVZtWmhydWFaZU82YTdsZTU0ZklYZnl1cGliaWNkZy8w'
-qr = 'aHR0cDovL2ltZy4xMnhpb25nLnRvcC9tYXN0ZXIvMS5qcGc'
-title = '6buE5Zu-57qi5Zu-55qu5aWl5Yip5aWl55qE'
-# prize_url = 'aHR0cDovL2ltYWdlLjEyeGlvbmcudG9wLzFfMjAxNzA2MDYxMDM2MzEuanBn'
-prize_url = 'aHR0cDovL2ltZy4xMnhpb25nLnRvcC8xMDExXzIwMTcwMjE0MjIxMTAxLmpwZw=='
-# prize_url = "aHR0cDovL2ltZy4xMnhpb25nLnRvcC8xMl8yMDE2MTIwMzE1NTI0OC5naWY_aW1hZ2VNb2dyMi90aHVtYm5haWwvMTcweDI0MC9mb3JtYXQvanBn"
-
-
-want1 = '5oOz6KaB'
-num = 'Tk86MTEyNDM="'
-mark = '6L-Z5piv56aP5Yip'
-
-
-water_5 = 'http://img.12xiong.top/help_tie_bg4.jpg?watermark/3/'  \
-  + 'image/' + logo + '/dissolve/100/gravity/North/dx/-40/dy/105/ws/0.15/'\
-  + 'text/' + want1 + '/font/5b6u6L2v6ZuF6buR/fontsize/500/fill/YmxhY2s=/dissolve/85/gravity/North/dx/35/dy/115/'\
-  + 'text/' + title + '/font/5b6u6L2v6ZuF6buR/fontsize/500/fill/YmxhY2s=/dissolve/85/gravity/North/dx/0/dy/165/'\
-  + 'image/' + prize_url + '/dissolve/15/gravity/Center/dx/0/dy/0/ws/0.2/'\
-  + 'text/' + mark + '/font/5b6u6L2v6ZuF6buR/fontsize/300/fill/cmVk/dissolve/85/gravity/Center/dx/0/dy/0/'\
-  + 'image/' + qr + '/dissolve/100/gravity/South/dx/0/dy/20/ws/0.45/'\
-  + 'text/' + num + '/font/5b6u6L2v6ZuF6buR/fontsize/300/fill/cmVk/dissolve/85/gravity/South/dx/0/dy/0/'\
-
-webbrowser.open(water_5)
+# import webbrowser
+# import base64
+# logo = 'aHR0cDovL3d4LnFsb2dvLmNuL21tb3Blbi92aV8zMi9RMGo0VHdHVGZUS1ZqT3VjbzM5aWF5QnlKRGFndmRIWGoxSnNyNmpHZUYwYUhrV015Z3ZWeXBtU2RFeVZtWmhydWFaZU82YTdsZTU0ZklYZnl1cGliaWNkZy8w'
+# qr = 'aHR0cDovL2ltZy4xMnhpb25nLnRvcC9tYXN0ZXIvMS5qcGc'
+# title = '6buE5Zu-57qi5Zu-55qu5aWl5Yip5aWl55qE'
+# # prize_url = 'aHR0cDovL2ltYWdlLjEyeGlvbmcudG9wLzFfMjAxNzA2MDYxMDM2MzEuanBn'
+# prize_url = 'aHR0cDovL2ltZy4xMnhpb25nLnRvcC8xMDExXzIwMTcwMjE0MjIxMTAxLmpwZw=='
+# # prize_url = "aHR0cDovL2ltZy4xMnhpb25nLnRvcC8xMl8yMDE2MTIwMzE1NTI0OC5naWY_aW1hZ2VNb2dyMi90aHVtYm5haWwvMTcweDI0MC9mb3JtYXQvanBn"
+#
+#
+# want1 = '5oOz6KaB'
+# num = 'Tk86MTEyNDM="'
+# mark = '6L-Z5piv56aP5Yip'
+#
+#
+# water_5 = 'http://img.12xiong.top/help_tie_bg4.jpg?watermark/3/'  \
+#   + 'image/' + logo + '/dissolve/100/gravity/North/dx/-40/dy/105/ws/0.15/'\
+#   + 'text/' + want1 + '/font/5b6u6L2v6ZuF6buR/fontsize/500/fill/YmxhY2s=/dissolve/85/gravity/North/dx/35/dy/115/'\
+#   + 'text/' + title + '/font/5b6u6L2v6ZuF6buR/fontsize/500/fill/YmxhY2s=/dissolve/85/gravity/North/dx/0/dy/165/'\
+#   + 'image/' + prize_url + '/dissolve/15/gravity/Center/dx/0/dy/0/ws/0.2/'\
+#   + 'text/' + mark + '/font/5b6u6L2v6ZuF6buR/fontsize/300/fill/cmVk/dissolve/85/gravity/Center/dx/0/dy/0/'\
+#   + 'image/' + qr + '/dissolve/100/gravity/South/dx/0/dy/20/ws/0.45/'\
+#   + 'text/' + num + '/font/5b6u6L2v6ZuF6buR/fontsize/300/fill/cmVk/dissolve/85/gravity/South/dx/0/dy/0/'\
+#
+# webbrowser.open(water_5)
 
 # http://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKVjOuco39iayByJDagvdHXj1Jsr6jGeF0aHkWMygvVypmSdEyVmZhruaZeO6a7le54fIXfyupibicdg/0
 #http://image.12xiong.top/1_20170606103631.jpg
+
+
+
+# from django.conf import settings
+# settings.configure()
+from wx_app.models import *
+import json
+
+# import os
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+_story_id = 1
+_step_current = "1,3"
+# _tree = Story.objects.get(id = _story_id ).tree
+# _tree_json =  json.loads(_tree)           #剧情树转json
+#
+# # print _current_art_id
+# if _step_current == "":                        #从故事列表进入，步骤为空
+#     _current_art_id = _tree_json.keys()[0] #获取当前文章的id
+#     _art_list = [_current_art_id]           #第一步为用户已经走的路
+# else:
+#     _art_list = _step_current.split(',')
+#     _current_art_id = _art_list[-1]         #最新的步数为当前浏览步数
+# # print _art_list
+# _step_next = {}     #设置下一步信息你
+# temp = _tree_json
+# for item in _art_list: #遍历步骤列表
+#     temp=temp[item]
+#     if item == _art_list[-1]: #根据步骤，获取当前步数的son
+#         key_list = ["right_id", "right_name","left_id","left_name"]
+#         for k in key_list:    #将son的左右数据，依次存入_step_next
+#             if temp.has_key(k):
+#                 _step_next[k] = temp[k]
+#
+# a = Article.objects.get(id = _current_art_id )  #当前步数对应的文章
+#
+# _dict = {
+#     "status":"true",
+#     "swiper": a.swiper.replace('\r\n','').split(",") , #轮播图
+#     "title":a.title,
+#     "content":a.content,
+#     "step_current":','.join(_art_list),
+#     "step_next":_step_next,
+# }
+#
+# print _dict
+
+
+
+
+
+# print s.name, json.loads(s.tree)
+# t =  json.loads(s.tree)
+# _story =  '''{
+# 	"1":
+# 	{
+# 	    "right_id":"2",
+# 	    "right_name":"右边的",
+# 	    "left_id":"3",
+# 	    "left_name":"左边的",
+#
+#         "2":
+#         {
+#
+#         },
+#         "3":
+#         {
+#
+#         }
+# 	}
+# }'''
+
+
+

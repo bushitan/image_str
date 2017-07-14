@@ -52,6 +52,9 @@ admin.site.register(RelThemeUser,RelThemeUserAdmin)
 admin.site.register(Step,StepAdmin)
 
 
+class StoryAdmin(admin.ModelAdmin):
+    list_display = ('id','name',)
+admin.site.register(Story,StoryAdmin)
 class ArticleAdmin(admin.ModelAdmin):
     # formfield_overrides = {models.TextField: {'widget': form.Textarea},}
     # class Media:
@@ -59,6 +62,10 @@ class ArticleAdmin(admin.ModelAdmin):
     #         '/static/tinymce/tinymce.min.js',
     #         '/static/tinymce/textareas.js',
     #     )
+    list_display = ('id','title','content',)
+    class Media:
+        js = ('/static/tinymce/tinymce.min.js',
+              '/static/tinymce/textareas.js')
     fieldsets = (
         # (u'基本信息', {
         #     'fields': ('title', 'en_title', 'img'
