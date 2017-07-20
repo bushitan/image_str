@@ -200,7 +200,7 @@ class Article(models.Model):
     content = models.TextField(verbose_name=u'正文',null=True,blank=True)
     is_show = models.IntegerField(u'是否显示文章',default=1,choices=ARTICLE_SHOW.items(),)
     create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
-    tao_bao = models.CharField(max_length=100,verbose_name=u'淘宝链接',null=True,blank=True)
+    # tao_bao = models.CharField(max_length=100,verbose_name=u'淘宝链接',null=True,blank=True)
     def get_tags(self):
         return self.tags.split(',')
 
